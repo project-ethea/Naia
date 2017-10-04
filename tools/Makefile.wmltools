@@ -63,7 +63,7 @@ test:
 	@echo "  Difficulties: $(DIFFICULTIES)"
 	@echo "  Config sets:  $(PACKS)"
 
-	@for p in $(PACKS); do for d in $(DIFFICULTIES); do \
+	@for p in $(PACKS) __WMLUNITS__; do for d in $(DIFFICULTIES); do \
 		echo "    TEST    $$p -> $$d"; \
 		$(WML_PREPROCESS) $(targetdir) .preprocessor.out --preprocess-defines __TEST_SUITE__,$(EXTRASYMS),$(CAMPAIGNSYM),$$d,$$p 2>&1 | tail -n +5 ; \
 		test "$(AUTO_DELTEMP)" -ne 0 && rm -rf .preprocessor.out; true; \
@@ -76,7 +76,7 @@ stats:
 	@echo "  Difficulties: $(DIFFICULTIES)"
 	@echo "  Configs sets: $(PACKS)"
 
-	@for p in $(PACKS); do for d in $(DIFFICULTIES); do \
+	@for p in $(PACKS) __WMLUNITS__; do for d in $(DIFFICULTIES); do \
 		echo "    WML     $$p -> $$d"; \
 		$(WML_PREPROCESS) $(targetdir) .preprocessor.out --preprocess-defines __TEST_SUITE__,$(EXTRASYMS),$(CAMPAIGNSYM),$$d,$$p 2>&1 2> /dev/null; \
 		wc -lcm .preprocessor.out/_main.cfg | awk '{printf "            %u lines, %u characters (%1.0f KiB)\n", $$1, $$2, $$3 / 1024}'; \
