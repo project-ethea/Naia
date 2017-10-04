@@ -1,0 +1,100 @@
+NAIA_PREFIX      := naia
+
+MAKEFLAGS        += -rR --no-print-directory
+
+ifndef USE_WESNOTH_DEV
+WESNOTH          := wesnoth-1.12
+else
+WESNOTH          := wesnoth
+endif
+
+WESNOTH_VERSION  := $(shell $(WESNOTH) --version 2>&1 | head -n 1)
+WESNOTH_DATA_DIR := $(shell $(WESNOTH) --path 2>&1 | tail -n 1)
+WESNOTH_CORE_DIR := $(WESNOTH_DATA_DIR)/data/core
+
+DEFSCOPE         := $(NAIA_PREFIX)/tools/macro-scope-check
+
+AUTO_DELTEMP     ?= 1
+
+WMLLINT          ?= wmllint-1.12 -d
+WMLINDENT        ?= wmlindent-1.12
+WMLXGETTEXT      ?= wmlxgettext-1.12
+
+WML_PREPROCESS   := $(WESNOTH) -p
+
+LOCAL_TEXTDOMAIN = wesnoth-$(ADDON_NAME)
+
+dist_version ?= $(shell cat $(DIST_VERSION_FILE))
+dist_passphrase ?= $(shell sed -nE '/^$(ADDON_NAME)=(.*)$$/ { s//\1/; p; q }' $(DIST_PASSPHRASE_FILE))
+
+targetdir := $(realpath .)
+
+all: defscope lint
+
+indent:
+	$(WMLINDENT) .
+
+defscope:
+	$(DEFSCOPE) $(scenario_dirs)
+
+lint:
+	$(WMLLINT) $(WESNOTH_CORE_DIR) $(targetdir)
+
+%.pot:
+	@echo "    POT     $*.pot"
+	@find . \( -name '*.cfg' -o -name '*.lua' \) -type f -print0 | xargs -0 $(WMLXGETTEXT) --directory=$(targetdir) --domain $(LOCAL_TEXTDOMAIN) > $*.pot
+	@msgfmt --statistics -o /dev/null $*.pot 2>&1 | sed -E 's/^.*\s([0-9]+)\s.*$$/            \1 strings/'
+
+local-pot: $(LOCAL_TEXTDOMAIN).pot
+
+pbl: _server.pbl
+
+*.pbl: $(DIST_VERSION_FILE) $(DIST_PASSPHRASE_FILE)
+
+%.pbl: %.pbl.in
+	@echo "    PBL     $@ [$(dist_version)]"
+	@echo $(dist_version) | fgrep -vq 'dev' || ( echo "WARNING: Not a production release: $(dist_version)" )
+	@sed 's/@VERSION@/$(dist_version)/; s/@PASSPHRASE@/$(dist_passphrase)/' $< > $@
+
+test:
+	@echo "Running preprocessor/parser test pass..."
+	@echo "  Add-on id:    $(ADDON_NAME)"
+	@echo "  Version:      $(WESNOTH_VERSION)"
+	@echo "  Difficulties: $(DIFFICULTIES)"
+	@echo "  Config sets:  $(PACKS)"
+
+	@for p in $(PACKS); do for d in $(DIFFICULTIES); do \
+		echo "    TEST    $$p -> $$d"; \
+		$(WML_PREPROCESS) $(targetdir) .preprocessor.out --preprocess-defines __TEST_SUITE__,$(EXTRASYMS),$(CAMPAIGNSYM),$$d,$$p 2>&1 | tail -n +5 ; \
+		test "$(AUTO_DELTEMP)" -ne 0 && rm -rf .preprocessor.out; true; \
+	done; done
+
+stats:
+	@echo "Gathering WML statistics"
+	@echo "  Add-on id:    $(ADDON_NAME)"
+	@echo "  Version:      $(WESNOTH_VERSION)"
+	@echo "  Difficulties: $(DIFFICULTIES)"
+	@echo "  Configs sets: $(PACKS)"
+
+	@for p in $(PACKS); do for d in $(DIFFICULTIES); do \
+		echo "    WML     $$p -> $$d"; \
+		$(WML_PREPROCESS) $(targetdir) .preprocessor.out --preprocess-defines __TEST_SUITE__,$(EXTRASYMS),$(CAMPAIGNSYM),$$d,$$p 2>&1 2> /dev/null; \
+		wc -lcm .preprocessor.out/_main.cfg | awk '{printf "            %u lines, %u characters (%1.0f KiB)\n", $$1, $$2, $$3 / 1024}'; \
+		test "$(AUTO_DELTEMP)" -ne 0 && rm -rf .preprocessor.out; true; \
+	done; done
+
+optipng:
+	$(OPTIPNG)
+
+clean-wmltools:
+	$(WMLLINT) --clean $(targetdir)
+	find \( \
+	    -name '*.new' -o \
+	    -name '*.tmp' -o \
+	    -name '*.pot' -o \
+	    -name '*.orig' -o \
+	    -name '*.rej' -o \
+	    -name '*.map.cfg' -o \
+	    -name '*.pbl' \
+	\) -type f -print0 | xargs -0 rm -f
+	rm -rf .preprocessor.out
