@@ -1,0 +1,92 @@
+#!/usr/bin/env perl
+#
+# WML macro scope checking tool
+#
+# Checks if macros defined within scenario files are correctly undefined
+# at the end to avoid polluting the namespace.
+#
+# Usage:
+#
+#   macro-scope-check <path to scenarios directory>
+#
+# Copyright (C) 2011 - 2017 by Ignacio R. Morelle <shadowm@wesnoth.org>
+#
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice is present in all copies.
+#
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+# STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+# IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+
+use strict;
+use warnings;
+
+# return non-zero on failure
+sub macro_scope_check_file
+{
+	my $path = shift;
+	my $res = 0;
+
+	open my $fh, '<', $path or die "Could not open file $path: $!\n";
+
+	my %local_defines = ();
+	my $lno = 0;
+
+	foreach(<$fh>) {
+		++$lno; chomp;
+
+		if(/^[^#]*#define\s+([^\s]+)/) {
+			print "warning: $1 redefined at $path:$lno\n"
+				if exists $local_defines{$1};
+			$local_defines{$1} = $lno;
+		} elsif(/^[^#]*#undef\s+([^\s]+)/) {
+			delete $local_defines{$1};
+		}
+	}
+
+	close $fh;
+
+	foreach(keys %local_defines) {
+		print "error: $_ defined at $path:".$local_defines{$_}." not undefined before end of file\n";
+	}
+
+	return $res;
+}
+
+# return non-zero on failure
+sub macro_scope_check_dir
+{
+	my $path = shift;
+	my $res = 0;
+
+	opendir my $dirh, $path or die "Could not open directory $path: $!\n";
+
+	foreach(readdir $dirh) {
+		# next if /^\.{1,2}$/;
+		next if /^\./; # ignore dot dentries and hidden files/dirs
+
+		if(-d) {
+			$res += macro_scope_check_dir("$path/$_");
+		} elsif(/\.cfg$/) {
+			$res += macro_scope_check_file("$path/$_");
+		}
+	}
+
+	closedir($dirh);
+
+	return $res;
+}
+
+my $res = 0;
+$res += macro_scope_check_dir $_ foreach @ARGV;
+exit !!($res != 0); # return non-zero on failure
