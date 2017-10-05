@@ -18,11 +18,8 @@ AUTO_DELTEMP     ?= 1
 
 WMLLINT          ?= wmllint-1.12 -d
 WMLINDENT        ?= wmlindent-1.12
-WMLXGETTEXT      ?= wmlxgettext-1.12
 
 WML_PREPROCESS   := $(WESNOTH) -p
-
-LOCAL_TEXTDOMAIN = wesnoth-$(ADDON_NAME)
 
 dist_version ?= $(shell cat $(DIST_VERSION_FILE))
 dist_passphrase ?= $(shell sed -nE '/^$(ADDON_NAME)=(.*)$$/ { s//\1/; p; q }' $(DIST_PASSPHRASE_FILE))
@@ -39,13 +36,6 @@ defscope:
 
 lint:
 	$(WMLLINT) $(WESNOTH_CORE_DIR) $(targetdir)
-
-%.pot:
-	@echo "    POT     $*.pot"
-	@find . \( -name '*.cfg' -o -name '*.lua' \) -type f -print0 | xargs -0 $(WMLXGETTEXT) --directory=$(targetdir) --domain $(LOCAL_TEXTDOMAIN) > $*.pot
-	@msgfmt --statistics -o /dev/null $*.pot 2>&1 | sed -E 's/^.*\s([0-9]+)\s.*$$/            \1 strings/'
-
-local-pot: $(LOCAL_TEXTDOMAIN).pot
 
 pbl: _server.pbl
 
@@ -91,7 +81,6 @@ clean-wmltools:
 	find \( \
 	    -name '*.new' -o \
 	    -name '*.tmp' -o \
-	    -name '*.pot' -o \
 	    -name '*.orig' -o \
 	    -name '*.rej' -o \
 	    -name '*.map.cfg' -o \
