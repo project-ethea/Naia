@@ -3,7 +3,7 @@ NAIA_PREFIX      := naia
 MAKEFLAGS        += -rR --no-print-directory
 
 ifndef USE_WESNOTH_DEV
-WESNOTH          := wesnoth-1.12
+WESNOTH          := wesnoth-1.14
 else
 WESNOTH          := wesnoth
 endif
@@ -16,8 +16,8 @@ DEFSCOPE         := $(NAIA_PREFIX)/tools/macro-scope-check
 
 AUTO_DELTEMP     ?= 1
 
-WMLLINT          ?= wmllint-1.12 -d
-WMLINDENT        ?= wmlindent-1.12
+WMLLINT          ?= wmllint-1.14 -d
+WMLINDENT        ?= wmlindent-1.14
 
 WML_PREPROCESS   := $(WESNOTH) -p
 
