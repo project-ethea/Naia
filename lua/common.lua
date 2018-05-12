@@ -193,8 +193,8 @@ function wesnoth.wml_actions.set_facing(cfg)
 end
 
 ---
--- Installs mechanical "Door" units on *^Z\ and *^Z/ hexes
--- using the given owner side.
+-- Installs mechanical "Door" units on *^P*\, *^P*|, *^P*/, *^Z\ and *^Z/
+-- hexes using the given owner side.
 --
 -- [setup_doors]
 --     side=3
@@ -202,8 +202,7 @@ end
 ---
 function wesnoth.wml_actions.setup_doors(cfg)
 	local locs = wesnoth.get_locations {
-		terrain = "*^Z\\",
-		{ "or", { terrain = "*^Z/" } },
+		terrain = "*^P*/,*^P*\\,*^P*|,*^Z\\,*^Z/",
 		{ "not", { { "filter", {} } } },
 	}
 
