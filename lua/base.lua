@@ -45,10 +45,10 @@ local loglvl_map = { "error", "warning", "info", "debug" }
 -- msg: Line contents.
 ---
 function wput(lvl, msg)
-	wesnoth.wml_actions.wml_message({
+	wesnoth.wml_actions.wml_message {
 		logger = loglvl_map[math.max(1, math.min(lvl, #loglvl_map))],
-		message = "[Naia] " .. msg
-	})
+		message = "[Naia] " .. tostring(msg)
+	}
 end
 
 ---
@@ -59,7 +59,7 @@ end
 -- ...: Parameters for line formatting.
 ---
 function wprintf(lvl, fmt, ...)
-	wput(lvl, string.format(fmt, ...))
+	wput(lvl, tostring(fmt):format(...))
 end
 
 ---
