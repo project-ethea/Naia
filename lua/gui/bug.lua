@@ -202,25 +202,6 @@ function wesnoth.wml_actions.bug(cfg)
 	end
 
 	if dialog_result == 2 or not may_ignore then
-		-- Because of some stupid 1.14 behaviour change/bug, firing endlevel
-		-- before prestart results in the player's victory and instant
-		-- completion of the whole campaign. Injecting a preload event to run
-		-- endlevel after the storyscreen works.
-		if wesnoth.current.event_context.name == "_from_lua" then
-			wesnoth.wml_actions.event {
-				name = "preload",
-				{ "endlevel", {
-					result           = "defeat",
-					linger_mode      = false,
-					carryover_report = false
-				}}
-			}
-		else
-			wesnoth.wml_actions.endlevel {
-				result           = "defeat",
-				linger_mode      = false,
-				carryover_report = false
-			}
-		end
+		die()
 	end
 end

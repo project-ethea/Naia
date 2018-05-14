@@ -104,4 +104,32 @@ function in_range(value, minval, maxval)
 	return math.max(minval, math.min(value, maxval))
 end
 
+---
+-- Returns to the titlescreen ASAP.
+---
+function die()
+	-- Because of some stupid 1.14 behaviour change/bug, firing endlevel
+	-- before prestart results in the player's victory and instant
+	-- completion of the whole campaign. Injecting a preload event to run
+	-- endlevel after the storyscreen works.
+	if wesnoth.current.event_context.name == "_from_lua" then
+		wput(W_DBG, "deferred die() on global [lua] context")
+		wesnoth.wml_actions.event {
+			name = "preload",
+			{ "endlevel", {
+				result           = "defeat",
+				linger_mode      = false,
+				carryover_report = false
+			}}
+		}
+	else
+		wput(W_DBG, "die() on event context")
+		wesnoth.wml_actions.endlevel {
+			result           = "defeat",
+			linger_mode      = false,
+			carryover_report = false
+		}
+	end
+end
+
 wprintf(W_INFO, "codename Naia version %s initializing", PROJECT_ETHEA_NAIA_VERSION)
