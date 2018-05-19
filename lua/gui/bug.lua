@@ -52,7 +52,7 @@ function wesnoth.wml_actions.bug(cfg)
 
 	local alert_dialog = {
 		maximum_width = 640,
-		maximum_height = 400,
+		maximum_height = 900,
 		T.helptip { id="tooltip_large" }, -- mandatory field
 		T.tooltip { id="tooltip_large" }, -- mandatory field
 		T.grid { -- Title, will be the object name
@@ -72,6 +72,37 @@ function wesnoth.wml_actions.bug(cfg)
 					border = "all",
 					border_size = 5,
 					T.label { id = "message", wrap = true }
+				}
+			},
+			T.row {
+				T.column {
+					horizontal_grow = true,
+					T.panel {
+						id = "details_area",
+						T.grid {
+							T.row {
+								T.column {
+									horizontal_alignment = "left",
+									border = "all",
+									border_size = 5,
+									T.label { id = "message2", wrap = true }
+								}
+							},
+							T.row {
+								T.column {
+									vertical_alignment = "center",
+									horizontal_grow = "true",
+									border = "all",
+									border_size = 5,
+									T.scroll_label {
+										id = "wml",
+										definition = "verbatim",
+										vertical_scrollbar_mode = "always"
+									}
+								},
+							}
+						}
+					}
 				}
 			},
 			T.row {
@@ -106,65 +137,15 @@ function wesnoth.wml_actions.bug(cfg)
 	}
 
 	local function show_details()
-		local dialog = {
-			maximum_width = 640,
-			maximum_height = 400,
-			T.helptip { id="tooltip_large" },
-			T.tooltip { id="tooltip_large" },
-			T.grid {
-				T.row {
-					T.column {
-						horizontal_alignment = "left",
-						grow_factor = 1,
-						border = "all",
-						border_size = 5,
-						T.label { definition = "title", id = "title", wrap = true }
-					}
-				},
-				T.row {
-					T.column {
-						horizontal_alignment = "left",
-						border = "all",
-						border_size = 5,
-						T.label { id = "message", wrap = true }
-					}
-				},
-				T.row {
-					T.column {
-						vertical_alignment = "center",
-						horizontal_grow = "true",
-						border = "all",
-						border_size = 5,
-						T.scroll_label { id = "wml", definition = "description", vertical_scrollbar_mode = "always" }
-					},
-				},
-				T.row {
-					T.column {
-						horizontal_alignment = "right",
-						border = "all",
-						border_size = 5,
-						T.button { id = "ok", label = wgettext("Continue") }
-					}
-				}
-			}
-		}
-
-		-- #textdomain wesnoth-Naia
-		local _ = wesnoth.textdomain "wesnoth-Naia"
-		local cap = _ "Details"
-		local msg = _ "The following WML condition was unexpectedly reached:"
-
-		wesnoth.show_dialog(dialog, function()
-			wesnoth.set_dialog_value(cap, "title")
-			wesnoth.set_dialog_value(msg, "message")
-			wesnoth.set_dialog_value(wesnoth.debug(cond), "wml")
-		end)
+		wesnoth.set_dialog_visible(true, "details_area")
+		wesnoth.set_dialog_active(false, "details")
 	end
 
 	local function preshow()
 		-- #textdomain wesnoth-Naia
 		local _ = wesnoth.textdomain "wesnoth-Naia"
 		local msg = _ "An inconsistency has been detected, and the scenario might not continue working as originally intended."
+		local msg2 = _ "The following WML condition was unexpectedly reached:"
 
 		if report then
 			msg = msg .. "\n\n" .. _ "Please report this to the campaign maintainer!"
@@ -180,12 +161,14 @@ function wesnoth.wml_actions.bug(cfg)
 		local cap = _ "Error"
 		local det = _ "Details"
 
-		wesnoth.set_dialog_value(cap, "title")
-		wesnoth.set_dialog_value(msg, "message")
-		wesnoth.set_dialog_value(det, "details")
+		wesnoth.set_dialog_value(cap,  "title")
+		wesnoth.set_dialog_value(msg,  "message")
+		wesnoth.set_dialog_value(msg2, "message2")
+		wesnoth.set_dialog_value(det,  "details")
 
 		if cond then
 			wesnoth.set_dialog_callback(show_details, "details")
+			wesnoth.set_dialog_value(wesnoth.debug(cond), "wml")
 		else
 			wesnoth.set_dialog_active(false, "details")
 		end
@@ -193,6 +176,8 @@ function wesnoth.wml_actions.bug(cfg)
 		if not may_ignore then
 			wesnoth.set_dialog_active(false, "ok")
 		end
+
+		wesnoth.set_dialog_visible(false, "details_area")
 	end
 
 	local dialog_result = wesnoth.show_dialog(alert_dialog, preshow, nil)
