@@ -192,11 +192,11 @@ function wesnoth.wml_actions.setup_doors(cfg)
 	}
 
 	for k, loc in ipairs(locs) do
-		wesnoth.put_unit(loc[1], loc[2], {
+		wesnoth.put_unit({
 			type = "Door",
 			side = cfg.side,
 			id = string.format("__door_X%dY%d", loc[1], loc[2]),
-		})
+		}, loc[1], loc[2])
 	end
 end
 
