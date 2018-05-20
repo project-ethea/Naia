@@ -9,21 +9,34 @@
 
 local T = helper.set_wml_tag_metatable {}
 
----
--- Displays an error message on a popup dialog.
---
--- This is intended to be used as an exit mechanism when the WML detects an
--- inconsistency (see the BUG and BUG_ON macros in core/debug.cfg
---
--- [bug]
---     message= <...>
---     may_ignore= boolean, defaults to yes
---     # Optional conditional statement
---     [condition]
---         ...
---     [/condition]
--- [/bug]
----
+--[[
+
+Displays an error message on a popup dialog.
+
+This is intended to be used as an exit mechanism when the WML detects an
+inconsistency (see the BUG and BUG_ON macros in core/debug.cfg
+
+[bug]
+    # String
+    message=""
+
+    # Boolean
+    may_ignore=yes
+
+    # Boolean
+    should_report=yes
+
+    # Either "forum" or "tracker", only used if should_report=yes.
+    feedback="forum"
+
+    # Optional bug condition. If provided, the bug check message is only
+    # triggered if the condition evalutes to a true value.
+    [condition]
+        # WML condition here
+    [/condition]
+[/bug]
+
+]]
 function wesnoth.wml_actions.bug(cfg)
 	local cond = helper.get_child(cfg, "condition")
 
@@ -35,6 +48,11 @@ function wesnoth.wml_actions.bug(cfg)
 	local notice = cfg.message
 	local log_notice = notice
 	local may_ignore = cfg.may_ignore
+	local feedback = cfg.feedback
+
+	if feedback == nil or (feedback ~= "tracker" and feedback ~= "omgbugseverywhere") then
+		feedback = "forum"
+	end
 
 	if log_notice == nil or log_notice == "" then
 		log_notice = "inconsistency detected"
@@ -67,11 +85,26 @@ function wesnoth.wml_actions.bug(cfg)
 			},
 			T.row {
 				T.column {
-					vertical_alignment = "center",
-					horizontal_alignment = "center",
+					horizontal_grow = true,
 					border = "all",
 					border_size = 5,
 					T.label { id = "message", wrap = true }
+				}
+			},
+			T.row {
+				T.column {
+					horizontal_grow = true,
+					border = "all",
+					border_size = 5,
+					T.label { id = "feedback", wrap = true }
+				}
+			},
+			T.row {
+				T.column {
+					horizontal_grow = true,
+					border = "all",
+					border_size = 5,
+					T.spacer {}
 				}
 			},
 			T.row {
@@ -147,24 +180,54 @@ function wesnoth.wml_actions.bug(cfg)
 		local msg = _ "An inconsistency has been detected, and the scenario might not continue working as originally intended."
 		local msg2 = _ "The following WML condition was unexpectedly reached:"
 
-		if report then
-			msg = msg .. "\n\n" .. _ "Please report this to the campaign maintainer!"
-		end
-
 		if notice ~= nil and notice ~= "" then
-			msg = msg .. "\n\n" .. _ "Message:"
-			msg = msg .. "\n\t" .. cfg.message
+			if feedback ~= "omgbugseverywhere" then
+				msg = msg .. "\n\n" .. _ "Message:"
+				msg = msg .. "\n\t" .. cfg.message
+				msg = msg .. "\n"
+			else
+				-- HACK: for the experimental version notice
+				msg = cfg.message
+			end
 		end
 
-		msg = msg .. "\n"
+		local feedback_msg = nil
+
+		if report then
+			if feedback == "forum" then
+				feedback_msg = _ "Please report this to the add-on maintainer on the forums:"
+				feedback_msg = feedback_msg .. "\n" .. naia_get_package_url()[1]
+			elseif feedback == "tracker" then
+				feedback_msg = _ "Please report this to the add-on maintainer on the issue tracker:"
+				feedback_msg = feedback_msg .. "\n" .. naia_get_package_url()[2]
+			elseif feedback == "omgbugseverywhere" then
+				feedback_msg = naia_get_package_url()[2]
+			else
+				wprintf(W_ERR, "Unknown [bug] feedback= value '%s'", feedback)
+			end
+		end
 
 		local cap = _ "Error"
 		local det = _ "Details"
+
+		if feedback == "omgbugseverywhere" then
+			cap = _ "Notice"
+			wesnoth.set_dialog_visible(false, "details")
+		end
 
 		wesnoth.set_dialog_value(cap,  "title")
 		wesnoth.set_dialog_value(msg,  "message")
 		wesnoth.set_dialog_value(msg2, "message2")
 		wesnoth.set_dialog_value(det,  "details")
+
+		wesnoth.set_dialog_markup(true, "message")
+		wesnoth.set_dialog_markup(true, "feedback")
+
+		if feedback_msg then
+			wesnoth.set_dialog_value(feedback_msg, "feedback")
+		else
+			wesnoth.set_dialog_visible(false, "feedback")
+		end
 
 		if cond then
 			wesnoth.set_dialog_callback(show_details, "details")
