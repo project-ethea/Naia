@@ -7,22 +7,7 @@
 -- See COPYING for usage terms.
 --
 
--- NOTE: taken from data/lua/wml-tags.lua:
--- "when using these, make sure that nothing can throw over the call to end_var_scope"
-local function start_var_scope(name)
-	local var = helper.get_variable_array(name) --containers and arrays
-	if #var == 0 then var = wesnoth.get_variable(name) end --scalars (and nil/empty)
-	wesnoth.set_variable(name)
-	return var
-end
-local function end_var_scope(name, var)
-	wesnoth.set_variable(name)
-	if type(var) == "table" then
-		helper.set_variable_array(name, var)
-	else
-		wesnoth.set_variable(name, var)
-	end
-end
+local utils = wesnoth.require "lua/wml-utils.lua"
 
 ---
 -- Assigns a given variable (presumed to be a direction value)
@@ -350,7 +335,7 @@ function wesnoth.wml_actions.animate_attack(cfg)
 	local _ = wesnoth.textdomain "wesnoth"
 	-- #textdomain wesnoth
 
-	local this_unit = start_var_scope("this_unit")
+	local this_unit = utils.start_var_scope("this_unit")
 
 	wesnoth.set_variable("this_unit") -- clearing this_unit
 	wesnoth.set_variable("this_unit", defender.__cfg) -- cfg field needed
@@ -482,7 +467,7 @@ function wesnoth.wml_actions.animate_attack(cfg)
 	wesnoth.wml_actions.redraw {}
 
 	wesnoth.set_variable ( "this_unit" ) -- clearing this_unit
-	end_var_scope("this_unit", this_unit)
+	utils.end_var_scope("this_unit", this_unit)
 end
 
 ---
