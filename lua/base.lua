@@ -8,13 +8,6 @@
 --
 
 ---
--- TODO: use utils.split() on 1.13.x instead
----
-function split(s)
-	return tostring(s):gmatch("[^%s,][^,]*")
-end
-
----
 -- Returns a pseudorandom value from a set without syncing replays/MP.
 --
 -- This will use the same format as WML [set_variable] in the future, maybe,
