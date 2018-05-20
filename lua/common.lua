@@ -762,13 +762,8 @@ end
 function wesnoth.wml_actions.apply_amlas(cfg)
 	local u = wesnoth.get_units(cfg)[1] or helper.wml_error("[apply_amlas]: Could not match any units!")
 
-	local amla_tag = "advance"
-	if wesnoth.compare_versions(wesnoth.game_config.version, '>', '1.13.1') then
-		amla_tag = "advancement"
-	end
-
-	for amla_cfg in helper.child_range(cfg, amla_tag) do
-		wesnoth.add_modification(u, amla_tag, amla_cfg)
+	for amla_cfg in helper.child_range(cfg, "advancement") do
+		wesnoth.add_modification(u, "advancement", amla_cfg)
 	end
 end
 
@@ -831,16 +826,3 @@ function wesnoth.wml_actions.scatter_images(cfg)
 	wesnoth.wml_actions.redraw {}
 end
 
----
--- Added to mainline in 1.13.0. The implementation is somewhat different but it
--- has the same semantics.
----
-if wesnoth.wml_actions.remove_event == nil then
-	function wesnoth.wml_actions.remove_event(cfg)
-		local id = cfg.id or helper.wml_error("[remove_event] missing required id= key")
-
-		for w in split(id) do
-			wesnoth.wml_actions.event { id = w, remove = true }
-		end
-	end
-end
