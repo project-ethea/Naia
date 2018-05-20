@@ -171,8 +171,8 @@ function wesnoth.wml_actions.set_facing(cfg)
 			-- display accordingly. Against what one would normally expect, calling
 			-- [redraw] does *not* work as an alternative.
 
-			wesnoth.extract_unit(u)
-			wesnoth.put_unit(u)
+			u:extract()
+			u:to_map()
 		end
 	end
 end
@@ -488,7 +488,7 @@ function wesnoth.wml_actions.hidden_unit(cfg)
 	-- this smarter than [unit].
 	u.x, u.y = wesnoth.find_vacant_tile(u.x, u.y)
 	u.hidden = true
-	wesnoth.put_unit(u)
+	u:to_map()
 end
 
 ---

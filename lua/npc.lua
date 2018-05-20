@@ -117,7 +117,7 @@ function wesnoth.wml_actions.npc_bird_behavior(cfg)
 
 			-- Move the bird
 
-			wesnoth.extract_unit(npc)
+			npc:extract()
 
 			-- wesnoth.message(string.format("x = %s; y = %s", path.x, path.y))
 
@@ -140,7 +140,7 @@ function wesnoth.wml_actions.npc_bird_behavior(cfg)
 				npc.x, npc.y = wesnoth.find_vacant_tile(endpoint.x, endpoint.y)
 				npc.facing = path.direction
 
-				wesnoth.put_unit(npc)
+				npc:to_map()
 			end
 
 			-- TODO: fire moveto or death events accordingly
