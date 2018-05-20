@@ -28,6 +28,24 @@ function wesnoth.wml_actions.remove_sound_source(cfg)
 end
 
 ---
+-- Fix for [change_theme] crashing when no theme is specified (fixed in version
+-- 1.14.2).
+---
+if wesnoth.compare_versions(wesnoth.game_config.version, "<=", "1.14.1") then
+	log_patch("change_theme", "crash on missing theme= attribute")
+
+	function wesnoth.wml_actions.change_theme(cfg)
+		local new_theme = cfg.theme
+
+		if new_theme == nil then
+			new_theme = ""
+		end
+
+		wesnoth.game_config.theme = new_theme
+	end
+end
+
+---
 -- Add an option to fall back to some other unit (e.g. Mal Keshar) whenever
 -- nonsentient undead need to talk in events.
 --
