@@ -101,8 +101,7 @@ function wesnoth.wml_actions.save_map(cfg)
 		t[ y + border ] = table.concat ( row, ',' )
 	end
 
-	local s = table.concat( t, '\n' ) -- not string, to avoid overriding the string library!
-	wesnoth.set_variable ( variable, string.format ( "border_size=%d\nusage=map\n\n%s", border, s ) )
+	wesnoth.set_variable(variable, table.concat(t, '\n'))
 end
 
 function wesnoth.wml_actions.load_map(cfg)
