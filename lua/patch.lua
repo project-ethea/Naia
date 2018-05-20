@@ -32,7 +32,7 @@ end
 -- 1.14.2).
 ---
 if wesnoth.compare_versions(wesnoth.game_config.version, "<=", "1.14.1") then
-	log_patch("change_theme", "crash on missing theme= attribute")
+	log_patch("change_theme", "crash on missing theme= attribute + explicit [redraw] required")
 
 	function wesnoth.wml_actions.change_theme(cfg)
 		local new_theme = cfg.theme
@@ -42,6 +42,8 @@ if wesnoth.compare_versions(wesnoth.game_config.version, "<=", "1.14.1") then
 		end
 
 		wesnoth.game_config.theme = new_theme
+
+		wesnoth.wml_actions.redraw {}
 	end
 end
 
