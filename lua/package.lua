@@ -57,15 +57,14 @@ function naia_register_package(p)
 	package.global_id = p.global_id or default_package.global_id
 	package.name = p.name or default_package.name
 	package.version = p.version or default_package.version
+	package.abbreviation = p.abbreviation or default_package.abbreviation
 	package.tracker_url = p.tracker_url or default_package.tracker_url
 	package.forum_thread = p.forum_thread or default_package.forum_thread
 
 	package.registered = true
 
 	wprintf(W_INFO, "%s (%s) version %s (Naia %s)", package.name, package.global_id, package.version, package.naia_version)
-
-	-- Set the abbreviation for wput() last
-	package.abbreviation = p.abbreviation or default_package.abbreviation
+	_wsetlogprefix(package.abbreviation)
 end
 
 function naia_get_package_name()

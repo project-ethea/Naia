@@ -38,6 +38,12 @@ W_DBG  = 4 -- Debug.
 
 local loglvl_map = { "error", "warning", "info", "debug" }
 
+local logprefix = "[Naia] "
+
+function _wsetlogprefix(str)
+	logprefix = "[" .. str .. "] "
+end
+
 ---
 -- Prints a text line using the engine log facilities.
 --
@@ -47,7 +53,7 @@ local loglvl_map = { "error", "warning", "info", "debug" }
 function wput(lvl, msg)
 	wesnoth.wml_actions.wml_message {
 		logger = loglvl_map[math.max(1, math.min(lvl, #loglvl_map))],
-		message = "[Naia] " .. tostring(msg)
+		message = logprefix .. tostring(msg)
 	}
 end
 
