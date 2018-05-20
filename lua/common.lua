@@ -587,10 +587,6 @@ function wesnoth.wml_actions.fade_out_music(cfg)
 	-- HACK: reserve last 10 milliseconds for the music switch workaround.
 	duration = duration - 10
 
-	local function set_music_volume(percentage)
-		wesnoth.fire("volume", { music = percentage })
-	end
-
 	local delay_granularity = 10
 
 	duration = math.max(delay_granularity, duration)
@@ -606,7 +602,7 @@ function wesnoth.wml_actions.fade_out_music(cfg)
 	for k = 1, steps do
 		local v = helper.round(100 - (100*k / steps))
 		--wesnoth.message(string.format("step %d, volume %d", k, v))
-		set_music_volume(v)
+		wesnoth.music_list.volume = v
 		wesnoth.delay(delay_granularity)
 	end
 
@@ -620,7 +616,7 @@ function wesnoth.wml_actions.fade_out_music(cfg)
 	--       resetting to full volume.
 	wesnoth.delay(10)
 
-	set_music_volume(100)
+	wesnoth.music_list.volume = 100.0
 end
 
 local function wml_sfx_volume_fade_internal(duration, is_fade_out)
@@ -647,7 +643,7 @@ local function wml_sfx_volume_fade_internal(duration, is_fade_out)
 
 		--wesnoth.message(string.format("step %d, volume %d", k, v))
 
-		wesnoth.fire("volume", { sound = v })
+		wesnoth.sound_volume(v)
 
 		wesnoth.delay(delay_granularity)
 	end
@@ -681,14 +677,14 @@ end
 -- Sets the sound volume to zero.
 ---
 function wesnoth.wml_actions.mute_sound_effects(cfg)
-	wesnoth.fire("volume", { sound = 0 })
+	wesnoth.sound_volume(0.0)
 end
 
 ---
 -- Resets the main sound volume back to normal.
 ---
 function wesnoth.wml_actions.reset_sound_effects(cfg)
-	wesnoth.fire("volume", { sound = 100 })
+	wesnoth.sound_volume(100.0)
 end
 
 ---
