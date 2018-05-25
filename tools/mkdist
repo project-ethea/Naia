@@ -1,0 +1,451 @@
+#!/bin/sh
+#
+# Project Ethea Distribution Package Tool
+# Based on the Wesnoth-UMC-Dev umcdist tool (codename 'Blackmore')
+# Copyright (C) 2008 - 2018 by Iris Morelle <shadowm@wesnoth.org>
+#
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice is present in all copies.
+#
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+# STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+# IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+
+UMCDIST_VERSION='0.2.0'
+
+#
+# Configurable variables (affected by command line contents).
+#
+
+# The output directory.
+output_dir=
+# The input directory.
+input_dir=
+# The Naia library directory.
+lib_dir=
+# Whether to compute and write a SHA256 digest.
+do_sha256=1
+# Whether to honor .ign files.
+use_ign=1
+# Whether to proceed even if the package already exists in the target dir.
+force=0
+# wesnoth_addon_manager script name or full path
+umc_client=wesnoth_addon_manager
+# Path to pbl file. If set then wesnoth_addon_manager will be executed on the
+# output as a mid-step before producing the tarball.
+pbl_file=""
+# Add-ons server address:port (or just port). Only used if pbl_file is set.
+server_port=""
+
+#
+# Constants (for testing/debugging purposes only).
+#
+
+CLEANUP_ON_EXIT=1
+ARCHIVE_FORMAT=tar
+ARCHIVE_COMPRESSOR=bz2
+ARCHIVE_COMPRESSOR_DECOMPRESS=bunzip2
+ARCHIVE_SWITCH=j
+IGNORE_PATTERNS=`cat <<END
+*.ign
+*.pbl
+_server.*
+END`
+
+CLEAR_WHITESPACE_EXPR='v;s/[\n\r]//g;q'
+
+ORIGINAL_PWD=$PWD
+
+#
+# Support functions.
+#
+
+restore_pwd()
+{
+	cd $ORIGINAL_PWD
+}
+
+error()
+{
+	echo `basename $0`: $*
+}
+
+need_gnu()
+{
+	echo "$1 is not the GNU version. $0 has only been tested with the GNU version. Aborting."
+	exit 3
+}
+
+probe_gnu()
+{
+	local cmd=$1
+	set -- `$cmd --version`
+
+	local is_gnu=$2
+	[ "$2" = "(GNU" ] || need_gnu $cmd
+}
+
+print_usage()
+{
+	echo "Usage: `basename $0` [OPTIONS] <input directory> <output directory>"
+}
+
+print_version()
+{
+	cat <<END
+Project Ethea Distribution Package Tool version $UMCDIST_VERSION
+Based on the Wesnoth-UMC-Dev umcdist tool (codename 'Blackmore')
+Copyright (C) 2008 - 2018 by Iris Morelle <shadowm@wesnoth.org>
+END
+}
+
+print_license()
+{
+	cat <<END
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice is present in all copies.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+END
+}
+
+print_help()
+{
+	print_usage `basename $0`
+
+	cat <<END
+
+Runs the Project Ethea add-on packaging utility, which creates tarballs of
+add-ons for redistribution.
+
+Behavior options:
+  -f, --force                 Overwrites an existing package file should it
+                               already exist in the output directory.
+  -I, --ignore-ign            Ignores the _server.ign file in the input
+                               directory when present and uses only the default
+                               patterns to filter out private files instead.
+  -L LIBPATH, --lib LIBPATH   Sets the path to the Naia library add-on. This is
+                               normally auto-detected (either ./Naia or ../Naia
+                               relative to the add-on's directory).
+  -u PBLFILE [ADDRESS:]PORT   Automatically tries to upload the add-on using
+                               the specified .pbl file to the specified server
+                               instance.
+
+Output options:
+  --no-sha256                 Skips generation of the file with the SHA256
+                               digest for the package.
+  -X, --xz                    Use xz instead of bzip2 to compress tarballs.
+
+Miscellaneous options:
+  -h, --help                  Prints this help text.
+  -V, --version               Shows the program's version number and license
+                               information.
+
+Built-in ignore patterns: `echo $IGNORE_PATTERNS`
+END
+}
+
+#
+# Make sure we are on a GNU environment.
+#
+
+for c in cp mv mkdir mktemp readlink tr tar; do
+	probe_gnu $c
+done
+
+sed 'v' < /dev/null || need_gnu 'sed'
+
+#
+# Process command line.
+#
+
+while [ -n "$1" ]; do
+	case "$1" in
+		-h | --help )
+			print_help
+			exit
+		;;
+		-V | --version )
+			print_version; echo; print_license
+			exit
+		;;
+		-L | --lib )
+			shift; lib_dir="$1"
+		;;
+		-u | --upload )
+			shift; pbl_file="$1"
+			shift; server_port="$1"
+		;;
+		-X | --xz )
+			ARCHIVE_COMPRESSOR=xz
+			ARCHIVE_SWITCH=J
+			ARCHIVE_COMPRESSOR_DECOMPRESS=unxz
+		;;
+		-f | --force )
+			force=1
+		;;
+		-I | --ignore-ign )
+			use_ign=0
+		;;
+		--no-sha256 )
+			do_sha256=0
+		;;
+		* )
+			#print_usage; exit 1
+			input_dir=`readlink -e -- $1 2>/dev/null`
+			shift
+
+			if [ -z "$1" ]; then
+				error "You must specify an output directory."
+				print_usage
+				exit 2
+			fi
+
+			if [ ! -e "$1" ]; then
+				error "Output directory does not exist!"
+				exit 2
+			fi
+
+			output_dir="`readlink -e -- $1 2>/dev/null`"
+
+			if [ -n "$2" ]; then
+				error "Unrecognized option '$2'."
+				print_usage
+				exit 2
+			fi
+	esac
+	shift
+done
+
+set -o nounset
+
+if [ -z "$input_dir" ]; then
+	error "You must specify an output directory."
+	print_usage
+	exit 2
+fi
+
+if [ "$output_dir" = "$input_dir" ]; then
+	error "The input and output paths cannot be the same."
+	exit 2
+fi
+
+if [ -n "$lib_dir" ]; then
+	if [ -h "$lib_dir" ]; then
+		lib_dir="$(readlink -e $lib_dir)"
+	fi
+
+	if [ -z "$lib_dir" ] || [ ! -d "$lib_dir" ]; then
+		error "The specified library path does not exist or is not a directory!"
+		exit 2
+	fi
+else
+	# Autodetect Naia. Outer Naia takes precedence
+	lib_dir="$(readlink -e $input_dir)/../Naia"
+
+	if [ ! -d "$lib_dir" ]; then
+		lib_dir="$(readlink -e $input_dir)/Naia"
+
+		if [ ! -d "$lib_dir" ]; then
+			error "Could not auto-detect Naia. Use the -L option to provide a path to Naia if necessary."
+			exit 2
+		fi
+	fi
+fi
+
+if [ -n "$pbl_file" ] && [ ! -e "$pbl_file" ]; then
+	error "The specified .pbl file does not exist."
+	exit 2
+fi
+
+if [ ! -f "$input_dir/dist/BASEDIRS" ] || [ ! -f "$input_dir/dist/VERSION" ]; then
+	error "dist/BASEDIRS or dist/VERSION missing in the input directory."
+	exit 1
+fi
+
+print_version
+
+echo
+echo     Input directory: $input_dir
+echo    Output directory: $output_dir
+echo   Library directory: $lib_dir
+
+#
+# Enter input directory.
+#
+
+# Minimal signal handler for now, until we set up a temporary dir later
+trap restore_pwd INT QUIT HUP TERM
+
+cd $input_dir
+
+PKG_NAME=`cat ./dist/BASEDIRS | sed $CLEAR_WHITESPACE_EXPR`
+PKG_VERSION=`cat ./dist/VERSION | sed $CLEAR_WHITESPACE_EXPR`
+PKG_TITLE=`echo "$PKG_NAME" | sed 'y/_/ /'`
+
+OUTPUT_NAME_STEM="${PKG_NAME}-${PKG_VERSION}"
+OUTPUT_EXTENSION="${ARCHIVE_FORMAT}.${ARCHIVE_COMPRESSOR}"
+
+mkdir -p "$output_dir"
+
+# Check that target package doesn't exist in the output dir already
+if [ -e "$output_dir/$OUTPUT_NAME_STEM.$OUTPUT_EXTENSION" ]; then
+	if [ $force -eq 0 ]; then
+		error "Target file '$OUTPUT_NAME_STEM.$OUTPUT_EXTENSION' already exists in the output directory and won't be overwritten without --force."
+		restore_pwd; exit 1
+	else
+		rm -f "$output_dir/$OUTPUT_NAME_STEM.$OUTPUT_EXTENSION"
+	fi
+fi
+
+# Test early enough whether the input is versioned.
+
+if [ ! -d './.git' ]; then
+	error "Input directory is not versioned!"
+fi
+
+if [ ! -d "$lib_dir/.git" ]; then
+	error "Library directory is not versioned!"
+fi
+
+
+#
+# Create scratch tree.
+#
+
+echo
+echo "Creating scratch directory..."
+
+SCRATCH_DIR_BASE=`mktemp -d --tmpdir umcdist-XXXXXXXXXX`
+
+do_cleanup()
+{
+	restore_pwd
+	[ -n "$SCRATCH_DIR_BASE" ] && rm -rf "$SCRATCH_DIR_BASE"
+	# Try to prevent running rm -rf twice on the same path if we get called
+	# more than once before quitting
+	SCRATCH_DIR_BASE=''
+}
+
+cleanup_from_signal()
+{
+	echo Signal received, cleaning up...
+	do_cleanup
+	exit 15
+}
+
+# Make sure we don't leave temporary directories lying around after aborting
+trap cleanup_from_signal INT QUIT HUP TERM
+
+if [ ! -d "$SCRATCH_DIR_BASE" ]; then
+	error Could not create scratch directory!
+	exit 2
+fi
+
+
+
+export_tree()
+{
+	local input prefix output
+
+	input="$1"
+	prefix="$2"
+	output="$3"
+
+	printf 'Exporting tree %s [%s]...' "$input" "$prefix"
+
+	(cd "$input" && git archive --format=tar --prefix="$prefix/" HEAD ) | (cd "$output" && tar xf - )
+
+	echo ' done'
+}
+
+export_tree "$input_dir" "$PKG_NAME" "$SCRATCH_DIR_BASE"
+export_tree "$lib_dir"   Naia        "$SCRATCH_DIR_BASE/$PKG_NAME/"
+
+
+
+#
+# Change to scratch dir to begin filtering out files.
+#
+
+cd "$SCRATCH_DIR_BASE/$PKG_NAME"
+
+if [ -f "./_server.ign" ] && [ $use_ign -ne 0 ]; then
+	echo "Custom ignore patterns list file found: _server.ign"
+	IGNORE_PATTERNS="$IGNORE_PATTERNS
+`cat ./_server.ign`"
+fi
+
+printf 'Excluding files...'
+IGNORE_LIST=`echo "$IGNORE_PATTERNS" | "$lib_dir/tools/match-ign"`
+
+rm -rf "$IGNORE_LIST"
+echo " done"
+
+printf 'Writing package manifest...'
+cat > ./dist/MANIFEST <<END
+# $PKG_TITLE
+# Package created by Naia/mkdist on $(date -u +'%F %H:%M:%S (UTC)')
+# Version $PKG_VERSION ($(basename $0) version $UMCDIST_VERSION)
+END
+echo " done"
+
+if [ -n "$pbl_file" ]; then
+	#
+	# TODO: upload here!
+	#
+	echo "FIXME: upload functionality not implemented yet!!!"
+fi
+
+
+
+#
+# Generate the tarball.
+#
+
+cd "$SCRATCH_DIR_BASE"
+
+PKG_FILE="$output_dir/$OUTPUT_NAME_STEM.$OUTPUT_EXTENSION"
+
+echo "Generating package..."
+tar -${ARCHIVE_SWITCH}cf "$PKG_FILE" "./$PKG_NAME"
+
+
+
+#
+# Compute message digests of the generated tarball.
+#
+
+[ $do_sha256 -ne 0 ] && sha256sum "$PKG_FILE" > "$PKG_FILE.SHA256"
+
+
+
+#
+# Cleanup and finish.
+#
+
+do_cleanup
+
+echo
+echo "Done."

@@ -1,0 +1,83 @@
+#!/usr/bin/env perl
+#
+# Matches .ign patterns from stdin on the current directory. Intended for
+# internal use by mkdist (patterns are read from stdin).
+#
+# Copyright (C) 2011 - 2018 by Iris Morelle <shadowm2006@gmail.com>
+#
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice is present in all copies.
+#
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+# STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+# IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+
+use strict;
+use warnings;
+
+our (@dir_patterns, @file_patterns);
+
+# Converts a glob pattern into a regular expression.
+sub glob_to_regexp (_)
+{
+	my $globstr = shift;
+	my %patmap = ('*' => '.*', '?' => '.');
+	$globstr =~ s{(.)} { $patmap{$1} || "\Q$1" }ge;
+	return '^' . $globstr . '$';
+}
+
+sub matches_in_glob_array(\@$)
+{
+	my ($globs_ary, $name) = @_;
+
+	foreach(@$globs_ary) {
+		$name =~ glob_to_regexp and return 1;
+	}
+
+	return 0;
+}
+
+sub descend_match_tree
+{
+	my @matches;
+	my $parent = shift;
+
+	opendir(my $dh, $parent) || die "Could not open $parent: $!";
+	foreach my $node (readdir $dh) {
+		if($node eq '.' || $node eq '..') { # is garbage
+			next;
+		} elsif(-d $node) { # is a directory
+			if(matches_in_glob_array(@dir_patterns, $node)) {
+				push @matches, $parent.'/'.$node;
+			} else {
+				push @matches, descend_match_tree($parent.'/'.$node);
+			}
+		} elsif(matches_in_glob_array(@file_patterns, $node)) { # is something else
+			push @matches, $parent.'/'.$node;
+		}
+	}
+
+	closedir $dh;
+
+	return @matches;
+}
+
+while(<STDIN>) {
+	s|^\s+||; s|\s+$||;
+	push @{ s|/$|| ? \@dir_patterns : \@file_patterns }, $_;
+}
+
+{
+	local ($\) = "\n";
+	print foreach(descend_match_tree("."));
+}
