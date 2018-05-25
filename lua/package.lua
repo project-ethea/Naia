@@ -14,6 +14,7 @@ local default_package = {
 	abbreviation = "Naia",
 	tracker_url  = "https://github.com/project-ethea/Naia/issues",
 	forum_thread = "",
+	dev_mode     = false,
 	naia_version = PROJECT_ETHEA_NAIA_VERSION,
 	registered   = false,
 }
@@ -45,6 +46,10 @@ naia_register_package {
 
     -- The forum thread URL for the add-on.
     forum_thread = "http://localhost/",
+
+    -- Whether maintainer mode is enabled, which affects the behavior of
+    -- certain debug features.
+    maintainer_mode = false,
 }
 
 ]]
@@ -61,10 +66,20 @@ function naia_register_package(p)
 	package.tracker_url = p.tracker_url or default_package.tracker_url
 	package.forum_thread = p.forum_thread or default_package.forum_thread
 
+	if p.maintainer_mode == nil then
+		package.dev_mode = default_package.dev_mode
+	else
+		package.dev_mode = p.maintainer_mode
+	end
+
 	package.registered = true
 
 	wprintf(W_INFO, "%s (%s) version %s (Naia %s)", package.name, package.global_id, package.version, package.naia_version)
 	_wsetlogprefix(package.abbreviation)
+
+	if package.dev_mode then
+		wprintf(W_INFO, "Maintainer mode enabled")
+	end
 end
 
 function naia_get_package_name()
@@ -85,4 +100,8 @@ end
 
 function naia_get_package_id()
 	return package.global_id
+end
+
+function naia_is_in_maintainer_mode()
+	return package.dev_mode
 end
