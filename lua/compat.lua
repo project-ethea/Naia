@@ -21,7 +21,7 @@ local function do_compat_fail(msg, may_ignore, silent_in_maintainer_mode, feedba
 
 	wesnoth.wml_actions.bug {
 		message       = msg,
-		should_report = false,
+		should_report = (feedback_mode ~= nil),
 		may_ignore    = (naia_is_in_maintainer_mode() or may_ignore),
 		feedback      = feedback_mode,
 	}
