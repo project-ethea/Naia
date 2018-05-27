@@ -193,7 +193,7 @@ function wesnoth.wml_actions.setup_doors(cfg)
 	cfg = helper.parsed(cfg)
 
 	if cfg.terrain == nil then
-		cfg["terrain"] = "*^Z\\,*^Z/"
+		cfg["terrain"] = "*^P*/,*^P*\\,*^P*|,*^Z\\,*^Z/"
 	end
 
 	cfg.side = nil
