@@ -2,6 +2,16 @@
 NAIA - PROJECT ETHEA PHASE 1 SHARED LIBRARY - CHANGELOG
 =======================================================
 
+Version 20180525+dev:
+---------------------
+* Lua library:
+  * Replaced the AtS implementation of [setup_doors] with its IftU counterpart,
+    with minor code improvements and the addition of the AtS requirement for
+    target locations to be vacant. Otherwise, the semantics of the AtS
+    implementation break IftU S22A and possibly others that require a custom
+    SLF.
+
+
 Version 20180525:
 -----------------
 * General:
