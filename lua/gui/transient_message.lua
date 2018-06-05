@@ -7,7 +7,7 @@
 -- See COPYING for usage terms.
 --
 
-local T = helper.set_wml_tag_metatable {}
+local T = wml.tag {}
 
 ---
 -- Displays a transparent message box that's dimissed when clicked.

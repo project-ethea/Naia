@@ -7,7 +7,7 @@
 -- See COPYING for usage terms.
 --
 
-local T = helper.set_wml_tag_metatable {}
+local T = wml.tag {}
 
 --[[
 
