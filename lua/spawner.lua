@@ -7,7 +7,7 @@
 -- See COPYING for usage terms.
 --
 
-local T = wml.tag {}
+local T = wml.tag
 
 local function dbg(msg)
 	wput(W_INFO, "spawner.lua: " .. msg)
