@@ -21,14 +21,6 @@ local T = wml.tag
 -- [/transient_message]
 ---
 function wesnoth.wml_actions.transient_message(cfg)
-	-- HACK: Don't set a border size for the image cell when
-	--       there's no image to display; this way it doesn't
-	--       result in some empty space to the left of the text.
-	local image_margin = 0
-	if cfg.image ~= nil then
-		image_margin = 5
-	end
-
 	local dd = {
 		maximum_width = 800,
 		maximum_height = 600,
@@ -39,7 +31,7 @@ function wesnoth.wml_actions.transient_message(cfg)
 		T.grid {
 			T.row {
 				T.column {
-					border = "all", border_size = image_margin,
+					border = "all", border_size = 5,
 					horizontal_alignment = "center",
 					vertical_alignment = "center",
 					T.image { id = "image" }
@@ -94,8 +86,10 @@ function wesnoth.wml_actions.transient_message(cfg)
 		wesnoth.set_dialog_value(message, "message")
 		wesnoth.set_dialog_markup(true, "message")
 
-		if cfg.image then
+		if cfg.image ~= nil and tostring(cfg.image):len() > 0 then
 			wesnoth.set_dialog_value(cfg.image, "image")
+		else
+			wesnoth.set_dialog_visible(false, "image")
 		end
 	end
 
