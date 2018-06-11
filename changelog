@@ -2,8 +2,8 @@
 NAIA - PROJECT ETHEA PHASE 1 SHARED LIBRARY - CHANGELOG
 =======================================================
 
-Version 20180525+dev:
----------------------
+Version 20180611:
+-----------------
 * General:
   * Initial version with Wesnoth 1.14 support.
   * Dropped compatibility with Wesnoth versions prior to 1.13.11.
