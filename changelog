@@ -4,19 +4,48 @@ NAIA - PROJECT ETHEA PHASE 1 SHARED LIBRARY - CHANGELOG
 
 Version 20180525+dev:
 ---------------------
-* Lua library:
+* General:
+  * Initial version with Wesnoth 1.14 support.
+  * Dropped compatibility with Wesnoth versions prior to 1.13.11.
+
+* Language and i18n:
+  * Updated French translation from newfrenchy83 (core set extracted from
+    AtS).
+  * Merged translations of the core set from IftU and AtS: Spanish, French,
+    Hungarian, Italian, Japanese, Russian, Turkish.
+
+* Lua and WML library:
   * Replaced the AtS implementation of [setup_doors] with its IftU counterpart,
     with minor code improvements and the addition of the AtS requirement for
     target locations to be vacant. Otherwise, the semantics of the AtS
     implementation break IftU S22A and possibly others that require a custom
     SLF.
+  * [setup_doors] and the Door unit support the new Gate terrains from 1.14.
+  * [unstore_unit] male/female_text is used where needed instead of the clunky
+    checks and variable assignments used before.
+  * Patch [change_theme] crash on 1.14.1 and earlier when theme= is not
+    specified.
+  * Standard macros no longer use FOREACH.
 
+* Terrains:
+  * Event gates are now implemented as recolored mainline Rusy Gates. The open
+    variations are currently unused since event gates are normally handled as
+    barriers that get instantly removed.
+  * Included wall moss terrain from AtS for use in IftU 2.1.0.
 
-Version 20180525:
------------------
-* General:
-  * Initial version with Wesnoth 1.14 support.
-  * Dropped compatibility with Wesnoth versions prior to 1.13.11.
+* Units:
+  * Added faerie race icon by LordBob.
+  * Set unit bars offset for the Matrix Flow System.
+  * Use the new 1.14 staff sounds for staff-wielding units.
+  * Set the Chaos Hound line's undead variation to wolf (IftU issue #34).
+  * Simplified implementation of Terror and Protection abilities.
+
+* User interface library:
+  * Scenario title cards use a larger font size to compensate for the increased
+    UI font sizes in 1.14.
+  * Improved experimental version and bugcheck dialogs, including a link to the
+    campaign's forum thread or tracker URL as applicable.
+  * Bugcheck dialogs use monospace text for the details section.
 
 
 ; kate: indent-mode normal; encoding utf-8; space-indent on; word-wrap on;
