@@ -1,4 +1,4 @@
-NAIA_PREFIX      := naia
+NAIA_PREFIX      := ../Naia
 
 MAKEFLAGS        += -rR --no-print-directory
 
