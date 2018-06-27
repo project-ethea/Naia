@@ -35,7 +35,7 @@ defscope:
 	$(DEFSCOPE) $(scenario_dirs)
 
 lint:
-	$(WMLLINT) $(WESNOTH_CORE_DIR) $(targetdir)
+	$(WMLLINT) $(WESNOTH_CORE_DIR) $(NAIA_PREFIX) $(targetdir)
 
 pbl: _server.pbl
 
