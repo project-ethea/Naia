@@ -25,7 +25,7 @@ end
 
 local function screen_color_adjust(r, g, b)
 	--print(string.format("COLOR ADJUST: %d %d %d", r, g, b))
-	wesnoth.fire("color_adjust", { red = r, green = g, blue = b })
+	wesnoth.color_adjust { red = r, green = g, blue = b }
 end
 
 local function screen_color_fade_step(r, g, b, step_delay)
