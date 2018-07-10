@@ -7,6 +7,21 @@ Version 20180611+dev:
 * Lua and WML library:
   * [fade_to_black] and [fade_in] now use wesnoth.color_adjust() directly
     instead of the [color_adjust] action.
+  * Implemented code to make certain WML actions be skipped or take effect
+    instantly when pressing Escape on [message] dialogs. This makes it possible
+    to skip cutscenes much faster:
+      * [move_unit_fake]
+      * [move_units_fake]
+      * [animate_unit]
+      * [sound]
+      * [delay]
+      * [color_adjust]
+      * [floating_text]
+      * [scroll_to]
+      * [scroll_to_unit]
+      * [fade_out_music]
+      * [fade_out_sound_effects]
+      * [fade_in_sound_effects]
 
 * Units:
   * Aragwaithi humans now use the same race icons as regular humans.
