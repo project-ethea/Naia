@@ -741,12 +741,12 @@ end
 --
 -- [apply_amlas]
 --     ... SUF ...
---     [advance]
+--     [advancement]
 --         ... contents of the [advancement] tag ...
---     [/advance]
---     [advance]
+--     [/advancement]
+--     [advancement]
 --         ... another AMLA ...
---     [/advance]
+--     [/advancement]
 --     ...
 -- [/apply_amlas]
 ---
