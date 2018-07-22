@@ -27,6 +27,8 @@ Version 20180611+dev:
 
 * Units:
   * Aragwaithi humans now use the same race icons as regular humans.
+  * Fixed Protection ability capping resistances to 50% for units which already
+    have base resistances greater than 50% on their own (patch by newfrenchy83).
 
 
 Version 20180611:
