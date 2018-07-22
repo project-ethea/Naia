@@ -2,8 +2,8 @@
 NAIA - PROJECT ETHEA PHASE 1 SHARED LIBRARY - CHANGELOG
 =======================================================
 
-Version 20180611+dev:
----------------------
+Version 20180722:
+-----------------
 * Lua and WML library:
   * [fade_to_black] and [fade_in] now use wesnoth.color_adjust() directly
     instead of the [color_adjust] action.
