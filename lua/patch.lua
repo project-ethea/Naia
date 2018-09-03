@@ -48,6 +48,17 @@ if wesnoth.compare_versions(wesnoth.game_config.version, "<=", "1.14.1") then
 end
 
 ---
+-- Workaround for Wesnoth issue #1617/AtS issue #31.
+---
+
+local _WA_animate_unit = wesnoth.wml_actions.animate_unit
+
+function wesnoth.wml_actions.animate_unit(cfg)
+	wesnoth.delay(1)
+	_WA_animate_unit(cfg)
+end
+
+---
 -- Add an option to fall back to some other unit (e.g. Mal Keshar) whenever
 -- nonsentient undead need to talk in events.
 --
