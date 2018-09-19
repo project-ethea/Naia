@@ -4,7 +4,10 @@ NAIA - PROJECT ETHEA PHASE 1 SHARED LIBRARY - CHANGELOG
 
 Version 20180722+dev:
 ---------------------
-
+* Lua and WML library:
+  * Added [fade_to_black] and [fade_in] to the list of skippable actions to
+    solve issues with terrains remaining in dark screen mode when skipping
+    certain cutscenes using them, e.g. AtS E3S1.
 
 
 Version 20180722:

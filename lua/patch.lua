@@ -180,6 +180,8 @@ local skippable_actions = {
 	-- The lack of pauses can turn [color_adjust] into a health hazard, so
 	-- skip that as well.
 	"color_adjust",
+	"fade_in",
+	"fade_to_black",
 	"floating_text",
 }
 
