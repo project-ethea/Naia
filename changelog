@@ -9,6 +9,12 @@ Version 20180722+dev:
     solve issues with terrains remaining in dark screen mode when skipping
     certain cutscenes using them, e.g. AtS E3S1.
 
+* Units:
+  * Chaos Cardinal migrated from IftU and expanded with a new baseframe by
+    VYNLT and slightly different stats over the mainline Ancient Lich:
+    * 80 HP -> 89 HP
+    * Melee 8-4 -> 9-3, plague(Ghoul) weapon special added
+
 
 Version 20180722:
 -----------------
