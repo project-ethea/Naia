@@ -8,6 +8,8 @@ Version 20180722+dev:
   * Added [fade_to_black] and [fade_in] to the list of skippable actions to
     solve issues with terrains remaining in dark screen mode when skipping
     certain cutscenes using them, e.g. AtS E3S1.
+  * Patch a border case with FORCE_CHANCE_TO_HIT in Wesnoth 1.14 affecting
+    scenarios such as AtS E3S3.
 
 * Units:
   * Chaos Cardinal migrated from IftU and expanded with a new baseframe by
