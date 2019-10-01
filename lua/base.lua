@@ -112,6 +112,19 @@ function die()
 end
 
 ---
+-- Helper used for injecting global events (see /core/events.cfg).
+---
+
+function global_run_wml(cfg)
+	local evtcount = wml.child_count(cfg, "event")
+	local wmicount = wml.child_count(cfg, "set_menu_item")
+
+	wprintf(W_INFO, "Running global events block (%d events, %d menu items)", evtcount, wmicount)
+
+	utils.handle_event_commands(cfg)
+end
+
+---
 -- Version number object.
 --
 

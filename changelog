@@ -10,6 +10,7 @@ Version 20180722+dev:
     certain cutscenes using them, e.g. AtS E3S1.
   * Patch a border case with FORCE_CHANCE_TO_HIT in Wesnoth 1.14 affecting
     scenarios such as AtS E3S3.
+  * Added a mechanism to inject global events without relying on [campaign].
   * Major characters with AMLA upgrades available now have their XP bar
     displayed in blue.
 
