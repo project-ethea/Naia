@@ -7,8 +7,6 @@
 -- See COPYING for usage terms.
 --
 
-local utils = wesnoth.require "lua/wml-utils.lua"
-
 ---
 -- Assigns a given variable (presumed to be a direction value)
 -- the opposite of its current contents. If the variable doesn't
