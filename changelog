@@ -2,7 +2,7 @@
 NAIA - PROJECT ETHEA PHASE 1 SHARED LIBRARY - CHANGELOG
 =======================================================
 
-Version 20180722+dev:
+Version 20191001+dev:
 ---------------------
 * Lua and WML library:
   * Added [fade_to_black] and [fade_in] to the list of skippable actions to
