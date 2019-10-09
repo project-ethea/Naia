@@ -19,6 +19,7 @@ Version 20191001+dev:
     VYNLT and slightly different stats over the mainline Ancient Lich:
     * 80 HP -> 89 HP
     * Melee 8-4 -> 9-3, plague(Ghoul) weapon special added
+  * Door unit event handlers now have unique ids.
 
 
 Version 20180722:
