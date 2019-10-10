@@ -1,0 +1,166 @@
+#!/usr/bin/python3
+'''
+.pbl post-processor for codename Naia
+
+codename Naia - Project Ethea phase 1 campaigns shared library
+Copyright (C) 2019 by Iris Morelle <shadowm@wesnoth.org>
+
+See COPYING for usage terms.
+'''
+
+import argparse
+import json
+import os
+import re
+import sys
+
+from base64 import b64encode
+from mimetypes import guess_type
+from pathlib import Path
+
+
+# Path to the user's add-on credentials store (a json file)
+ADDON_AUTH_STORE_FN = str(Path.home() / '.naia-auth')
+
+# Add-on credentials store proper
+ADDON_AUTH = None
+
+DIST_VERSION_FILE = 'dist/VERSION'
+
+
+class NaiaAuthStore:
+    '''The add-on credentials store.
+
+    Attributes:
+        path: Path to the text file containing the credentials store.
+    '''
+    def __init__(self, path):
+        self.path = path
+        self._data = None
+        try:
+            self._data = json.load(open(path, 'r', encoding='utf-8'))
+        except json.decoder.JSONDecodeError as err:
+            self._diag("JSON error on {0} line {2} char {3}: {1}".format(path, err.msg,
+                                                                         err.lineno, err.pos))
+        except FileNotFoundError as err:
+            self._diag("File not found: {}".format(err.filename))
+        except PermissionError as err:
+            self._diag("Cannot open file for reading ({1}): {0}".format(err.filename, err.strerror))
+
+    def valid(self):
+        'Returns whether the store file is valid.'
+        if self._data is None:
+            return False
+        return True
+
+    def query_passphrase(self, addon_id):
+        'Retrieves a single passphrase from the store.'
+        if addon_id not in self._data:
+            return None
+        return self._data[addon_id]['passphrase']
+
+    @staticmethod
+    def _diag(msg):
+        print("*** [AUTH] " + msg, file=sys.stderr)
+
+
+def warn(msg):
+    'Prints a warning message to stderr.'
+    print("WARNING: " + msg, file=sys.stderr)
+
+def die(msg):
+    'Prints an error message to stderr and exits.'
+    sys.exit("ERROR: " + msg)
+
+def read_base64_file(path):
+    'Converts an input file into a Base64 data URI <https://wiki.wesnoth.org/DataURI>.'
+    try:
+        with open(path, 'rb') as file:
+            text = b64encode(file.read()).decode('utf-8')
+            mime = guess_type(path)
+            if mime is None:
+                warn("Could not determine MIME type of base64 file input: {}".format(path))
+                mime = ('application/octet-stream')
+            return 'data:' + mime[0] + ';base64,' + text
+    except FileNotFoundError as err:
+        die("Could not open base64 file input: {}".format(err.filename))
+
+def get_addon_credentials(addon_id):
+    'Retrieves the passphrase for the specified add-on.'
+    passphrase = ADDON_AUTH.query_passphrase(addon_id)
+    if not passphrase:
+        die("Passphrase for add-on {} not found in the Naia credentials store.".format(addon_id))
+    return passphrase
+
+def get_addon_version(addon_path=None):
+    'Retrieves the version number for the add-on at the specified path.'
+    if not addon_path:
+        stamp_path = Path.cwd()
+    else:
+        stamp_path = Path(os.path.abspath(addon_path))
+    stamp_path = stamp_path / DIST_VERSION_FILE
+    if stamp_path.exists():
+        try:
+            with open(stamp_path, 'r', encoding='utf-8') as stamp:
+                return stamp.read().strip()
+        except FileNotFoundError:
+            pass
+    die("Version stamp file {} does not exist.".format(stamp_path))
+    return None
+
+def _pblpost_re(inner_re, line):
+    return re.compile(r'@\s*PBLPOST:' + inner_re + r'\s*@').search(line)
+
+def _pblpost_sub(line, match, sub):
+    return line[:match.start()] + sub + line[match.end():]
+
+def postprocess_line(line):
+    'Performs postprocessor substitutions on a single line of text.'
+    while True:
+        match = _pblpost_re(r'BASE64\s+([^@\s]+)', line)
+        if match:
+            path = match.group(1)
+            line = _pblpost_sub(line, match, read_base64_file(path))
+            break
+        match = _pblpost_re(r'PASSPHRASE\s+([^@\s]+)', line)
+        if match:
+            addon_id = match.group(1)
+            line = _pblpost_sub(line, match, get_addon_credentials(addon_id))
+            break
+        match = _pblpost_re(r'VERSION', line)
+        if match:
+            line = _pblpost_sub(line, match, get_addon_version())
+            break
+        break
+    return line
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-A', action='store', dest='auth_file',
+                        default=ADDON_AUTH_STORE_FN,
+                        help='Sets the path to the add-on credentials store')
+    parser.add_argument('input_file')
+    parser.add_argument('output_file')
+    args = parser.parse_args()
+    in_path = args.input_file
+    out_path = args.output_file
+    # Initialize the add-on credentials store.
+    ADDON_AUTH = NaiaAuthStore(args.auth_file)
+    if not ADDON_AUTH.valid():
+        die("Could not open the Naia add-on credentials store file: {}".format(ADDON_AUTH.path))
+    #
+    # We're making this happen.
+    #
+    lines = ()
+    try:
+        with open(in_path, 'r', encoding='utf-8') as in_file:
+            lines = in_file.readlines()
+    except FileNotFoundError as err:
+        die("Could not read input file {}, aborting.".format(in_path))
+    try:
+        with open(out_path, 'w', encoding='utf-8') as out_file:
+            for ln in lines:
+                out_file.write(postprocess_line(ln))
+    except FileNotFoundError as err:
+        die("Could not write output file {}, aborting.".format(out_path))
