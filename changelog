@@ -13,6 +13,7 @@ Version 20191001+dev:
   * Added a mechanism to inject global events without relying on [campaign].
   * Major characters with AMLA upgrades available now have their XP bar
     displayed in blue.
+  * Added [item_prompt] and adapted IftU's PICK_UP macro to make use of it.
 
 * Units:
   * Chaos Cardinal migrated from IftU and expanded with a new baseframe by
