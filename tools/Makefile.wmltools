@@ -13,6 +13,7 @@ WESNOTH_DATA_DIR := $(shell $(WESNOTH) --path 2>&1 | tail -n 1)
 WESNOTH_CORE_DIR := $(WESNOTH_DATA_DIR)/data/core
 
 DEFSCOPE         := $(NAIA_PREFIX)/tools/macro-scope-check
+PBLPOST          := $(NAIA_PREFIX)/tools/pblpost
 
 AUTO_DELTEMP     ?= 1
 
@@ -44,7 +45,7 @@ pbl: _server.pbl
 %.pbl: %.pbl.in
 	@echo "    PBL     $@ [$(dist_version)]"
 	@echo $(dist_version) | fgrep -vq 'dev' || ( echo "WARNING: Not a production release: $(dist_version)" )
-	@sed 's/@VERSION@/$(dist_version)/; s/@PASSPHRASE@/$(dist_passphrase)/' $< > $@
+	$(PBLPOST) $< $@
 
 test:
 	@echo "Running preprocessor/parser test pass..."
