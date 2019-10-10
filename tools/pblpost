@@ -159,8 +159,10 @@ if __name__ == "__main__":
     except FileNotFoundError as err:
         die("Could not read input file {}, aborting.".format(in_path))
     try:
-        with open(out_path, 'w', encoding='utf-8') as out_file:
+        tmp_path = out_path + ".new"
+        with open(tmp_path, 'w', encoding='utf-8') as out_file:
             for ln in lines:
                 out_file.write(postprocess_line(ln))
+        os.replace(tmp_path, out_path)
     except FileNotFoundError as err:
-        die("Could not write output file {}, aborting.".format(out_path))
+        die("Could not write output file {}, aborting.".format(err.filename))
