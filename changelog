@@ -22,6 +22,9 @@ Version 20191001+dev:
     * Melee 8-4 -> 9-3, plague(Ghoul) weapon special added
   * Door unit event handlers now have unique ids.
 
+* Terrains:
+  * Migrated Flat and Rough Overlay terrains from AtS.
+
 
 Version 20180722:
 -----------------
