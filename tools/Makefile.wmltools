@@ -23,7 +23,6 @@ WMLINDENT        ?= wmlindent-1.14
 WML_PREPROCESS   := $(WESNOTH) -p
 
 dist_version ?= $(shell cat $(DIST_VERSION_FILE))
-dist_passphrase ?= $(shell sed -nE '/^$(ADDON_NAME)=(.*)$$/ { s//\1/; p; q }' $(DIST_PASSPHRASE_FILE))
 
 targetdir := $(realpath .)
 
@@ -45,7 +44,7 @@ pbl: _server.pbl
 %.pbl: %.pbl.in
 	@echo "    PBL     $@ [$(dist_version)]"
 	@echo $(dist_version) | fgrep -vq 'dev' || ( echo "WARNING: Not a production release: $(dist_version)" )
-	$(PBLPOST) $< $@
+	@$(PBLPOST) $< $@
 
 test:
 	@echo "Running preprocessor/parser test pass..."
