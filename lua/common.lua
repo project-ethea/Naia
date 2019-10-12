@@ -28,7 +28,7 @@ function wesnoth.wml_actions.invert_direction(cfg)
 	elseif dir == "nw" then
 		dir = "se"
 	elseif dir == "n" then
-		dir = "n"
+		dir = "s"
 	elseif dir == "ne" then
 		dir = "sw"
 	else -- if dir == "se" then

@@ -15,6 +15,7 @@ Version 20191001+dev:
     displayed in blue.
   * Added [item_prompt] and adapted IftU's PICK_UP macro to make use of it.
   * Added UNIT_SPEAKS_FOR_UNDEAD_MINION* from IftU.
+  * Fixed [invert_direction] yielding north for north.
 
 * Units:
   * Chaos Cardinal migrated from IftU and expanded with a new baseframe by
