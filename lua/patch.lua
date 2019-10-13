@@ -89,8 +89,8 @@ log_patch("message", "[fallback_if]/[fallback_to]")
 local _WA_message = wesnoth.wml_actions.message
 
 function wesnoth.wml_actions.message(cfg)
-	local fback_if_cfg = helper.get_child(cfg, "fallback_if")
-	local fback_to_cfg = helper.get_child(cfg, "fallback_to")
+	local fback_if_cfg = wml.get_child(cfg, "fallback_if")
+	local fback_to_cfg = wml.get_child(cfg, "fallback_to")
 
 	if not fback_if_cfg or not fback_to_cfg then
 		_WA_message(cfg)
@@ -105,7 +105,7 @@ function wesnoth.wml_actions.message(cfg)
 
 	wprintf(W_DBG, "[message] fallback check mode activated")
 
-	cfg = helper.literal(cfg)
+	cfg = wml.literal(cfg)
 
 	local minisuf = {
 		x = cfg.x,
@@ -208,7 +208,7 @@ for i, action_id in ipairs(warp_actions) do
 			elseif action_id == "fade_in_sound_effects" then
 				wesnoth.sound_volume(100)
 			else -- scroll_to* actions
-				local p = helper.parsed(cfg)
+				local p = wml.parsed(cfg)
 				p.immediate = true
 				_WA_warp_actions[action_id](p)
 			end

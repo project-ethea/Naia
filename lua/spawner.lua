@@ -75,7 +75,7 @@ function wesnoth.wml_actions.spawner_spawn(cfg)
 		respawn_turns = cfg.respawn_turns or do_error("respawn_turns missing or zero and can_respawn is true")
 	end
 
-	cfg = helper.literal(cfg)
+	cfg = wml.literal(cfg)
 
 	-- Delete non-[unit] attributes.
 	cfg.can_respawn = nil

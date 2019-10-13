@@ -38,7 +38,7 @@ inconsistency (see the BUG and BUG_ON macros in core/debug.cfg
 
 ]]
 function wesnoth.wml_actions.bug(cfg)
-	local cond = helper.get_child(cfg, "condition")
+	local cond = wml.get_child(cfg, "condition")
 
 	if cond and not wesnoth.eval_conditional(cond) then
 		return

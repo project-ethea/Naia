@@ -118,15 +118,15 @@ function wesnoth.wml_actions.item_prompt(cfg)
 	local image = cfg.image
 	local sound = cfg.sound
 
-	local branch_then = helper.get_child(cfg, "then") or
+	local branch_then = wml.get_child(cfg, "then") or
 		helper.wml_error("[item_prompt] Missing mandatory [then] branch")
-	local branch_else = helper.get_child(cfg, "else")
+	local branch_else = wml.get_child(cfg, "else")
 
 	if image == nil then
 		-- Try to guess the icon from the first [object] in the command
 		-- sequence.
 
-		local first_object = helper.get_child(branch_then, "object")
+		local first_object = wml.get_child(branch_then, "object")
 
 		if first_object then
 			image = first_object.image

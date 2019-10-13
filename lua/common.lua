@@ -62,8 +62,8 @@ end
 -- [/store_direction]
 ---
 function wesnoth.wml_actions.store_direction(cfg)
-	local from_slf = helper.get_child(cfg, "from")
-	local to_slf = helper.get_child(cfg, "to")
+	local from_slf = wml.get_child(cfg, "from")
+	local to_slf = wml.get_child(cfg, "to")
 
 	local a = { x = cfg.from_x, y = cfg.from_y }
 	local b = { x = cfg.to_x  , y = cfg.to_y   }
@@ -120,12 +120,12 @@ end
 -- [/set_facing]
 ---
 function wesnoth.wml_actions.set_facing(cfg)
-	local suf = helper.get_child(cfg, "filter") or
+	local suf = wml.get_child(cfg, "filter") or
 		helper.wml_error("[set_facing] Missing unit filter")
 
 	local facing = cfg.facing
-	local target_suf = helper.get_child(cfg, "filter_second")
-	local target_slf = helper.get_child(cfg, "filter_location")
+	local target_suf = wml.get_child(cfg, "filter_second")
+	local target_slf = wml.get_child(cfg, "filter_location")
 
 	local target_loc, target_u
 
@@ -188,7 +188,7 @@ function wesnoth.wml_actions.setup_doors(cfg)
 	local owner_side = cfg.side or
 		helper.wml_error("[setup_doors] No owner side= specified")
 
-	cfg = helper.parsed(cfg)
+	cfg = wml.parsed(cfg)
 
 	if cfg.terrain == nil then
 		cfg["terrain"] = "*^P*/,*^P*\\,*^P*|,*^Z\\,*^Z/"
@@ -222,7 +222,7 @@ end
 -- [/store_unit_ids]
 ---
 function wesnoth.wml_actions.store_unit_ids(cfg)
-	local filter = helper.get_child(cfg, "filter") or
+	local filter = wml.get_child(cfg, "filter") or
 		helper.wml_error "[store_unit_ids] missing required [filter] tag"
 	local var = cfg.variable or "units"
 	local idx = 0
@@ -257,7 +257,7 @@ end
 ---
 function wesnoth.wml_actions.item_fast(cfg)
 	local locs = wesnoth.get_locations(cfg)
-	cfg = helper.parsed(cfg)
+	cfg = wml.parsed(cfg)
 
 	if not cfg.image and not cfg.halo then
 		--Nothing to do
@@ -323,9 +323,9 @@ end
 -- single attackers and defenders.
 ---
 function wesnoth.wml_actions.animate_attack(cfg)
-	local attacker_filter = helper.get_child(cfg, "filter_second") or helper.wml_error("[animate_attack] missing required [filter_second] tag")
-	local defender_filter = helper.get_child(cfg, "filter") or helper.wml_error("[animate_attack] missing required [filter] tag")
-	local weapon_filter = helper.get_child(cfg, "filter_attack") or helper.wml_error("[animate_attack] missing required [filter_attack] tag")
+	local attacker_filter = wml.get_child(cfg, "filter_second") or helper.wml_error("[animate_attack] missing required [filter_second] tag")
+	local defender_filter = wml.get_child(cfg, "filter") or helper.wml_error("[animate_attack] missing required [filter] tag")
+	local weapon_filter = wml.get_child(cfg, "filter_attack") or helper.wml_error("[animate_attack] missing required [filter_attack] tag")
 
 	-- we need to use shallow_literal field, to avoid raising an error if $this_unit (not yet assigned) is used
 	if not cfg.__shallow_literal.amount then helper.wml_error("[animate_attack] has missing required amount= attribute") end
@@ -560,7 +560,7 @@ end
 ---
 function wesnoth.wml_actions.set_conditional_variable(cfg)
 	local varname = cfg.name
-	local condition = helper.get_child(cfg, "condition")
+	local condition = wml.get_child(cfg, "condition")
 
 	if varname == nil then
 		helper.wml_error("[set_conditional_variable]: Required 'name' attribute missing")
@@ -709,9 +709,9 @@ end
 ---
 
 function wesnoth.wml_actions.check_unit_in_range(cfg)
-	local primary_suf = helper.get_child(cfg, "filter") or
+	local primary_suf = wml.get_child(cfg, "filter") or
 		helper.wml_error "[check_unit_in_range] missing required [filter] tag"
-	local second_suf = helper.get_child(cfg, "filter_second") or
+	local second_suf = wml.get_child(cfg, "filter_second") or
 		helper.wml_error "[check_unit_in_range] missing required [filter_second] tag"
 	local variable = cfg.variable
 
@@ -724,7 +724,7 @@ function wesnoth.wml_actions.check_unit_in_range(cfg)
 	local u2 = wesnoth.get_units(second_suf)[1] or
 		helper.wml_error "[check_unit_in_range] could not match secondary unit"
 
-	if helper.distance_between(u1.x, u1.y, u2.x, u2.y) <= u1.max_moves then
+	if wesnoth.map.distance_between(u1.x, u1.y, u2.x, u2.y) <= u1.max_moves then
 		wesnoth.set_variable(variable, true)
 	else
 		wesnoth.set_variable(variable, false)
@@ -748,7 +748,7 @@ end
 function wesnoth.wml_actions.apply_amlas(cfg)
 	local u = wesnoth.get_units(cfg)[1] or helper.wml_error("[apply_amlas]: Could not match any units!")
 
-	for amla_cfg in helper.child_range(cfg, "advancement") do
+	for amla_cfg in wml.child_range(cfg, "advancement") do
 		wesnoth.add_modification(u, "advancement", amla_cfg)
 	end
 end
@@ -763,7 +763,7 @@ end
 -- [/highlight_goal]
 ---
 function wesnoth.wml_actions.highlight_goal(cfg)
-	cfg = helper.literal(cfg)
+	cfg = wml.literal(cfg)
 
 	if cfg.image == nil then
 		cfg.image = "misc/goal-highlight.png"
@@ -811,4 +811,3 @@ function wesnoth.wml_actions.scatter_images(cfg)
 
 	wesnoth.wml_actions.redraw {}
 end
-
