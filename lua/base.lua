@@ -87,27 +87,24 @@ end
 -- Returns to the titlescreen ASAP.
 ---
 function die()
+	local endlevel_config = {
+		result           = "defeat",
+		linger_mode      = false,
+		carryover_report = false
+	}
+
 	-- Because of some stupid 1.14 behaviour change/bug, firing endlevel
 	-- before prestart results in the player's victory and instant
 	-- completion of the whole campaign. Injecting a preload event to run
 	-- endlevel after the storyscreen works.
 	if wesnoth.current.event_context.name == "_from_lua" then
 		wput(W_DBG, "deferred die() on global [lua] context")
-		wesnoth.wml_actions.event {
-			name = "preload",
-			{ "endlevel", {
-				result           = "defeat",
-				linger_mode      = false,
-				carryover_report = false
-			}}
-		}
+		on_event("preload", function()
+			wesnoth.wml_actions.endlevel(endlevel_config)
+		end)
 	else
 		wput(W_DBG, "die() on event context")
-		wesnoth.wml_actions.endlevel {
-			result           = "defeat",
-			linger_mode      = false,
-			carryover_report = false
-		}
+		wesnoth.wml_actions.endlevel(endlevel_config)
 	end
 end
 
