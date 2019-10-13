@@ -197,11 +197,8 @@ for i, action_id in ipairs(warp_actions) do
 			wprintf(W_INFO, "Ignoring timing or scrolling delay for [%s] while skipping [message]", action_id)
 
 			if action_id == "fade_out_music" then
-				wesnoth.set_music {
-					name      = "silence.ogg",
-					immediate = true,
-					append    = false,
-				}
+				wesnoth.music_list.clear()
+				wesnoth.music_list.add("silence.ogg", true)
 				-- HACK: give the new track a chance to start playing silently before
 				--       resetting to full volume.
 				wesnoth.delay(10)

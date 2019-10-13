@@ -614,11 +614,8 @@ function wesnoth.wml_actions.fade_out_music(cfg)
 		wesnoth.delay(delay_granularity)
 	end
 
-	wesnoth.set_music({
-		name = "silence.ogg",
-		immediate = true,
-		append = false
-	})
+	wesnoth.music_list.clear()
+	wesnoth.music_list.add("silence.ogg", true)
 
 	-- HACK: give the new track a chance to start playing silently before
 	--       resetting to full volume.
