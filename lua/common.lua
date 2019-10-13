@@ -19,7 +19,7 @@
 function wesnoth.wml_actions.invert_direction(cfg)
 	local variable = cfg.variable or "direction"
 
-	local dir = wesnoth.get_variable(variable)
+	local dir = wml.variables[variable]
 
 	if dir == "s" then
 		dir = "n"
@@ -35,7 +35,7 @@ function wesnoth.wml_actions.invert_direction(cfg)
 		dir = "nw"
 	end
 
-	wesnoth.set_variable(variable, dir)
+	wml.variables[variable] = dir
 end
 
 ---
@@ -83,7 +83,7 @@ function wesnoth.wml_actions.store_direction(cfg)
 
 	local variable = cfg.variable or "direction"
 
-	wesnoth.set_variable(variable, hex_facing(a, b))
+	wml.variables[variable] = hex_facing(a, b)
 end
 
 ---
@@ -227,19 +227,19 @@ function wesnoth.wml_actions.store_unit_ids(cfg)
 	local var = cfg.variable or "units"
 	local idx = 0
 	if cfg.mode == "append" then
-		idx = wesnoth.get_variable(var .. ".length")
+		idx = wml.variables[var .. ".length"]
 	else
-		wesnoth.set_variable(var)
+		wml.variables[var] = nil
 	end
 
 	for i, u in ipairs(wesnoth.get_units(filter)) do
-		wesnoth.set_variable(string.format("%s[%d].id", var, idx), u.id)
+		wml.variables[("%s[%d].id"):format(var, idx)] = u.id
 		idx = idx + 1
 	end
 
 	if (not filter.x or filter.x == "recall") and (not filter.y or filter.y == "recall") then
 		for i, u in ipairs(wesnoth.get_recall_units(filter)) do
-			wesnoth.set_variable(string.format("%s[%d].id", var, idx), u.id)
+			wml.variables[("%s[%d].id"):format(var, idx)] = u.id
 			idx = idx + 1
 		end
 	end
@@ -301,7 +301,7 @@ function wesnoth.wml_actions.simplify_location_filter(cfg)
 	local locs = wesnoth.get_locations(cfg)
 	local xstr, ystr = "", ""
 
-	wesnoth.set_variable(var)
+	wml.variables[var] = nil
 
 	for i, loc in ipairs(locs) do
 		if i > 1 then
@@ -313,8 +313,8 @@ function wesnoth.wml_actions.simplify_location_filter(cfg)
 		end
 	end
 
-	wesnoth.set_variable(var .. ".x", xstr)
-	wesnoth.set_variable(var .. ".y", ystr)
+	wml.variables[var .. ".x"] = xstr
+	wml.variables[var .. ".y"] = ystr
 end
 
 ---
@@ -345,8 +345,8 @@ function wesnoth.wml_actions.animate_attack(cfg)
 
 	local this_unit = utils.start_var_scope("this_unit")
 
-	wesnoth.set_variable("this_unit") -- clearing this_unit
-	wesnoth.set_variable("this_unit", defender.__cfg) -- cfg field needed
+	wml.variables.this_unit = nil -- clearing this_unit
+	wml.variables.this_unit = defender.__cfg -- cfg field needed
 
 	local animate = cfg.animate
 	local fire_event = cfg.fire_event
@@ -474,7 +474,7 @@ function wesnoth.wml_actions.animate_attack(cfg)
 
 	wesnoth.wml_actions.redraw {}
 
-	wesnoth.set_variable ( "this_unit" ) -- clearing this_unit
+	wml.variables.this_unit = nil -- clearing this_unit
 	utils.end_var_scope("this_unit", this_unit)
 end
 
@@ -513,9 +513,9 @@ function wesnoth.wml_actions.count_units(cfg)
 	local varname = cfg.variable or "unit_count"
 
 	if units == nil then
-		wesnoth.set_variable(varname, 0)
+		wml.variables[varname] = 0
 	else
-		wesnoth.set_variable(varname, #units)
+		wml.variables[varname] = #units
 	end
 end
 
@@ -544,7 +544,7 @@ function wesnoth.wml_actions.store_unit_portrait(cfg)
 		end
 	end
 
-	wesnoth.set_variable(varname, img)
+	wml.variables[varname] = img
 end
 
 ---
@@ -570,7 +570,7 @@ function wesnoth.wml_actions.set_conditional_variable(cfg)
 		helper.wml_error("[set_conditional_variable]: Required '[condition]' tag missing")
 	end
 
-	wesnoth.set_variable(varname, wesnoth.eval_conditional(condition))
+	wml.variables[varname] = wesnoth.eval_conditional(condition)
 end
 
 ---
@@ -725,9 +725,9 @@ function wesnoth.wml_actions.check_unit_in_range(cfg)
 		helper.wml_error "[check_unit_in_range] could not match secondary unit"
 
 	if wesnoth.map.distance_between(u1.x, u1.y, u2.x, u2.y) <= u1.max_moves then
-		wesnoth.set_variable(variable, true)
+		wml.variables[variable] = true
 	else
-		wesnoth.set_variable(variable, false)
+		wml.variables[variable] = false
 	end
 end
 

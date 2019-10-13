@@ -16,7 +16,7 @@ function wesnoth.wml_actions.store_shroud(cfg)
 	local side = wesnoth.get_sides( cfg )[1] or helper.wml_error("No matching side found in [store_shroud]")
 	local variable = cfg.variable or helper.wml_error("Missing required variable= attribute in [store_shroud].")
 	local current_shroud = side.__cfg.shroud_data
-	wesnoth.set_variable(variable, current_shroud)
+	wml.variables[variable] = current_shroud
 end
 
 --! [set_shroud]
@@ -101,10 +101,10 @@ function wesnoth.wml_actions.save_map(cfg)
 		t[ y + border ] = table.concat ( row, ',' )
 	end
 
-	wesnoth.set_variable(variable, table.concat(t, '\n'))
+	wml.variables[variable] = table.concat(t, '\n')
 end
 
 function wesnoth.wml_actions.load_map(cfg)
 	local variable = cfg.variable or helper.wml_error "[load_map] missing required variable= attribute"
-	wesnoth.wml_actions.replace_map { map = wesnoth.get_variable ( variable ), expand = true, shrink = true }
+	wesnoth.wml_actions.replace_map { map = wml.variables[variable], expand = true, shrink = true }
 end
