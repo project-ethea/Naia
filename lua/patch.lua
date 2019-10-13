@@ -69,6 +69,8 @@ end
 -- Workaround for Wesnoth issue #1617/AtS issue #31.
 ---
 
+log_patch("animate_unit", "render glitch with animations following [message]")
+
 local _WA_animate_unit = wesnoth.wml_actions.animate_unit
 
 function wesnoth.wml_actions.animate_unit(cfg)
