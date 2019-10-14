@@ -761,6 +761,45 @@ function wesnoth.wml_actions.apply_amlas(cfg)
 end
 
 ---
+-- Applies a given list of [object]s to a unit matching the given SUF.
+--
+-- [apply_objects]
+--     ... SUF ...
+--     exclude_internal=yes
+--     exclude_temporaries=yes
+--     [object]
+--         ...
+--     [/object]
+--     [object]
+--         ...
+--     [/object]
+--     ...
+-- [/apply_objects]
+function wesnoth.wml_actions.apply_objects(cfg)
+	local u = wesnoth.get_units(cfg)[1] or helper.wml_error("[apply_objects]: Could not match any units!")
+
+	local no_internals = cfg.exclude_internal
+	local no_temporaries = cfg.exclude_temporaries
+
+	if no_internals == nil then
+		no_internals = true
+	end
+	if no_temporaries == nil then
+		no_temporaries = true
+	end
+
+	for object_cfg in wml.child_range(cfg, "object") do
+		if no_temporaries and object_cfg.duration ~= "forever" and object_cfg.duration ~= nil then
+			wprintf(W_DBG, "Skipping object with duration=%s", object_cfg.duration)
+		elseif no_internals and object_cfg.description == nil then
+			wprintf(W_DBG, "Skipping description-less object")
+		else
+			wesnoth.add_modification(u, "object", object_cfg)
+		end
+	end
+end
+
+---
 -- Highlights a given set of target locations at once as a hint for the
 -- player.
 --
