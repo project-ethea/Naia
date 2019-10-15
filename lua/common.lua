@@ -615,6 +615,13 @@ function wesnoth.wml_actions.fade_out_music(cfg)
 	end
 
 	wesnoth.music_list.clear()
+
+	-- Unset existing ms_after to work around Wesnoth issues #4458, #4459, and #4460.
+	-- This is also done by Naia's version of [music]
+	if wesnoth.music_list.current then
+		wesnoth.music_list.current.ms_after = 0
+	end
+
 	wesnoth.music_list.add("silence.ogg", true)
 
 	-- HACK: give the new track a chance to start playing silently before
@@ -750,6 +757,45 @@ function wesnoth.wml_actions.apply_amlas(cfg)
 
 	for amla_cfg in wml.child_range(cfg, "advancement") do
 		wesnoth.add_modification(u, "advancement", amla_cfg)
+	end
+end
+
+---
+-- Applies a given list of [object]s to a unit matching the given SUF.
+--
+-- [apply_objects]
+--     ... SUF ...
+--     exclude_internal=yes
+--     exclude_temporaries=yes
+--     [object]
+--         ...
+--     [/object]
+--     [object]
+--         ...
+--     [/object]
+--     ...
+-- [/apply_objects]
+function wesnoth.wml_actions.apply_objects(cfg)
+	local u = wesnoth.get_units(cfg)[1] or helper.wml_error("[apply_objects]: Could not match any units!")
+
+	local no_internals = cfg.exclude_internal
+	local no_temporaries = cfg.exclude_temporaries
+
+	if no_internals == nil then
+		no_internals = true
+	end
+	if no_temporaries == nil then
+		no_temporaries = true
+	end
+
+	for object_cfg in wml.child_range(cfg, "object") do
+		if no_temporaries and object_cfg.duration ~= "forever" and object_cfg.duration ~= nil then
+			wprintf(W_DBG, "Skipping object with duration=%s", object_cfg.duration)
+		elseif no_internals and object_cfg.description == nil then
+			wprintf(W_DBG, "Skipping description-less object")
+		else
+			wesnoth.add_modification(u, "object", object_cfg)
+		end
 	end
 end
 

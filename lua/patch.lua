@@ -12,6 +12,24 @@ function log_patch(action_id, msg)
 end
 
 ---
+-- Patches [music] immediate=yes to ignore ms_after.
+--
+-- See Wesnoth issues #4458, #4459, and #4460.
+---
+
+log_patch("music", "immediate=yes fade-out wait (Wesnoth #4458, #4459, #4460)")
+
+local _WA_music = wesnoth.wml_actions.music
+
+function wesnoth.wml_actions.music(cfg)
+	if cfg.immediate and wesnoth.music_list.current then
+		wesnoth.music_list.current.ms_after = 0
+	end
+
+	_WA_music(cfg)
+end
+
+---
 -- Extends [remove_sound_source] to take a comma-separated list of sound
 -- sources to remove.
 ---
@@ -50,6 +68,8 @@ end
 ---
 -- Workaround for Wesnoth issue #1617/AtS issue #31.
 ---
+
+log_patch("animate_unit", "render glitch with animations following [message]")
 
 local _WA_animate_unit = wesnoth.wml_actions.animate_unit
 
