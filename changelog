@@ -25,6 +25,8 @@ Version 20191001+dev:
   * Door unit event handlers now have unique ids.
   * Chaos Hound unit line now belongs to the wolf race, giving them traits and
     names accordingly.
+  * Removed overlong death animation for the Aragwaith Lancer that only uses
+    the baseframe as a placeholder.
 
 * Terrains:
   * Migrated Flat and Rough Overlay terrains from AtS.
