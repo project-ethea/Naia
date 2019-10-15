@@ -231,7 +231,7 @@ function wesnoth.wml_actions.bug(cfg)
 
 		if cond then
 			wesnoth.set_dialog_callback(show_details, "details")
-			wesnoth.set_dialog_value(wesnoth.debug(cond), "wml")
+			wesnoth.set_dialog_value(wml.tostring(cond), "wml")
 		else
 			wesnoth.set_dialog_active(false, "details")
 		end

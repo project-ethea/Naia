@@ -112,6 +112,6 @@ function wesnoth.wml_actions.spawner_spawn(cfg)
 		side, x, y, cfg.type, cfg.facing, ((uvars.spawner_respawn and 1) or 0), respawn_turns))
 
 	-- Run [unit].
-	--dbg(wesnoth.debug(wml.tovconfig(cfg)))
+	--dbg(wml.tostring(wml.tovconfig(cfg)))
 	wesnoth.fire("unit", cfg)
 end
