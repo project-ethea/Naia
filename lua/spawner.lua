@@ -25,7 +25,7 @@ function wesnoth.wml_actions.run_spawn_controller(cfg)
 	local respawn_turn = wesnoth.current.turn + uv.spawner_turns
 
 	if uv.spawner_turns <= 0 and uv.spawner_respawn then
-		dbg(string.format("<CTL> fire '%s' now", respawn_event))
+		dbg(("<CTL> fire '%s' now"):format(respawn_event))
 
 		wesnoth.fire("kill", {
 			x = ctx.x1,
@@ -36,10 +36,10 @@ function wesnoth.wml_actions.run_spawn_controller(cfg)
 
 		wesnoth.fire_event(respawn_event)
 	else
-		dbg(string.format("<CTL> fire '%s' on turn %d", respawn_event, respawn_turn))
+		dbg(("<CTL> fire '%s' on turn %d"):format(respawn_event, respawn_turn))
 
 		wesnoth.fire("event", {
-			name = string.format("turn %d", respawn_turn),
+			name = ("turn %d"):format(respawn_turn),
 			first_time_only = true,
 			T.filter_condition {
 				T.variable {
@@ -88,7 +88,7 @@ function wesnoth.wml_actions.spawner_spawn(cfg)
 	local uvars = {
 		-- Used by a WML event handler.
 		spawner_respawn = can_respawn,
-		spawner_event = string.format("respawn:S%dX%dY%d", side, x, y),
+		spawner_event = ("respawn:S%dX%dY%d"):format(side, x, y),
 		spawner_turns = respawn_turns
 	}
 
@@ -108,7 +108,7 @@ function wesnoth.wml_actions.spawner_spawn(cfg)
 	cfg.type = helper.rand(cfg.type)
 	cfg.facing = helper.rand(cfg.facing)
 
-	dbg(string.format("respawn S: %d, X: %d, Y: %d, T: %s, F: %s, R: %d %d",
+	dbg(("respawn S: %d, X: %d, Y: %d, T: %s, F: %s, R: %d %d"):format(
 		side, x, y, cfg.type, cfg.facing, ((uvars.spawner_respawn and 1) or 0), respawn_turns))
 
 	-- Run [unit].

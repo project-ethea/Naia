@@ -305,11 +305,11 @@ function wesnoth.wml_actions.simplify_location_filter(cfg)
 
 	for i, loc in ipairs(locs) do
 		if i > 1 then
-			xstr = xstr .. string.format(",%d", loc[1])
-			ystr = ystr .. string.format(",%d", loc[2])
+			xstr = ("%s,%d"):format(xstr, loc[1])
+			ystr = ("%s,%d"):format(ystr, loc[2])
 		else
-			xstr = string.format("%d", loc[1])
-			ystr = string.format("%d", loc[2])
+			xstr = ("%d"):format(loc[1])
+			ystr = ("%d"):format(loc[2])
 		end
 	end
 
@@ -404,7 +404,7 @@ function wesnoth.wml_actions.animate_attack(cfg)
 		end
 	end
 
-	local text = string.format("%d%s", damage, "\n")
+	local text = ("%d%s"):format(damage, "\n")
 	local add_tab = false
 	local gender = defender.__cfg.gender
 
@@ -412,9 +412,9 @@ function wesnoth.wml_actions.animate_attack(cfg)
 	local function set_status(name, male_string, female_string, sound)
 		if not cfg[name] or defender.status[name] then return end
 		if gender == "female" then
-			text = string.format("%s%s%s", text, tostring(female_string), "\n")
+			text = ("%s%s%s"):format(text, tostring(female_string), "\n")
 		else
-			text = string.format("%s%s%s", text, tostring(male_string), "\n")
+			text = ("%s%s%s"):format(text, tostring(male_string), "\n")
 		end
 
 		defender.status[name] = true
@@ -433,7 +433,7 @@ function wesnoth.wml_actions.animate_attack(cfg)
 	set_status("unhealable", _"unhealable", _"female^unhealable")
 
 	if add_tab then
-		text = string.format("%s%s", "\t", text)
+		text = ("%s%s"):format("\t", text)
 	end
 
 	-- HACK: do not display floating label when
@@ -463,7 +463,7 @@ function wesnoth.wml_actions.animate_attack(cfg)
 			} }
 		} )
 	else
-		wesnoth.float_label( defender.x, defender.y, string.format( "<span foreground='red'>%s</span>", text ) )
+		wesnoth.float_label( defender.x, defender.y, ("<span foreground='red'>%s</span>"):format(text) )
 	end
 
 	defender.hitpoints = defender.hitpoints - damage
@@ -538,9 +538,9 @@ function wesnoth.wml_actions.store_unit_portrait(cfg)
 	if (not img) or img ~= "unit_image" then
 		local mods = u.image_mods
 		if mods then
-			img = string.format("%s~%s~TC(%d,%s)", u.__cfg.image, mods, u.side, u.__cfg.flag_rgb)
+			img = ("%s~%s~TC(%d,%s)"):format(u.__cfg.image, mods, u.side, u.__cfg.flag_rgb)
 		else
-			img = string.format("%s~TC(%d,%s)", u.__cfg.image, u.side, u.__cfg.flag_rgb)
+			img = ("%s~TC(%d,%s)"):format(u.__cfg.image, u.side, u.__cfg.flag_rgb)
 		end
 	end
 
@@ -605,11 +605,11 @@ function wesnoth.wml_actions.fade_out_music(cfg)
 	end
 
 	local steps = duration / delay_granularity
-	--wesnoth.message(string.format("%d steps", steps))
+	--wesnoth.message(("%d steps"):format(steps))
 
 	for k = 1, steps do
 		local v = helper.round(100 - (100*k / steps))
-		--wesnoth.message(string.format("step %d, volume %d", k, v))
+		--wesnoth.message(("step %d, volume %d"):format(k, v))
 		wesnoth.music_list.volume = v
 		wesnoth.delay(delay_granularity)
 	end
@@ -635,7 +635,7 @@ local function wml_sfx_volume_fade_internal(duration, is_fade_out)
 	duration = duration - (duration % delay_granularity)
 
 	local steps = duration / delay_granularity
-	--wesnoth.message(string.format("%d steps", steps))
+	--wesnoth.message(("%d steps"):format(steps))
 
 	for k = 1, steps do
 		local v = 0
@@ -646,7 +646,7 @@ local function wml_sfx_volume_fade_internal(duration, is_fade_out)
 			v = helper.round(100*k / steps)
 		end
 
-		--wesnoth.message(string.format("step %d, volume %d", k, v))
+		--wesnoth.message(("step %d, volume %d"):format(k, v))
 
 		wesnoth.sound_volume(v)
 
@@ -819,8 +819,8 @@ function wesnoth.wml_actions.deactivate_and_serialize_sides(cfg)
 	wml.variables[variable] = {}
 
 	for t, side_number in helper.get_sides(cfg) do
-		-- wesnoth.message("WML", string.format("store side %u", side_number))
-		local side_store = string.format("%s[%u]", variable, array_index)
+		-- wesnoth.message("WML", ("store side %u"):format(side_number))
+		local side_store = ("%s[%u]"):format(variable, array_index)
 
 		wml.variables[side_store] = {}
 
@@ -851,11 +851,11 @@ function wesnoth.wml_actions.unserialize_and_activate_sides(cfg)
 			income = side_data.income, controller = side_data.controller, hidden = side_data.hidden
 		}
 
-		local units = wml.array_access.get(variable .. string.format("[%u].units", index - 1))
+		local units = wml.array_access.get(("%s[%u].units"):format(variable, index - 1))
 
 		for uindex, container in ipairs(units) do
 			wesnoth.wml_actions.unstore_unit {
-				variable = string.format("%s[%u].units[%u]", variable, index - 1, uindex - 1),
+				variable = ("%s[%u].units[%u]"):format(variable, index - 1, uindex - 1),
 				find_vacant = true
 			}
 		end

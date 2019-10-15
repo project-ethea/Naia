@@ -24,7 +24,7 @@ function wesnoth.wml_actions.quake(cfg)
 end
 
 local function screen_color_adjust(r, g, b)
-	--print(string.format("COLOR ADJUST: %d %d %d", r, g, b))
+	--print(("COLOR ADJUST: %d %d %d"):format(r, g, b))
 	wesnoth.color_adjust { red = r, green = g, blue = b }
 end
 

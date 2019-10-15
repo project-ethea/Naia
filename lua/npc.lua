@@ -50,17 +50,17 @@ function wesnoth.wml_actions.npc_bird_behavior(cfg)
 	local y2 = default(cfg.y2, map_h)
 
 	if not on_board(x1,y1) then
-		do_error(string.format("(x1, y1) is (%d, %d), which is not on map (%d x %d)", x1, y1, map_w, map_h))
+		do_error(("(x1, y1) is (%d, %d), which is not on map (%d x %d)"):format(x1, y1, map_w, map_h))
 	end
 	if not on_board(x2,y2) then
-		do_error(string.format("(x2, y2) is (%d, %d), which is not on map (%d x %d)", x2, y2, map_w, map_h))
+		do_error(("(x2, y2) is (%d, %d), which is not on map (%d x %d)"):format(x2, y2, map_w, map_h))
 	end
 
 	local function in_npc_region(x, y)
 		return (x >= x1 and x <= x2) and (y >= y1 and y <= y2)
 	end
 
-	-- wesnoth.message(string.format("moving birds in area ((%d, %d), (%d, %d))", x1, y1, x2, y2))
+	-- wesnoth.message(("moving birds in area ((%d, %d), (%d, %d))"):format(x1, y1, x2, y2))
 
 	--
 	-- Store required units
@@ -68,8 +68,8 @@ function wesnoth.wml_actions.npc_bird_behavior(cfg)
 
 	local npcs = wesnoth.get_units {
 		type = types, side = side_num,
-		x = string.format("1-%d", map_w),
-		y = string.format("1-%d", map_h)
+		x = ("1-%d"):format(map_w),
+		y = ("1-%d"):format(map_h)
 	}
 
 	for k, npc in ipairs(npcs) do
@@ -106,8 +106,8 @@ function wesnoth.wml_actions.npc_bird_behavior(cfg)
 				if (not target) or (not in_npc_region(target[1], target[2])) then
 					oob = true
 				else
-					path.x = path.x .. string.format(",%d", target[1])
-					path.y = path.y .. string.format(",%d", target[2])
+					path.x = ("%s,%d"):format(path.x, target[1])
+					path.y = ("%s,%d"):format(path.y, target[2])
 
 					endpoint.x = target[1]
 					endpoint.y = target[2]
@@ -119,7 +119,7 @@ function wesnoth.wml_actions.npc_bird_behavior(cfg)
 
 			npc:extract()
 
-			-- wesnoth.message(string.format("x = %s; y = %s", path.x, path.y))
+			-- wesnoth.message(("x = %s; y = %s"):format(path.x, path.y))
 
 			local npc_cfg = npc.__cfg
 

@@ -67,7 +67,7 @@ function wesnoth.wml_actions.set_shroud(cfg)
 			wesnoth.wml_actions.modify_side { side = team_number, shroud = true } -- in case that shroud was removed by modify_side
 		end
 
-		wesnoth.wml_actions.place_shroud { side = team_number, x = string.format("%d-%d", 1 - border, height + border ), y = string.format("%d-%d", 1 - border, width + border ) }
+		wesnoth.wml_actions.place_shroud { side = team_number, x = ("%d-%d"):format(1 - border, height + border ), y = ("%d-%d"):format(1 - border, width + border ) }
 		wesnoth.wml_actions.remove_shroud { side = team_number, x = locs_x, y = locs_y }
 	end
 end
