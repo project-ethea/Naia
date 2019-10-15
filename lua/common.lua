@@ -83,7 +83,7 @@ function wesnoth.wml_actions.store_direction(cfg)
 
 	local variable = cfg.variable or "direction"
 
-	wml.variables[variable] = hex_facing(a, b)
+	wml.variables[variable] = wesnoth.map.get_relative_dir(a, b)
 end
 
 ---
@@ -148,12 +148,12 @@ function wesnoth.wml_actions.set_facing(cfg)
 		if facing then
 			new_facing = facing
 		elseif target_u then
-			new_facing = hex_facing(
+			new_facing = wesnoth.map.get_relative_dir(
 				{ x = u.x, y = u.y },
 				{ x = target_u.x, y = target_u.y }
 			)
 		elseif target_loc then
-			new_facing = hex_facing(
+			new_facing = wesnoth.map.get_relative_dir(
 				{ x = u.x, y = u.y },
 				{ x = target_loc[1], y = target_loc[2] }
 			)
