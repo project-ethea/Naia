@@ -8,6 +8,16 @@
 --
 
 ---
+-- This WML tag does nothing. Literally nothing at all.
+--
+-- However, because its contents aren't validated in any fashion, you can
+-- potentially use it to deliver context information to saved games for easy
+-- debugging of code in them.
+---
+function wesnoth.wml_actions.no_op(cfg)
+end
+
+---
 -- Assigns a given variable (presumed to be a direction value)
 -- the opposite of its current contents. If the variable doesn't
 -- seem to be a direction value, SE is used, setting it to NW.
