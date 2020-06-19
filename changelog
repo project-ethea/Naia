@@ -17,6 +17,9 @@ Version 20191001+dev:
   * Added UNIT_SPEAKS_FOR_UNDEAD_MINION* from IftU.
   * Fixed [invert_direction] yielding north for north.
   * Added [no_op].
+  * Added [variable_in] and [position_equals] WML conditional tags.
+  * Added VARIABLE_IF_ELSE, VARIABLE_POS_EQUALS, VARIABLE_LEXICAL_IN utility
+    macros.
 
 * Units:
   * Chaos Cardinal migrated from IftU and expanded with a new baseframe by
