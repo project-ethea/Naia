@@ -32,7 +32,7 @@ indent:
 	$(WMLINDENT) .
 
 defscope:
-	$(DEFSCOPE) $(scenario_dirs)
+	$(DEFSCOPE) $(SCENARIO_DIRS)
 
 lint:
 	$(WMLLINT) $(WESNOTH_CORE_DIR) $(NAIA_PREFIX) $(targetdir)
