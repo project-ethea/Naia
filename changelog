@@ -27,6 +27,7 @@ Version 20191001+dev:
     names accordingly.
   * Removed overlong death animation for the Aragwaith Lancer that only uses
     the baseframe as a placeholder.
+  * Terror ability no longer affects same-level units.
 
 * Terrains:
   * Migrated Flat and Rough Overlay terrains from AtS.
