@@ -3,6 +3,9 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 
 Version 20200620+dev:
 ---------------------
+* General:
+  * Updated art licenses for CC BY-NC-ND 4.0, CC BY-SA 4.0 and CC0 content.
+
 * Terrains:
   * Fixed Wall Moss terrain not having working graphics when playing IftU
     instead of AtS.
