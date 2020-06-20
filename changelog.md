@@ -1,5 +1,4 @@
-=======================================================
-NAIA - PROJECT ETHEA PHASE 1 SHARED LIBRARY - CHANGELOG
+Naia - Project Ethea Phase 1 Shared Library - Changelog
 =======================================================
 
 Version 20200620+dev:
