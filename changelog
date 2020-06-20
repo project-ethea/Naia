@@ -2,6 +2,13 @@
 NAIA - PROJECT ETHEA PHASE 1 SHARED LIBRARY - CHANGELOG
 =======================================================
 
+Version 20200620+dev:
+---------------------
+* Terrains:
+  * Fixed Wall Moss terrain not having working graphics when playing IftU
+    instead of AtS.
+
+
 Version 20200620:
 -----------------
 * Lua and WML library:
