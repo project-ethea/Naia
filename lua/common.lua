@@ -2,7 +2,7 @@
 -- General-purpose WML actions library
 --
 -- codename Naia - Project Ethea phase 1 campaigns shared library
--- Copyright (C) 2006 - 2019 by Iris Morelle <shadowm@wesnoth.org>
+-- Copyright (C) 2006 - 2020 by Iris Morelle <shadowm@wesnoth.org>
 --
 -- See COPYING for usage terms.
 --

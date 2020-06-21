@@ -1,8 +1,7 @@
 #!/bin/sh
 #
 # Project Ethea Distribution Package Tool
-# Based on the Wesnoth-UMC-Dev umcdist tool (codename 'Blackmore')
-# Copyright (C) 2008 - 2019 by Iris Morelle <shadowm@wesnoth.org>
+# Copyright (C) 2008 - 2020 by Iris Morelle <shadowm@wesnoth.org>
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -104,8 +103,7 @@ print_version()
 {
 	cat <<END
 Project Ethea Distribution Package Tool version $UMCDIST_VERSION
-Based on the Wesnoth-UMC-Dev umcdist tool (codename 'Blackmore')
-Copyright (C) 2008 - 2019 by Iris Morelle <shadowm@wesnoth.org>
+Copyright (C) 2008 - 2020 by Iris Morelle <shadowm@wesnoth.org>
 END
 }
 
