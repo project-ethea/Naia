@@ -34,14 +34,16 @@ end
 -- sources to remove.
 ---
 
-log_patch("remove_sound_source", "comma-separated id list")
+if wesnoth.compare_versions(wesnoth.game_config.version, "<", "1.15.0") then
+	log_patch("remove_sound_source", "comma-separated id list")
 
-local _WA_remove_sound_source = wesnoth.wml_actions.remove_sound_source
+	local _WA_remove_sound_source = wesnoth.wml_actions.remove_sound_source
 
-function wesnoth.wml_actions.remove_sound_source(cfg)
-	local ids = cfg.id or helper.wml_error("[remove_sound_source]: No id list provided")
-	for id in ids:gmatch("[^,]+") do
-		_WA_remove_sound_source { id = id:match "^%s*(.-)%s*$" }
+	function wesnoth.wml_actions.remove_sound_source(cfg)
+		local ids = cfg.id or helper.wml_error("[remove_sound_source]: No id list provided")
+		for id in ids:gmatch("[^,]+") do
+			_WA_remove_sound_source { id = id:match "^%s*(.-)%s*$" }
+		end
 	end
 end
 
