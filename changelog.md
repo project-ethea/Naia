@@ -4,7 +4,7 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 Version 20200621+dev:
 ---------------------
 * Units:
-  * Revised unit descriptions: Water Tidal, Water Spirit.
+  * Revised unit descriptions: Water Tidal, Water Spirit, Aragwaith Sorceress.
 
 
 Version 20200621:
