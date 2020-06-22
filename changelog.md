@@ -3,6 +3,8 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 
 Version 20200621+dev:
 ---------------------
+* Units:
+  * Revised unit descriptions: Water Tidal, Water Spirit.
 
 
 Version 20200621:
@@ -13,9 +15,6 @@ Version 20200621:
 * Terrains:
   * Fixed Wall Moss terrain not having working graphics when playing IftU
     instead of AtS.
-
-* Units:
-  * Revised unit descriptions: Water Tidal, Water Spirit.
 
 
 Version 20200620:
