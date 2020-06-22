@@ -14,6 +14,9 @@ Version 20200621:
   * Fixed Wall Moss terrain not having working graphics when playing IftU
     instead of AtS.
 
+* Units:
+  * Revised unit descriptions: Water Tidal, Water Spirit.
+
 
 Version 20200620:
 -----------------
