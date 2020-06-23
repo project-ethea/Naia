@@ -4,6 +4,7 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 Version 20200621+dev:
 ---------------------
 * Units:
+  * Revised race descriptions: Shaxthals.
   * Revised unit descriptions: Water Tidal, Water Spirit, Aragwaith Sorceress.
 
 
