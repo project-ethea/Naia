@@ -6,7 +6,7 @@ Version 20200621+dev:
 * Units:
   * Revised race descriptions: Shaxthals.
   * Revised unit descriptions: Water Tidal, Water Spirit, Aragwaith Sorceress,
-    Aragwaith Guard.
+    Aragwaith Guard, Aragwaith Greatbow.
 
 
 Version 20200621:
