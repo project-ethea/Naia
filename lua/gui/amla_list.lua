@@ -572,9 +572,9 @@ function wesnoth.wml_actions.amla_list(cfg)
 			wesnoth.remove_dialog_item(1, 0, "adv_list")
 		end
 
-		local function format_advancement_row(data)
-			-- TODO: ACTUALLY FORMAT THIS CRAP
-			return data.description + (" (%d times)"):format(data.times)
+		local function get_current_type()
+			local row = wesnoth.get_dialog_value("adv_list")
+			return state.entries[row][4]
 		end
 
 		local function get_current_advancement()
@@ -592,6 +592,13 @@ function wesnoth.wml_actions.amla_list(cfg)
 			-- Here we clone the original unit and apply the selected
 			-- modifications to the clone for the preview pane.
 			preview_unit = u:clone()
+
+			-- We are not supposed to do anything if we are looking at an
+			-- advancement the unit has already acquired.
+			if get_current_type() == ADV_AMLA_ACQUIRED then
+				wesnoth.set_dialog_value(preview_unit, "unit_display")
+				return
+			end
 
 			local adv = get_current_advancement()
 			if not adv.amla then
