@@ -6,6 +6,8 @@ Version 20200621+dev:
 * Lua and WML library:
   * Add `table_size`, `table_empty`, `table_keys`, `table_merge` global functions.
   * Moved `AMLA_VITALITY` macro from AtS.
+  * Fixed OOS errors in replays due to cutscene skipping with `[move_unit_fake]`
+    causing the unit counter to desync (After the Storm #68).
 
 * Units:
   * Added a context menu option to browse through custom AMLAs for player units

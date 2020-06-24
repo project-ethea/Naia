@@ -12,6 +12,28 @@ function log_patch(action_id, msg)
 end
 
 ---
+-- Patches [move_unit_fake] and [move_units_fake] to be always unsynced so
+-- skipping them (see action warping and skipping below at the end) doesn't
+-- cause the unit counter to go out of sync.
+---
+
+log_patch("move_unit_fake", "force unsynced execution (AtS #68)")
+
+local _WA_move_unit_fake = wesnoth.wml_actions.move_unit_fake
+
+function wesnoth.wml_actions.move_unit_fake(cfg)
+	wesnoth.unsynced(function() _WA_move_unit_fake(cfg) end)
+end
+
+log_patch("move_units_fake", "force unsynced execution (AtS #68)")
+
+local _WA_move_units_fake = wesnoth.wml_actions.move_units_fake
+
+function wesnoth.wml_actions.move_units_fake(cfg)
+	wesnoth.unsynced(function() _WA_move_units_fake(cfg) end)
+end
+
+---
 -- Patches [music] immediate=yes to ignore ms_after.
 --
 -- See Wesnoth issues #4458, #4459, and #4460.
