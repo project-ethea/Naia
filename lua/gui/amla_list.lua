@@ -197,6 +197,7 @@ local MISSING_UNIT_ICON = "misc/blank-hex.png"                 -- 72x72
 local ADV_PROMOTION_COLOR = "#00a0e1"
 local ADV_AMLA_LEGEND_COLOR = "#a69275"
 
+local ADV_NONE           = 0x00000000
 local ADV_PROMOTION      = 0x00000001
 local ADV_AMLA_AVAILABLE = 0x00000002
 local ADV_AMLA_ACQUIRED  = 0x00000004
@@ -643,11 +644,18 @@ function wesnoth.wml_actions.amla_list(cfg)
 
 		local function get_current_type()
 			local row = wesnoth.get_dialog_value("adv_list")
+			if row < 1 then
+				return ADV_NONE
+			end
 			return state.entries[row][4]
 		end
 
 		local function get_current_advancement()
 			local row = wesnoth.get_dialog_value("adv_list")
+			if row < 1 then
+				return nil
+			end
+
 			local id, type = state.entries[row][1], state.entries[row][4]
 
 			if type == ADV_PROMOTION then
@@ -666,11 +674,16 @@ function wesnoth.wml_actions.amla_list(cfg)
 			-- advancement the unit has already acquired.
 			if get_current_type() == ADV_AMLA_ACQUIRED then
 				wesnoth.set_dialog_value(preview_unit, "unit_display")
+				wesnoth.set_dialog_visible(true, "unit_display")
 				return
 			end
 
 			local adv = get_current_advancement()
-			if not adv.amla then
+			if not adv then
+				-- Nothing's selected or the selection is invalid somehow
+				wesnoth.set_dialog_visible("hidden", "unit_display")
+				return
+			elseif not adv.amla then
 				local promotion_ut = adv.unit_type
 				preview_unit.experience = 0
 				preview_unit:transform(promotion_ut.id)
@@ -680,6 +693,7 @@ function wesnoth.wml_actions.amla_list(cfg)
 			end
 
 			wesnoth.set_dialog_value(preview_unit, "unit_display")
+			wesnoth.set_dialog_visible(true, "unit_display")
 		end
 
 		local function rebuild()
@@ -782,6 +796,10 @@ function wesnoth.wml_actions.amla_list(cfg)
 
 		-- This will repopulate the list at the start of the dialog's lifecycle
 		do_update_filter_options(ADV_FILTERS.adv_display_all)
+
+		-- Disable options that don't apply. We need to do this after calling
+		-- do_update_filter_options() once in order for state not to be nil.
+		wesnoth.set_dialog_active(state.num_acquired_amlas > 0, "adv_display_current")
 
 		wesnoth.set_dialog_focus("adv_list")
 	end)
