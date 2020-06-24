@@ -121,18 +121,6 @@ function amla:unit_can_get(u)
 	local mods_cfg = wml.get_child(u.__cfg, "modifications")
 	local status = true
 
-	for req_id, req_count in pairs(self.require_amla) do
-		local times = count_wml_children_with_value(mods_cfg, "advancement", "id", req_id)
-
-		if times >= req_count then
-			status = status and true
-		end
-
-		if not status then
-			return false
-		end
-	end
-
 	for exc_id, exc_count in pairs(self.exclude_amla) do
 		local times = count_wml_children_with_value(mods_cfg, "advancement", "id", exc_id)
 
@@ -141,11 +129,19 @@ function amla:unit_can_get(u)
 		end
 
 		if status then
-			return false
+			return false, "exclude_amla"
 		end
 	end
 
-	return true
+	for req_id, req_count in pairs(self.require_amla) do
+		local times = count_wml_children_with_value(mods_cfg, "advancement", "id", req_id)
+
+		if times < req_count then
+			return false, "require_amla"
+		end
+	end
+
+	return true, nil
 end
 
 --
