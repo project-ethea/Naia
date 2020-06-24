@@ -5,6 +5,7 @@ Version 20200621+dev:
 ---------------------
 * Lua and WML library:
   * Add `table_size`, `table_empty`, `table_keys`, `table_merge` global functions.
+  * Moved `AMLA_VITALITY` macro from AtS.
 
 * Units:
   * Added a context menu option to browse through custom AMLAs for player units
