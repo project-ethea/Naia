@@ -403,8 +403,13 @@ local ADV_AMLA_LEGEND_COLOR = "#a69275"
 -- If no color should be applied, nil is returned instead.
 --
 local function amla_color(unit, amla_obj, times_applied)
-	if not amla_obj:unit_can_get(unit) then
-		return "#ff0000"
+	local can_get, why = amla_obj:unit_can_get(unit)
+	if not can_get then
+		if why == "exclude_amla" then
+			return "#ff0000"
+		else
+			return "#666666"
+		end
 	elseif times_applied > 0 then
 		return "#00ff00"
 	end
