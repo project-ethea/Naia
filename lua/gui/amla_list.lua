@@ -136,11 +136,11 @@ function amla:unit_can_get(u)
 	for exc_id, exc_count in pairs(self.exclude_amla) do
 		local times = count_wml_children_with_value(mods_cfg, "advancement", "id", exc_id)
 
-		if times < exc_count then
+		if times >= exc_count then
 			status = status and true
 		end
 
-		if not status then
+		if status then
 			return false
 		end
 	end
