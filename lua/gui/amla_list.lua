@@ -876,11 +876,21 @@ function wesnoth.wml_actions.amla_list(cfg)
 end
 
 --
--- This is a SUF Lua function to allow matching arbitrary units that have AMLAs
--- other than the mainline default, instead of having to specify character
--- names everywhere. It can then be used in a WML menu item or something.
+-- This SUF Lua function is used to check whether the context menu should
+-- include the AMLA browser option for the selected unit. This basically means
+-- that the unit or its unit type must include at least one AMLA other than
+-- mainline's AMLA_DEFAULT, and the controlling side must be played by a human.
+-- This is to avoid spoilers with regards to certain units that can be on
+-- either the player's side or on the enemy's.
+--
+-- See AMLA_MENU macros/amla.cfg for the WML menu item portion of the code.
 --
 function naia_amla_menu_check(u)
+	-- Does the unit belong to a human-controlled side?
+	if wesnoth.sides[u.side].controller ~= "human" then
+		return false
+	end
+
 	-- Find the first available AMLA that isn't the default mainline AMLA
 	-- (AMLA_DEFAULT).
 	for _, cfg in ipairs(u.advancements) do
