@@ -268,7 +268,7 @@ local adv_list = { T.row { T.column {
 	vertical_grow = true,
 	horizontal_grow = true,
 
-	-- ICON || LABEL
+	-- ICON || LABEL || NUMTIMES
 
 	T.toggle_panel { T.grid { T.row {
 		T.column {
@@ -290,6 +290,17 @@ local adv_list = { T.row { T.column {
 			T.label {
 				id = "adv_label",
 				linked_group = "group_adv_label"
+			}
+		},
+
+		T.column {
+			horizontal_grow = false,
+			grow_factor = 0,
+			border = "all",
+			border_size = 5,
+			T.label {
+				id = "adv_times",
+				linked_group = "group_adv_times"
 			}
 		},
 	} } }
@@ -344,6 +355,7 @@ local amla_dlg = {
 
 	T.linked_group { id = "group_adv_icon", fixed_width = true },
 	T.linked_group { id = "group_adv_label", fixed_width = true },
+	T.linked_group { id = "group_adv_times", fixed_width = true },
 
 	T.grid {
 		T.row {
@@ -430,6 +442,10 @@ local function amla_color(unit, amla_obj, times_applied)
 	end
 
 	return nil
+end
+
+local function pango_colorize(text, color)
+	return ("<span color='%s'>%s</span>"):format(color, text)
 end
 
 function naia_amla_menu_check()
@@ -695,13 +711,24 @@ function wesnoth.wml_actions.amla_list(cfg)
 
 				local display_text = ""
 
+				-- NOTE: (Wesnoth 1.14.x?)
+				-- Things get weird when you set a listbox cell to be invisible
+				-- instead of merely hidden, apparently. All the rows with
+				-- invisible cells have their horizontal layout shifted around
+				-- in the middle (???) even if the invisible cells aren't part
+				-- of a linked group. To avoid that, just set them to hidden
+				-- instead. They aren't going to take up a large amount of
+				-- space anyway.
+				local show_times = "hidden"
+				local times = ""
+
 				if type ~= ADV_PROMOTION then
 					local amla_name, amla_desc = extract_amla_labels(text)
 					local color = amla_color(u, amlas[id].amla, amlas[id].times_applied)
 
 					if amla_desc then
 						if not color then
-							amla_desc = "<span color='" .. ADV_AMLA_LEGEND_COLOR .. "'>" .. amla_desc .. "</span>"
+							amla_desc = pango_colorize(amla_desc, ADV_AMLA_LEGEND_COLOR)
 						end
 						display_text = ("%s\n<small>%s</small>"):format(amla_name, amla_desc)
 					else
@@ -709,18 +736,28 @@ function wesnoth.wml_actions.amla_list(cfg)
 					end
 
 					if color then
-						display_text = ("<span color='%s'>%s</span>"):format(color, display_text)
+						display_text = pango_colorize(display_text, color)
+					end
+
+					-- Only display number of times acquired for advancements
+					-- that can be applied multiple times.
+					if amlas[id].amla.max_times > 1 and amlas[id].times_applied > 0 then
+						show_times = true
+						times = ("×%d"):format(amlas[id].times_applied)
+						if color then
+							times = pango_colorize(times, color)
+						end
 					end
 				else
-					display_text = "<span color='" .. ADV_PROMOTION_COLOR .. "'>" ..
-								   tostring(_("advancements^Advance to: %s")):format(text) ..
-								   "</span>"
+					display_text = pango_colorize(tostring(_("advancements^Advance to: %s")):format(text), ADV_PROMOTION_COLOR)
 				end
 
 				wesnoth.set_dialog_value(icon, "adv_list", i, "adv_icon")
 				wesnoth.set_dialog_value(display_text, "adv_list", i, "adv_label")
-				-- TODO: is this correct?
 				wesnoth.set_dialog_markup(true, "adv_list", i, "adv_label")
+				wesnoth.set_dialog_value(times, "adv_list", i, "adv_times")
+				wesnoth.set_dialog_markup(true, "adv_list", i, "adv_times")
+				wesnoth.set_dialog_visible(show_times, "adv_list", i, "adv_times")
 			end
 
 			refresh_unit_preview()
