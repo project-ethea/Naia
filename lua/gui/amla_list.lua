@@ -374,6 +374,48 @@ local function lmsg(lvl, fmt, ...)
 	wput(lvl, "[amla_list]: " .. tostring(fmt):format(...))
 end
 
+--
+-- AMLA labels in IftU and AtS have the actual name of an AMLA preceding the
+-- first colon ':' character. The rest of the string is more of a description
+-- of the AMLA than its actual name.
+--
+-- This function extracts the name and description from the AMLA label and
+-- returns them both. If the label does not follow the convention above then
+-- the whole label and nil are returned instead.
+--
+local function extract_amla_labels(full_name)
+	local str = tostring(full_name) -- demote from tstring
+	local name, description = str:match("^%s*([^:]*)%s*:%s*(.*)%s*$")
+
+	if not name or not description then
+		-- Not a standard AMLA label, just say the whole thing is the name
+		return str, nil
+	else
+		return name, description
+	end
+end
+
+local ADV_PROMOTION_COLOR = "#00a0e1"
+local ADV_AMLA_LEGEND_COLOR = "#a69275"
+
+--
+-- Returns an #RRGGBB color value that should be used to represent the
+-- specified AMLA if applied (or not applied) to the unit the specified number
+-- of times. This includes situations where the AMLA is in fact not applicable
+-- because of exclude_amla limitations.
+--
+-- If no color should be applied, nil is returned instead.
+--
+local function amla_color(unit, amla_obj, times_applied)
+	if not amla_obj:unit_can_get(unit) then
+		return "#ff0000"
+	elseif times_applied > 0 then
+		return "#00ff00"
+	end
+
+	return nil
+end
+
 function naia_amla_menu_check()
 	return true
 end
@@ -652,8 +694,32 @@ function wesnoth.wml_actions.amla_list(cfg)
 					icon = icon .. ("~TC(%d,%s)"):format(u.side, promotion.unit_type.__cfg.flag_rgb or "magenta")
 				end
 
+				local display_text = ""
+
+				if type ~= ADV_PROMOTION then
+					local amla_name, amla_desc = extract_amla_labels(text)
+					local color = amla_color(u, amlas[id].amla, amlas[id].times_applied)
+
+					if amla_desc then
+						if not color then
+							amla_desc = "<span color='" .. ADV_AMLA_LEGEND_COLOR .. "'>" .. amla_desc .. "</span>"
+						end
+						display_text = ("%s\n<small>%s</small>"):format(amla_name, amla_desc)
+					else
+						display_text = amla_name
+					end
+
+					if color then
+						display_text = ("<span color='%s'>%s</span>"):format(color, display_text)
+					end
+				else
+					display_text = "<span color='" .. ADV_PROMOTION_COLOR .. "'>" ..
+								   tostring(_("advancements^Advance to: %s")):format(text) ..
+								   "</span>"
+				end
+
 				wesnoth.set_dialog_value(icon, "adv_list", i, "adv_icon")
-				wesnoth.set_dialog_value(text, "adv_list", i, "adv_label")
+				wesnoth.set_dialog_value(display_text, "adv_list", i, "adv_label")
 				-- TODO: is this correct?
 				wesnoth.set_dialog_markup(true, "adv_list", i, "adv_label")
 			end
