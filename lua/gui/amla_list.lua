@@ -445,7 +445,53 @@ local function amla_color(unit, amla_obj, times_applied)
 end
 
 local function pango_colorize(text, color)
-	return ("<span color='%s'>%s</span>"):format(color, text)
+	if not color then
+		return text
+	else
+		return ("<span color='%s'>%s</span>"):format(color, text)
+	end
+end
+
+local function pango_legend_row(label, text)
+	return ("%s %s"):format(label, tostring(text))
+end
+
+local function pango_amla_counted_list(counted_list, amlas)
+	local res = ""
+
+	for amla_id, amla_count in pairs(counted_list) do
+		if res ~= "" then
+			res = res .. ", "
+		end
+
+		if not amlas[amla_id] then
+			res = res .. "‹" .. _("unknown AMLA") .. "›"
+		else
+			local amla = amlas[amla_id].amla
+			local name = extract_amla_labels(amla.description)
+
+			if amla_count > 1 then
+				res = res .. ("%s <b>(×%d)</b>"):format(name, amla_count)
+			else
+				res = res .. name
+			end
+		end
+	end
+
+	return res
+end
+
+local function join_lines(array)
+	local res = ""
+
+	for i = 1, #array do
+		if i > 1 then
+			res = res .. "\n"
+		end
+		res = res .. array[i]
+	end
+
+	return res
 end
 
 function naia_amla_menu_check()
@@ -712,8 +758,6 @@ function wesnoth.wml_actions.amla_list(cfg)
 
 			-- Repopulate the listbox
 
-			-- TODO: Differentiate between different advancement types in formatting
-
 			for i = 1, #state.entries do
 				local id, type, icon, text = state.entries[i][1],
 											 state.entries[i][4],
@@ -746,19 +790,40 @@ function wesnoth.wml_actions.amla_list(cfg)
 				if type ~= ADV_PROMOTION then
 					local amla_name, amla_desc = extract_amla_labels(text)
 					local color = amla_color(u, amlas[id].amla, amlas[id].times_applied)
+					local details = {}
 
 					if amla_desc then
-						if not color then
-							amla_desc = pango_colorize(amla_desc, ADV_AMLA_LEGEND_COLOR)
+						table.insert(details, amla_desc)
+					end
+
+					if not table_empty(amlas[id].amla.exclude_amla) then
+						table.insert(details, pango_legend_row(_("advancements^disabled by:"), pango_amla_counted_list(amlas[id].amla.exclude_amla, amlas)))
+					end
+
+					if not table_empty(amlas[id].amla.require_amla) then
+						table.insert(details, pango_legend_row(_("advancements^requires:"), pango_amla_counted_list(amlas[id].amla.require_amla, amlas)))
+					end
+
+					if amlas[id].amla.max_times ~= 1 then
+						local max_times_label = amlas[id].amla.max_times
+						if max_times_label == -1 then
+							max_times_label = "∞"
 						end
-						display_text = ("%s\n<small>%s</small>"):format(amla_name, amla_desc)
+						table.insert(details, pango_legend_row(_("advancements^max. times:"), max_times_label))
+					end
+
+					if #details then
+						local details_text = join_lines(details)
+						-- Only colorize the legend if the whole thing isn't colored already.
+						if not color then
+							details_text = pango_colorize(details_text, ADV_AMLA_LEGEND_COLOR)
+						end
+						display_text = ("%s\n<small>%s</small>"):format(amla_name, details_text)
 					else
 						display_text = amla_name
 					end
 
-					if color then
-						display_text = pango_colorize(display_text, color)
-					end
+					display_text = pango_colorize(display_text, color)
 
 					-- Only display number of times acquired for advancements
 					-- that can be applied multiple times.
