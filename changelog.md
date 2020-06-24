@@ -3,6 +3,9 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 
 Version 20200621+dev:
 ---------------------
+* Lua and WML library:
+  * Add `table_size`, `table_empty`, `table_keys`, `table_merge` global functions.
+
 * Units:
   * Revised race descriptions: Shaxthals.
   * Revised unit descriptions: Water Tidal, Water Spirit, Aragwaith Sorceress,

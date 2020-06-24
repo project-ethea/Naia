@@ -84,6 +84,65 @@ function in_range(value, minval, maxval)
 end
 
 ---
+-- Returns the size of a table.
+---
+function table_size(table_v, include_nil)
+	local n = 0
+	for val in pairs(table_v) do
+		if val ~= nil or include_nil == true then
+			n = n + 1
+		end
+	end
+	return n
+end
+
+---
+-- Returns whether a table is empty or not.
+---
+function table_empty(table_v, include_nil)
+	for val in pairs(table_v) do
+		if val ~= nil or include_nil == true then
+			return false
+		end
+	end
+
+	return true
+end
+
+---
+-- Returns a sorted list of keys for a table.
+---
+function table_keys(table_v)
+	local keys = {}
+	for key, v in pairs(table_v) do
+		table.insert(keys, key)
+	end
+	table.sort(keys)
+	return keys
+end
+
+---
+-- Returns a table that contains the elements of both tables.
+--
+-- If table_b has items with the same keys as those of table_a then they will
+-- overwrite the latter's items in the result table.
+---
+function table_merge(table_a, table_b)
+	local keys_a, keys_b = table_keys(table_a), table_keys(table_b)
+	local result = {}
+
+	for _, key in ipairs(keys_a) do
+		result[key] = table_a[key]
+	end
+
+	for _, key in ipairs(keys_b) do
+		result[key] = table_b[key]
+	end
+
+	return result
+end
+
+---
 -- Returns to the titlescreen ASAP.
 ---
 function die()
