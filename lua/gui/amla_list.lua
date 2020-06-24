@@ -494,6 +494,11 @@ function wesnoth.wml_actions.amla_list(cfg)
 			adv_display_all       = ADV_PROMOTION | ADV_AMLA_AVAILABLE | ADV_AMLA_ACQUIRED,
 		}
 
+		local ADV_BLACKLIST = {
+			-- These advancements will never be displayed in the UI
+			amla_tree_lock_ui = true,
+		}
+
 		-- Variables
 
 		local current_filter = ADV_FILTERS.adv_display_all
@@ -531,7 +536,14 @@ function wesnoth.wml_actions.amla_list(cfg)
 					[ADV_AMLA_AVAILABLE] = "num_available_amlas",
 					[ADV_AMLA_ACQUIRED]  = "num_acquired_amlas",
 				}
-				table.insert(state.entries, { ... })
+
+				-- Don't push blacklisted advancements in.
+				local args = { ... }
+				if type ~= ADV_PROMOTION and ADV_BLACKLIST[args[1]] then
+					return
+				end
+
+				table.insert(state.entries, args)
 				table.insert(state.entries[#state.entries], type)
 				state[STATE_FIELD_NAME[type]] = state[STATE_FIELD_NAME[type]] + 1
 			end
