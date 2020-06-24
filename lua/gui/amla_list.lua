@@ -401,6 +401,10 @@ local function lmsg(lvl, fmt, ...)
 	wput(lvl, "[amla_list]: " .. tostring(fmt):format(...))
 end
 
+local function amla_is_not_single_use(amla)
+	return amla.max_times > 1 or amla.max_times == -1
+end
+
 --
 -- AMLA labels in IftU and AtS have the actual name of an AMLA preceding the
 -- first colon ':' character. The rest of the string is more of a description
@@ -620,7 +624,7 @@ function wesnoth.wml_actions.amla_list(cfg)
 			-- Available AMLAs
 			if filter & ADV_AMLA_AVAILABLE ~= 0 then
 				for _, amla_id in ipairs(table_keys(amlas)) do
-					if amlas[amla_id].times_applied == 0 then
+					if amlas[amla_id].times_applied == 0 or amla_is_not_single_use(amlas[amla_id].amla) then
 						push(ADV_AMLA_AVAILABLE, amla_id, amlas[amla_id].amla.image, amlas[amla_id].amla.description)
 					end
 				end
@@ -629,8 +633,16 @@ function wesnoth.wml_actions.amla_list(cfg)
 			-- Acquired AMLAs
 			if filter & ADV_AMLA_ACQUIRED ~= 0 then
 				for _, amla_id in ipairs(table_keys(amlas)) do
+					-- We don't want to push non-single use AMLAs we already pushed due
+					-- to the ADV_AMLA_AVAILABLE filter above, otherwise the "All" view
+					-- gets polluted with duplicates. This is visible with units that
+					-- have the default mainline AMLA applied multiple times.
 					if amlas[amla_id].times_applied > 0 then
-						push(ADV_AMLA_ACQUIRED, amla_id, amlas[amla_id].amla.image, amlas[amla_id].amla.description)
+						if amla_is_not_single_use(amlas[amla_id].amla) and filter & ADV_AMLA_AVAILABLE ~= 0 then
+							state.num_acquired_amlas = state.num_acquired_amlas + 1
+						else
+							push(ADV_AMLA_ACQUIRED, amla_id, amlas[amla_id].amla.image, amlas[amla_id].amla.description)
+						end
 					end
 				end
 			end
@@ -755,7 +767,7 @@ function wesnoth.wml_actions.amla_list(cfg)
 
 					-- Only display number of times acquired for advancements
 					-- that can be applied multiple times.
-					if amlas[id].amla.max_times > 1 and amlas[id].times_applied > 0 then
+					if amla_is_not_single_use(amlas[id].amla) and amlas[id].times_applied > 0 then
 						show_times = true
 						times = ("×%d"):format(amlas[id].times_applied)
 						if color then
