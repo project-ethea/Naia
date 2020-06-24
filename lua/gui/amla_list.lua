@@ -191,16 +191,34 @@ end
 -- User interface code --
 -------------------------
 
-local T = wml.tag
-
 local MISSING_AMLA_ICON = "misc/blank-hex.png~CROP(0,0,60,60)" -- 60x60
 local MISSING_UNIT_ICON = "misc/blank-hex.png"                 -- 72x72
+
+local ADV_PROMOTION_COLOR = "#00a0e1"
+local ADV_AMLA_LEGEND_COLOR = "#a69275"
+
+local ADV_PROMOTION      = 0x00000001
+local ADV_AMLA_AVAILABLE = 0x00000002
+local ADV_AMLA_ACQUIRED  = 0x00000004
+
+local ADV_FILTERS = {
+	-- The keys must match the widget identifiers in adv_filter_grid below.
+	adv_display_available = ADV_PROMOTION | ADV_AMLA_AVAILABLE,
+	adv_display_current   = ADV_AMLA_ACQUIRED,
+	adv_display_all       = ADV_PROMOTION | ADV_AMLA_AVAILABLE | ADV_AMLA_ACQUIRED,
+}
+
+local ADV_BLACKLIST = {
+	-- These advancements will never be displayed in the UI
+	amla_tree_lock_ui = true,
+}
+
+local T = wml.tag
 
 -- #textdomain wesnoth-Naia
 local _ = wesnoth.textdomain "wesnoth-Naia"
 
--- NOTE: The radio button ids must match the keys of the ADV_FILTERS table
---       found in the implementation of the dialog!
+-- NOTE: The radio button ids must match the keys of ADV_FILTERS above.
 local adv_filter_grid = {
 	T.row {
 		--[[
@@ -391,9 +409,6 @@ local function extract_amla_labels(full_name)
 	end
 end
 
-local ADV_PROMOTION_COLOR = "#00a0e1"
-local ADV_AMLA_LEGEND_COLOR = "#a69275"
-
 --
 -- Returns an #RRGGBB color value that should be used to represent the
 -- specified AMLA if applied (or not applied) to the unit the specified number
@@ -525,23 +540,6 @@ function wesnoth.wml_actions.amla_list(cfg)
 	--
 
 	wesnoth.show_dialog(amla_dlg, function()
-		-- Constants
-		local ADV_PROMOTION      = 0x00000001
-		local ADV_AMLA_AVAILABLE = 0x00000002
-		local ADV_AMLA_ACQUIRED  = 0x00000004
-
-		local ADV_FILTERS = {
-			-- The keys also match widget identifiers!
-			adv_display_available = ADV_PROMOTION | ADV_AMLA_AVAILABLE,
-			adv_display_current   = ADV_AMLA_ACQUIRED,
-			adv_display_all       = ADV_PROMOTION | ADV_AMLA_AVAILABLE | ADV_AMLA_ACQUIRED,
-		}
-
-		local ADV_BLACKLIST = {
-			-- These advancements will never be displayed in the UI
-			amla_tree_lock_ui = true,
-		}
-
 		-- Variables
 
 		local current_filter = ADV_FILTERS.adv_display_all
