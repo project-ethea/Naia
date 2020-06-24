@@ -209,6 +209,8 @@ local ADV_BLACKLIST = {
 	amla_tree_lock_ui = true,
 }
 
+local ADV_AMLA_DEFAULT = "amla_default"
+
 local T = wml.tag
 
 -- #textdomain wesnoth-Naia
@@ -492,10 +494,6 @@ local function join_lines(array)
 	end
 
 	return res
-end
-
-function naia_amla_menu_check()
-	return true
 end
 
 --
@@ -875,4 +873,31 @@ function wesnoth.wml_actions.amla_list(cfg)
 
 		wesnoth.set_dialog_focus("adv_list")
 	end)
+end
+
+--
+-- This is a SUF Lua function to allow matching arbitrary units that have AMLAs
+-- other than the mainline default, instead of having to specify character
+-- names everywhere. It can then be used in a WML menu item or something.
+--
+function naia_amla_menu_check(u)
+	-- Find the first available AMLA that isn't the default mainline AMLA
+	-- (AMLA_DEFAULT).
+	for _, cfg in ipairs(u.advancements) do
+		if cfg.id ~= ADV_AMLA_DEFAULT then
+			return true
+		end
+	end
+
+	-- And also look for forced AMLAs under [modifications].
+	local umods = wml.get_child(u.__cfg, "modifications")
+	if umods then
+		for cfg in wml.child_range(umods, "advancement") do
+			if cfg.id ~= ADV_AMLA_DEFAULT then
+				return true
+			end
+		end
+	end
+
+	return false
 end
