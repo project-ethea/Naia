@@ -50,7 +50,7 @@ local function count_wml_children_with_value(cfg, tag, attr_key, attr_val, stop_
 	local count = 0
 
 	for child in wml.child_range(cfg, tag) do
-		if child[attr_key] == attr.val then
+		if child[attr_key] == attr_val then
 			count = count + 1
 
 			if stop_count_at ~= nil and count >= stop_count_at then
@@ -118,7 +118,7 @@ end
 -- possible requirements and exclusions.
 --
 function amla:unit_can_get(u)
-	local mods_cfg = u.__cfg.modifications
+	local mods_cfg = wml.get_child(u.__cfg, "modifications")
 	local status = true
 
 	for req_id, req_count in pairs(self.require_amla) do
