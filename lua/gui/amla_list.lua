@@ -119,16 +119,11 @@ end
 --
 function amla:unit_can_get(u)
 	local mods_cfg = wml.get_child(u.__cfg, "modifications")
-	local status = true
 
 	for exc_id, exc_count in pairs(self.exclude_amla) do
 		local times = count_wml_children_with_value(mods_cfg, "advancement", "id", exc_id)
 
 		if times >= exc_count then
-			status = status and true
-		end
-
-		if status then
 			return false, "exclude_amla"
 		end
 	end
