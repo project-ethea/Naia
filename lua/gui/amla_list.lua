@@ -191,30 +191,6 @@ function amla:compare(other)
 	return true
 end
 
---
--- Returns a table containing AMLAs the unit has acquired, with the table keys
--- corresponding to the AMLA ids and the values to the number of times those
--- AMLAs have been acquired.
---
-function unit_amlas(u)
-	local mods_cfg = u.__cfg.modifications
-	local amlas = {}
-
-	for adv in wml.child_range(mods_cfg, "advancement") do
-		a_validate(adv.id, "unit has id-less AMLA")
-
-		if adv.id ~= nil then
-			if not amlas[adv.id] then
-				amlas[adv.id] = 1
-			else
-				amlas[adv.id] = amlas[adv.id] + 1
-			end
-		end
-	end
-
-	return amlas
-end
-
 -------------------------
 -- User interface code --
 -------------------------
