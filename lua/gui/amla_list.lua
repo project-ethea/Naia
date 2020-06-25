@@ -708,6 +708,31 @@ function naia_do_amla_menu(cfg)
 			end
 		end
 
+		local function recursive_apply_amla(parent_id)
+			-- Apply AMLAs recursively, so that the entire dependency list of
+			-- the AMLA with id == parent_id is satisfied (including AMLAs that
+			-- need to be acquired multiple times).
+
+			for dep_id, times_needed in pairs(amlas[parent_id].amla.require_amla) do
+				local amla = amlas[dep_id]
+				if not amla then
+					lmsg(W_ERR, "Cannot satisfy %s (x%d) dependency for AMLA %s", dep_id, times_needed, parent_id)
+					return
+				end
+
+				local apply_count = times_needed - amlas[dep_id].times_applied
+				if apply_count > 0 then
+					lmsg(W_DBG, "Satisfying recursive AMLA dependency %s (x%d)", dep_id, apply_count)
+					for i = 1, apply_count do
+						recursive_apply_amla(dep_id)
+					end
+				end
+			end
+
+			--lmsg(W_DBG, "APPLY: %s", parent_id)
+			preview_unit:add_modification("advancement", amlas[parent_id].amla.__cfg)
+		end
+
 		local function refresh_unit_preview()
 			-- Here we clone the original unit and apply the selected
 			-- modifications to the clone for the preview pane.
@@ -731,8 +756,7 @@ function naia_do_amla_menu(cfg)
 				preview_unit.experience = 0
 				preview_unit:transform(promotion_ut.id)
 			else
-				local promotion_cfg = adv.amla.__cfg
-				preview_unit:add_modification("advancement", promotion_cfg)
+				recursive_apply_amla(adv.amla.id)
 			end
 
 			wesnoth.set_dialog_value(preview_unit, "unit_display")
