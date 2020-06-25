@@ -348,8 +348,8 @@ local amla_dlg = {
 	maximum_width = 1024,
 	maximum_height = 700,
 
-	T.helptip { id = "tooltip_large" },
-	T.tooltip { id = "tooltip_large" },
+	T.helptip { id = "tooltip" },
+	T.tooltip { id = "tooltip" },
 
 	T.linked_group { id = "group_adv_icon", fixed_width = true },
 	T.linked_group { id = "group_adv_label", fixed_width = true },
