@@ -497,17 +497,9 @@ local function join_lines(array)
 end
 
 --
--- Displays the unit AMLA browser user interface.
+-- True implementation of the AMLA browser user interface.
 --
--- Usage:
---
---   [amla_list]
---       # Position of the unit to list AMLAs for. It must be a valid
---       # map location containing an extant unit.
---       x,y=1,1
---   [/amla_list]
---
-function wesnoth.wml_actions.amla_list(cfg)
+function naia_do_amla_menu(cfg)
 	local pos = { x = cfg.x, y = cfg.y }
 	local u = nil
 
@@ -876,6 +868,24 @@ function wesnoth.wml_actions.amla_list(cfg)
 end
 
 --
+-- Displays the unit AMLA browser user interface.
+--
+-- Usage:
+--
+--   [amla_list]
+--       # Position of the unit to list AMLAs for. It must be a valid
+--       # map location containing an extant unit.
+--       x,y=1,1
+--   [/amla_list]
+--
+function wesnoth.wml_actions.amla_list(cfg)
+	-- [amla_list] is not meant to modify the gamestate, but it makes heavy use
+	-- of unit cloning for the preview pane functionality. All that code needs
+	-- to execute in an unsynced context so replays don't come out weird.
+	wesnoth.unsynced(function() naia_do_amla_menu(cfg) end)
+end
+
+--
 -- This SUF Lua function is used to check whether the context menu should
 -- include the AMLA browser option for the selected unit. This basically means
 -- that the unit or its unit type must include at least one AMLA other than
@@ -883,7 +893,7 @@ end
 -- This is to avoid spoilers with regards to certain units that can be on
 -- either the player's side or on the enemy's.
 --
--- See AMLA_MENU macros/amla.cfg for the WML menu item portion of the code.
+-- See AMLA_MENU in macros/amla.cfg for the WML menu item portion of the code.
 --
 function naia_amla_menu_check(u)
 	-- Does the unit belong to a human-controlled side?
