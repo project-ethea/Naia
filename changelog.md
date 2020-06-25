@@ -1,8 +1,8 @@
 Naia - Project Ethea Phase 1 Shared Library - Changelog
 =======================================================
 
-Version 20200621+dev:
----------------------
+Version 20200625:
+-----------------
 * Lua and WML library:
   * Add `table_size`, `table_empty`, `table_keys`, `table_merge` global functions.
   * Moved `AMLA_VITALITY` macro from AtS.
