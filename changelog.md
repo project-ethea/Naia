@@ -11,7 +11,8 @@ Version 20200621+dev:
 
 * Units:
   * Added a context menu option to browse through custom AMLAs for player units
-    that have them (e.g. the protagonists of IftU and AtS).
+    that have them (e.g. the protagonists of IftU and AtS) (issue #3, After the
+    Storm #69, Invasion from the Unknown #70).
   * Revised race descriptions: Shaxthals.
   * Revised unit descriptions: Water Tidal, Water Spirit, Aragwaith Sorceress,
     Aragwaith Guard, Aragwaith Greatbow, Aragwaith Swordsmaster.
