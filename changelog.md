@@ -9,6 +9,9 @@ Version 20200621+dev:
   * Fixed OOS errors in replays due to cutscene skipping with `[move_unit_fake]`
     causing the unit counter to desync (After the Storm #68).
 
+* Language and i18n:
+  * Updated translations: Spanish (complete).
+
 * Units:
   * Added a context menu option to browse through custom AMLAs for player units
     that have them (e.g. the protagonists of IftU and AtS) (issue #3, After the
