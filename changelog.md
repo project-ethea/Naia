@@ -6,6 +6,9 @@ Version 20200628:
 * Language and i18n:
   * Updated translations: Russian (complete).
 
+* Terrains:
+  * Added snow and rain weather effects.
+
 
 Version 20200625:
 -----------------
