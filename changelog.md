@@ -8,6 +8,7 @@ Version 20200628:
 
 * Terrains:
   * Added snow and rain weather effects.
+  * Added snowy and dead oak Great Tree variants from Archaic Resources.
 
 
 Version 20200625:

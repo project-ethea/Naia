@@ -44,6 +44,19 @@ This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 Inte
  * images/units/faeries/sprite.png
 
 
+Archaic Era/Archaic Resources Art (CC BY-SA 4.0)
+------------------------------------------------
+
+Copyright (C) 2020 by doofus-01
+
+This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License. To view a copy of this license, visit <https://creativecommons.org/licenses/by-sa/4.0/> or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+
+ * images/terrain/great-tree-snow.png
+ * images/terrain/oak-tree-dead.png
+ * images/terrain/tile-icons/great-tree-oak-dead.png
+ * images/terrain/tile-icons/great-tree-snowy.png
+
+
 Non-Copyrighted Assets (CC0)
 ----------------------------
 
