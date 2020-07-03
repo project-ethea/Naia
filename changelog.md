@@ -3,6 +3,9 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 
 Version 20200628+dev:
 ---------------------
+* Graphics:
+  * New or updated unit graphics: Giant Ant.
+
 * Language and i18n:
   * Updated translations: Russian (complete).
 
