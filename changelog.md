@@ -1,6 +1,16 @@
 Naia - Project Ethea Phase 1 Shared Library - Changelog
 =======================================================
 
+Version 20200628+dev:
+---------------------
+* Language and i18n:
+  * Updated translations: Russian (complete).
+
+* Terrains:
+  * Added snow and rain weather effects.
+  * Added snowy and dead oak Great Tree variants from Archaic Resources.
+
+
 Version 20200628:
 -----------------
 * Language and i18n:
