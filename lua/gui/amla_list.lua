@@ -204,7 +204,7 @@ local ADV_FILTERS = {
 	adv_display_all       = ADV_PROMOTION | ADV_AMLA_AVAILABLE | ADV_AMLA_ACQUIRED,
 }
 
-local ADV_BLACKLIST = {
+local ADV_HIDDEN = {
 	-- These advancements will never be displayed in the UI
 	amla_tree_lock_ui = true,
 }
@@ -322,8 +322,26 @@ local main_row = {
 			-- Filter options at the top
 			T.row {
 				T.column {
-					horizontal_alignment = "right",
-					T.grid(adv_filter_grid)
+					horizontal_grow = true,
+					T.grid {
+						T.row {
+							T.column {
+								horizontal_alignment = "left",
+								border = "all",
+								border_size = 5,
+								T.image {
+									id = "hidden_adv_notice",
+									label = "icons/icon-info.png",
+									tooltip = _("Not all advancements for this unit are available yet"),
+								}
+							},
+
+							T.column {
+								horizontal_alignment = "right",
+								T.grid(adv_filter_grid)
+							}
+						}
+					}
 				}
 			},
 
@@ -603,6 +621,8 @@ function naia_do_amla_menu(cfg)
 		-- from by other functions to update unit preview pane.
 		local state = {}
 
+		local has_hidden_adv = false
+
 		local preview_unit = nil
 
 		local function state_factory(filter)
@@ -630,9 +650,11 @@ function naia_do_amla_menu(cfg)
 					[ADV_AMLA_ACQUIRED]  = "num_acquired_amlas",
 				}
 
-				-- Don't push blacklisted advancements in.
+				-- Don't push hidden advancements.
 				local args = { ... }
-				if type ~= ADV_PROMOTION and ADV_BLACKLIST[args[1]] then
+				if type ~= ADV_PROMOTION and ADV_HIDDEN[args[1]] then
+					-- HACK: AtS-specific progression functionality.
+					has_hidden_adv = true
 					return
 				end
 
@@ -886,6 +908,8 @@ function naia_do_amla_menu(cfg)
 		-- Disable options that don't apply. We need to do this after calling
 		-- do_update_filter_options() once in order for state not to be nil.
 		wesnoth.set_dialog_active(state.num_acquired_amlas > 0, "adv_display_current")
+
+		wesnoth.set_dialog_visible(has_hidden_adv, "hidden_adv_notice")
 
 		wesnoth.set_dialog_focus("adv_list")
 	end)
