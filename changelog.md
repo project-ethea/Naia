@@ -13,6 +13,12 @@ Version 20200628+dev:
   * Added snow and rain weather effects.
   * Added snowy and dead oak Great Tree variants from Archaic Resources.
 
+* Units:
+  * Added a hint for partially-locked advancement trees (AtS E1 and E2) to the
+    Unit Advancements dialog.
+  * Added an option to toggle back to the on-map unit stats to the Unit
+    Advancements dialog.
+
 
 Version 20200628:
 -----------------

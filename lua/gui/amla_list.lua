@@ -400,12 +400,29 @@ local amla_dlg = {
 
 		T.row {
 			T.column {
-				horizontal_alignment = "right",
-				border = "all",
-				border_size = 5,
-				T.button {
-					id = "ok",
-					label = wgettext("Close")
+				horizontal_grow = true,
+				T.grid {
+					T.row {
+						T.column {
+							horizontal_alignment = "left",
+							border = "all",
+							border_size = 5,
+							T.toggle_button {
+								id = "preview_toggle",
+								label = _("advancements^Preview selected")
+							}
+						},
+
+						T.column {
+							horizontal_alignment = "right",
+							border = "all",
+							border_size = 5,
+							T.button {
+								id = "ok",
+								label = wgettext("Close")
+							}
+						}
+					}
 				}
 			}
 		},
@@ -755,14 +772,19 @@ function naia_do_amla_menu(cfg)
 			preview_unit:add_modification("advancement", amlas[parent_id].amla.__cfg)
 		end
 
+		local function preview_toggle()
+			return wesnoth.get_dialog_value("preview_toggle")
+		end
+
 		local function refresh_unit_preview()
 			-- Here we clone the original unit and apply the selected
 			-- modifications to the clone for the preview pane.
 			preview_unit = u:clone()
 
 			-- We are not supposed to do anything if we are looking at an
-			-- advancement the unit has already acquired.
-			if get_current_type() == ADV_AMLA_ACQUIRED then
+			-- advancement the unit has already acquired, or if the preview is
+			-- disabled.
+			if not preview_toggle() or get_current_type() == ADV_AMLA_ACQUIRED then
 				wesnoth.set_dialog_value(preview_unit, "unit_display")
 				wesnoth.set_dialog_visible(true, "unit_display")
 				return
@@ -900,7 +922,11 @@ function naia_do_amla_menu(cfg)
 			wesnoth.set_dialog_callback(function() do_update_filter_options(mask) end, id)
 		end
 
+		wesnoth.set_dialog_value(true, "preview_toggle")
+
 		wesnoth.set_dialog_callback(refresh_unit_preview, "adv_list")
+
+		wesnoth.set_dialog_callback(refresh_unit_preview, "preview_toggle")
 
 		-- This will repopulate the list at the start of the dialog's lifecycle
 		do_update_filter_options(ADV_FILTERS.adv_display_all)
