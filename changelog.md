@@ -9,6 +9,10 @@ Version 20200628+dev:
 * Language and i18n:
   * Updated translations: Russian (complete).
 
+* Lua and WML library:
+  * Removed `hex_facing` function and its implementation details, superseded by
+    mainline APIs in version 20200620.
+
 * Terrains:
   * Added snow and rain weather effects.
   * Added snowy and dead oak Great Tree variants from Archaic Resources.
