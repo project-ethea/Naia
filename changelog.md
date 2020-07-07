@@ -16,6 +16,7 @@ Version 20200628+dev:
 * Terrains:
   * Added snow and rain weather effects.
   * Added snowy and dead oak Great Tree variants from Archaic Resources.
+  * Fixed some technical terrains being available in the Help browser.
 
 * Units:
   * Added a hint for partially-locked advancement trees (AtS E1 and E2) to the
