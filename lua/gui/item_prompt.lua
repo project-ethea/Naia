@@ -133,25 +133,29 @@ function wesnoth.wml_actions.item_prompt(cfg)
 		end
 	end
 
-	local res = wesnoth.show_dialog(dd, function()
-		-- #textdomain wesnoth-Naia
-		local _ = wesnoth.textdomain "wesnoth-Naia"
-		local message = _ "Do you want this unit to pick up this item?"
+	local res = wesnoth.synchronize_choice(function()
+		return { value = wesnoth.show_dialog(dd, function()
+			-- #textdomain wesnoth-Naia
+			local _ = wesnoth.textdomain "wesnoth-Naia"
+			local message = _ "Do you want this unit to pick up this item?"
 
-		wesnoth.set_dialog_value(message, "message")
+			wesnoth.set_dialog_value(message, "message")
 
-		if image ~= nil and tostring(image):len() > 0 then
-			wesnoth.set_dialog_value(image, "image")
-		end
+			if image ~= nil and tostring(image):len() > 0 then
+				wesnoth.set_dialog_value(image, "image")
+			end
+		end)}
 	end)
 
-	if res == 1 then
+	res.value = math.abs(res.value) -- keyboard Enter/Esc are -1 and -2
+
+	if res.value == 1 then
 		if sound ~= nil then
 			wesnoth.play_sound(sound)
 		end
 
 		utils.handle_event_commands(branch_then, "conditional")
-	elseif res == 2 then
+	elseif res.value == 2 then
 		if branch_else then
 			utils.handle_event_commands(branch_else, "conditional")
 		end

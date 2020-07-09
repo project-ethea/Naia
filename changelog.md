@@ -10,6 +10,8 @@ Version 20200628+dev:
   * Updated translations: Russian (complete).
 
 * Lua and WML library:
+  * Fixed collectable items prompt triggering during replays and causing OOS
+    issues, as well as not behaving properly on keyboard Enter/Esc presses.
   * Removed `hex_facing` function and its implementation details, superseded by
     mainline APIs in version 20200620.
 
