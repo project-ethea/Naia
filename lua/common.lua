@@ -558,6 +558,26 @@ function wesnoth.wml_actions.store_unit_portrait(cfg)
 end
 
 ---
+-- Sets a variable to the specified value only if it hasn't been set yet
+-- (doesn't exist in wml.variables).
+---
+function wesnoth.wml_actions.variable_default(cfg)
+	local name = cfg.name
+	if name == nil then
+		helper.wml_error("[variable_default]: No variable name= specified")
+	end
+
+	local value = cfg.value
+	if value == nil then
+		helper.wml_error("[variable_default]: No variable value= specified")
+	end
+
+	if wml.variables[name] == nil then
+		wml.variables[name] = value
+	end
+end
+
+---
 -- Sets the given variable to a boolean value depending
 -- on whether the given conditional statements pass or not.
 --

@@ -10,6 +10,7 @@ Version 20200628+dev:
   * Updated translations: Russian (complete).
 
 * Lua and WML library:
+  * Added `[variable_default]` and `VARIABLE_DEFAULT` macro.
   * Fixed collectable items prompt triggering during replays and causing OOS
     issues, as well as not behaving properly on keyboard Enter/Esc presses.
   * Removed `hex_facing` function and its implementation details, superseded by
