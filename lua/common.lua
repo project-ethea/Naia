@@ -17,6 +17,13 @@
 function wesnoth.wml_actions.no_op(cfg)
 end
 
+local INVERT_DIRECTION = {
+	s = "n", sw = "ne", nw = "se",
+	n = "s", ne = "sw", se = "nw",
+}
+
+local DEFAULT_DIRECTION = "sw"
+
 ---
 -- Assigns a given variable (presumed to be a direction value)
 -- the opposite of its current contents. If the variable doesn't
@@ -31,21 +38,11 @@ function wesnoth.wml_actions.invert_direction(cfg)
 
 	local dir = wml.variables[variable]
 
-	if dir == "s" then
-		dir = "n"
-	elseif dir == "sw" then
-		dir = "ne"
-	elseif dir == "nw" then
-		dir = "se"
-	elseif dir == "n" then
-		dir = "s"
-	elseif dir == "ne" then
-		dir = "sw"
-	else -- if dir == "se" then
-		dir = "nw"
+	if INVERT_DIRECTION[dir] then
+		wml.variables[variable] = INVERT_DIRECTION[dir]
+	else
+		wml.variables[variable] = INVERT_DIRECTION[DEFAULT_DIRECTION]
 	end
-
-	wml.variables[variable] = dir
 end
 
 ---
