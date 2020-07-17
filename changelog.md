@@ -15,6 +15,8 @@ Version 20200628+dev:
     issues, as well as not behaving properly on keyboard Enter/Esc presses.
   * Removed `hex_facing` function and its implementation details, superseded by
     mainline APIs in version 20200620.
+  * Added `opposite=` option to `[set_facing]`, along with an `OPPOSITE_FACING`
+    macro for the `FACE_*` utility macros.
 
 * Terrains:
   * Added snow and rain weather effects.

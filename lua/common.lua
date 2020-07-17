@@ -104,6 +104,7 @@ end
 --     [filter_location]
 --         ... SLF ...
 --     [/filter_location]
+--     opposite=false
 -- [/set_facing]
 --
 -- Or:
@@ -115,6 +116,7 @@ end
 --     [filter_second]
 --         ... SUF ...
 --     [/filter_second]
+--     opposite=false
 -- [/set_facing]
 --
 -- Or:
@@ -124,6 +126,7 @@ end
 --         ... SUF ...
 --     [/filter]
 --     facing= ... direction ...
+--     opposite=false
 -- [/set_facing]
 ---
 function wesnoth.wml_actions.set_facing(cfg)
@@ -133,6 +136,8 @@ function wesnoth.wml_actions.set_facing(cfg)
 	local facing = cfg.facing
 	local target_suf = wml.get_child(cfg, "filter_second")
 	local target_slf = wml.get_child(cfg, "filter_location")
+
+	local opposite = cfg.opposite or false
 
 	local target_loc, target_u
 
@@ -166,6 +171,10 @@ function wesnoth.wml_actions.set_facing(cfg)
 			)
 		else
 			helper.wml_error("[set_facing] Missing facing or [filter_second] or [filter_location]")
+		end
+
+		if opposite then
+			new_facing = INVERT_DIRECTION[new_facing] or INVERT_DIRECTION[DEFAULT_DIRECTION]
 		end
 
 		if new_facing ~= u.facing then
