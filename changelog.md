@@ -28,6 +28,9 @@ Version 20200628+dev:
     Unit Advancements dialog.
   * Added an option to toggle back to the on-map unit stats to the Unit
     Advancements dialog.
+  * Units of the spirits race now get the mainline elemental trait instead of
+    the custom spirit trait. Note that this makes them not receive the
+    `not_living` status anymore.
 
 
 Version 20200628:
