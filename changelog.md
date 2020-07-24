@@ -1,8 +1,8 @@
 Naia - Project Ethea Phase 1 Shared Library - Changelog
 =======================================================
 
-Version 20200628+dev:
----------------------
+Version 20200724:
+-----------------
 * Graphics:
   * New or updated unit graphics: Giant Ant.
 
