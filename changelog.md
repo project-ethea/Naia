@@ -1,6 +1,11 @@
 Naia - Project Ethea Phase 1 Shared Library - Changelog
 =======================================================
 
+Version 20200724.1+dev:
+-----------------------
+
+
+
 Version 20200724.1:
 -------------------
 * Language and i18n:
