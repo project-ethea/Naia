@@ -3,7 +3,9 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 
 Version 20200724.1+dev:
 -----------------------
-
+* Lua and WML library:
+  * Added `table_dump` function to return a user-readable string representation
+    of a table for debugging purposes.
 
 
 Version 20200724.1:

@@ -143,6 +143,81 @@ function table_merge(table_a, table_b)
 end
 
 ---
+-- Dumps a table in string form.
+---
+function table_dump(obj, level)
+	if level == nil then
+		level = 0
+	end
+
+	local str = ""
+
+	local function write_base(text, newline, indent)
+		if newline == nil then
+			newline = true
+		end
+
+		if indent == nil then
+			indent = true
+		end
+
+		if indent then
+			str = str .. string.rep(" ", level * 4)
+		end
+
+		str = str .. text
+
+		if newline then
+			str = str .. "\n"
+		end
+	end
+
+	local function put(text)
+		write_base(text, true, true)
+	end
+
+	local function add(text)
+		write_base(text, false, false)
+	end
+
+	local function finalize(text)
+		write_base(text, true, false)
+	end
+
+	local function start(text)
+		write_base(text, false, true)
+	end
+
+	finalize("{")
+	level = level + 1
+
+	for k, v in pairs(obj) do
+		if type(k) == "number" then
+			start(("[%d] = "):format(k))
+		elseif type(k) == "string" then
+			start(("\"%s\" = "):format(k))
+		else
+			start(("<%s key> = "):format(type(k)))
+		end
+
+		if type(v) == "number" then
+			finalize(("%d"):format(v))
+		elseif type(v) == "string" then
+			finalize(("\"%s\""):format(v))
+		elseif type(v) == "table" then
+			finalize(("table: %s"):format(table_dump(v, level)))
+		else
+			finalize(("data: %s"):format(tostring(v)))
+		end
+	end
+
+	level = level - 1
+	put("}")
+
+	return str
+end
+
+---
 -- Returns to the titlescreen ASAP.
 ---
 function die()
