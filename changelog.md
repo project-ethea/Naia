@@ -7,6 +7,9 @@ Version 20200724.1+dev:
   * Added `table_dump` function to return a user-readable string representation
     of a table for debugging purposes.
 
+* Units:
+  * Increased base Shaxthal resistances to arcane damage from -10% to 0%.
+
 
 Version 20200724.1:
 -------------------
