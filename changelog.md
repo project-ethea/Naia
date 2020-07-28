@@ -9,6 +9,8 @@ Version 20200724.1+dev:
 
 * Units:
   * Increased base Shaxthal resistances to arcane damage from -10% to 0%.
+  * Increased Chaos Magus resistance to arcane damage from 0% to 10%.
+  * Increased Chaos Lorekeeper resistance to arcane damage from -20% to -10%.
 
 
 Version 20200724.1:
