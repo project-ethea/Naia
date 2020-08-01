@@ -6,6 +6,7 @@ Version 20200724.1+dev:
 * Lua and WML library:
   * Added `table_dump` function to return a user-readable string representation
     of a table for debugging purposes.
+  * Moved all IftU and AtS AI macros, presets, and engines into Naia.
 
 * Units:
   * Increased base Shaxthal resistances to arcane damage from -10% to 0%.
