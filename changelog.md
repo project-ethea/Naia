@@ -14,6 +14,7 @@ Version 20200724.1+dev:
     stone walls and castle/keep walls).
 
 * Units:
+  * Fixed obscures ability not really doing anything (PR #2).
   * Increased base Shaxthal resistances to arcane damage from -10% to 0%.
   * Increased Chaos Magus resistance to arcane damage from 0% to 10%.
   * Increased Chaos Lorekeeper resistance to arcane damage from -20% to -10%.
