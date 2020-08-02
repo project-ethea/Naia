@@ -19,6 +19,17 @@ Version 20200724.1+dev:
   * Increased Chaos Lorekeeper resistance to arcane damage from -20% to -10%.
   * Gave Shaxthal Worm the burrow ability (hides in walls, deals 50% more
     damage on defense)
+  * Increased Shaxthal Drone's HP from 28 to 32.
+  * Increased Shaxthal Sentry Drone's HP from 46 to 51.
+  * Increased Shaxthal Enforcer Drone's HP from 62 to 65.
+  * Increased Shaxthal Assault Drone's HP from 42 to 47.
+  * Increased Shaxthal War Drone's HP from 56 to 62.
+  * Increased Shaxthal Runner Drone's HP from 29 to 31.
+  * Increased Shaxthal Protector Drone's HP from 38 to 45.
+  * Increased Shaxthal Rayblade's HP from 36 to 39.
+  * Increased Shaxthal Stormblade's HP from 49 to 54.
+  * Increased Shaxthal Razorbird's HP from 26 to 28.
+  * Increased Shaxthal Thunderbird's HP from 39 to 41.
 
 
 Version 20200724.1:
