@@ -35,6 +35,18 @@ Version 20200724.1+dev:
   * Increased Demon Grunt's HP from 40 to 43.
   * Increased Demon Warrior's HP from 56 to 59.
   * Increased Demon Zephyr's HP from 38 to 39.
+  * Increased Faerie Sprite's HP from 22 to 25.
+  * Increased Faerie Sprite's XP from 40 to 50.
+  * Decreased Faerie Sprite's cost from 21 to 20.
+  * Increased Faerie Sprite's melee damage from 2-3 to 3-3.
+  * Increased Fire Faerie's HP from 32 to 38.
+  * Increased Fire Faerie's XP from 70 to 90.
+  * Increased Fire Faerie's melee damage from 3-4 to 4-4.
+  * Increased Faerie Dryad's HP from 46 to 50.
+  * Increased Faerie Dryad's melee damage from 4-5 to 5-5.
+  * Increased Faerie Spirit's HP from 40 to 45.
+  * Increased Faerie Spirit's melee damage from 5-5 to 6-5.
+  * Increased Faerie Spirit's ranged damage from 5-5 to 6-5.
 
 
 Version 20200724.1:
