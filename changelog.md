@@ -10,6 +10,8 @@ Version 20200724.1+dev:
 
 * Terrains:
   * Fixed Dark Hive terrain transitions drawing through stone walls.
+  * Fixed Dark Hive Cells being drawn over certain transitions (especially
+    stone walls and castle/keep walls).
 
 * Units:
   * Increased base Shaxthal resistances to arcane damage from -10% to 0%.
