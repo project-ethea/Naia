@@ -31,6 +31,10 @@ Version 20200724.1+dev:
   * Increased Shaxthal Razorbird's HP from 26 to 28.
   * Increased Shaxthal Thunderbird's HP from 39 to 41.
   * Increased Shaxthal Protector Drone's MP from 5 to 6 to match its L1.
+  * Increased Demon's HP from 31 to 32.
+  * Increased Demon Grunt's HP from 40 to 43.
+  * Increased Demon Warrior's HP from 56 to 59.
+  * Increased Demon Zephyr's HP from 38 to 39.
 
 
 Version 20200724.1:
