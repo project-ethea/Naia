@@ -30,6 +30,7 @@ Version 20200724.1+dev:
   * Increased Shaxthal Stormblade's HP from 49 to 54.
   * Increased Shaxthal Razorbird's HP from 26 to 28.
   * Increased Shaxthal Thunderbird's HP from 39 to 41.
+  * Increased Shaxthal Protector Drone's MP from 5 to 6 to match its L1.
 
 
 Version 20200724.1:
