@@ -8,6 +8,9 @@ Version 20200724.1+dev:
     of a table for debugging purposes.
   * Moved all IftU and AtS AI macros, presets, and engines into Naia.
 
+* Terrains:
+  * Fixed Dark Hive terrain transitions drawing through stone walls.
+
 * Units:
   * Increased base Shaxthal resistances to arcane damage from -10% to 0%.
   * Increased Chaos Magus resistance to arcane damage from 0% to 10%.
