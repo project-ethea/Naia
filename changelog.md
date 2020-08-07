@@ -10,6 +10,7 @@ Version 20200724.1+dev:
 * Lua and WML library:
   * Added `table_dump` function to return a user-readable string representation
     of a table for debugging purposes.
+  * Added `opposite=` option to `[store_direction]`.
   * Moved all IftU and AtS AI macros, presets, and engines into Naia.
 
 * Terrains:

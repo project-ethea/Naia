@@ -53,6 +53,7 @@ end
 -- [store_direction]
 --     from_x,from_y= ...
 --     to_x,to_y= ...
+--     opposite=false
 --     variable="direction"
 -- [/store_direction]
 --
@@ -65,6 +66,7 @@ end
 --     [to]
 --         ... SLF ...
 --     [/to]
+--     opposite=false
 --     variable="direction"
 -- [/store_direction]
 ---
@@ -89,8 +91,15 @@ function wesnoth.wml_actions.store_direction(cfg)
 	end
 
 	local variable = cfg.variable or "direction"
+	local opposite = cfg.opposite or false
 
-	wml.variables[variable] = wesnoth.map.get_relative_dir(a, b)
+	local dir = wesnoth.map.get_relative_dir(a, b)
+
+	if opposite then
+		dir = INVERT_DIRECTION[dir] or INVERT_DIRECTION[DEFAULT_DIRECTION]
+	end
+
+	wml.variables[variable] = dir
 end
 
 ---
