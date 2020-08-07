@@ -12,6 +12,8 @@ Version 20200724.1+dev:
     of a table for debugging purposes.
   * Added `opposite=` option to `[store_direction]`.
   * Added `[unit_location_is_passable]` WML conditional tag.
+  * Added `OVERWRITE` and `PASSABLE` utility macros for `[unit]` placement
+    options.
   * Moved all IftU and AtS AI macros, presets, and engines into Naia.
 
 * Terrains:
