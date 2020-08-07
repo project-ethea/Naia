@@ -11,6 +11,7 @@ Version 20200724.1+dev:
   * Added `table_dump` function to return a user-readable string representation
     of a table for debugging purposes.
   * Added `opposite=` option to `[store_direction]`.
+  * Added `[unit_location_is_passable]` WML conditional tag.
   * Moved all IftU and AtS AI macros, presets, and engines into Naia.
 
 * Terrains:

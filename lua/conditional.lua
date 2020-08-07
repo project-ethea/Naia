@@ -41,3 +41,17 @@ function wesnoth.wml_conditionals.variable_in(cfg)
 
 	return false
 end
+
+--
+-- Returns whether the first unit matched by a SUF is presently on a location
+-- it would be able to move into under normal circumstances. If no unit can be
+-- found matching the SUF then it always returns false.
+--
+-- [unit_location_is_passable]
+--     <StandardUnitFilter>
+-- [/unit_location_is_passable]
+--
+function wesnoth.wml_conditionals.unit_location_is_passable(cfg)
+	local u = wesnoth.get_units(cfg)[1]
+	return not not (u and u:movement(wesnoth.get_terrain(u.x, u.y)) < u.max_moves)
+end
