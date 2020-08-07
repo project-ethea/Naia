@@ -48,6 +48,11 @@ Version 20200724.1+dev:
   * Increased Faerie Spirit's HP from 40 to 45.
   * Increased Faerie Spirit's melee damage from 5-5 to 6-5.
   * Increased Faerie Spirit's ranged damage from 5-5 to 6-5.
+  * Gave Chaos Cardinal the zeal ability (+30% to all resistances, max. 60% for
+    non-arcane, max. 30% for arcane, level diff * 15% damage bonus).
+  * Gave Chaos Cardinal the necrosis weapon special (living targets receive 10
+    damage per turn until cured, necrosed units turn into Ghouls belonging to
+    the infecter's side upon death).
 
 
 Version 20200724.1:
