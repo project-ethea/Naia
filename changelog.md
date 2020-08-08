@@ -1,8 +1,8 @@
 Naia - Project Ethea Phase 1 Shared Library - Changelog
 =======================================================
 
-Version 20200724.1+dev:
------------------------
+Version 20200808:
+-----------------
 * Graphics:
   * Added Wight by Santiago Iborra (for WTactics.org/Arcmage.org) as a
     replacement placeholder for Mal Hekuba's portrait.
