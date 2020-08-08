@@ -7,6 +7,9 @@ Version 20200724.1+dev:
   * Added Wight by Santiago Iborra (for WTactics.org/Arcmage.org) as a
     replacement placeholder for Mal Hekuba's portrait.
 
+* Language and i18n:
+  * Updated translations: Russian.
+
 * Lua and WML library:
   * Added `table_dump` function to return a user-readable string representation
     of a table for debugging purposes.
