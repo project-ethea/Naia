@@ -69,3 +69,16 @@ function register_unit_status_display(params)
 
 	wprintf(W_INFO, "registered Theme UI display for unit status %s.%s", params.source, params.id)
 end
+
+------------------------
+-- NAIA UNIT STATUSES --
+------------------------
+
+-- #textdomain wesnoth-Naia
+local _ = wesnoth.textdomain "wesnoth-Naia"
+
+register_unit_status_display {
+	id      = "necrosed",
+	icon    = "misc/necrosed-status-icon.png",
+	tooltip =  _ "necrosed: This unit is undergoing necrosis.",
+}
