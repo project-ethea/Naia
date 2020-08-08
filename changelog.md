@@ -14,6 +14,8 @@ Version 20200724.1+dev:
   * Added `[unit_location_is_passable]` WML conditional tag.
   * Added `OVERWRITE` and `PASSABLE` utility macros for `[unit]` placement
     options.
+  * Added `register_unit_status_display()` function to implement a cleaner API
+    for adding new unit status display items (dehydration, stunned, etc.).
   * Moved all IftU and AtS AI macros, presets, and engines into Naia.
 
 * Terrains:
