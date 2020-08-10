@@ -3,6 +3,9 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 
 Version 20200808+dev:
 ---------------------
+* Language and i18n:
+  * Updated translations: Russian.
+
 * Lua and WML library:
   * Added persistent WML variables API based on the AtS 0.10.x version.
 
