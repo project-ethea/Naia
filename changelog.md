@@ -1,8 +1,8 @@
 Naia - Project Ethea Phase 1 Shared Library - Changelog
 =======================================================
 
-Version 20200810+dev:
----------------------
+Version 20200812:
+-----------------
 * Lua and WML library:
   * Added basic facilities for log indentation.
   * Added `[harm_multiple_units]` WML action tag to implement animated AoE
