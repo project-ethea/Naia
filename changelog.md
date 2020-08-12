@@ -3,7 +3,8 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 
 Version 20200810+dev:
 ---------------------
-
+* Lua and WML library:
+  * Added basic facilities for log indentation.
 
 
 Version 20200810:

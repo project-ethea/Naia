@@ -33,8 +33,14 @@ local loglvl_map = { "error", "warning", "info", "debug" }
 
 local logprefix = "[Naia] "
 
+local logdepth = 0
+
 function _wsetlogprefix(str)
 	logprefix = "[" .. str .. "] "
+end
+
+function _windentprefix()
+	return string.rep(" ", logdepth * 4)
 end
 
 ---
@@ -46,7 +52,7 @@ end
 function wput(lvl, msg)
 	wesnoth.wml_actions.wml_message {
 		logger = loglvl_map[math.max(1, math.min(lvl, #loglvl_map))],
-		message = logprefix .. tostring(msg)
+		message = logprefix .. _windentprefix() .. tostring(msg)
 	}
 end
 
@@ -59,6 +65,20 @@ end
 ---
 function wprintf(lvl, fmt, ...)
 	wput(lvl, tostring(fmt):format(...))
+end
+
+---
+-- Increases the log indentation level.
+---
+function windent()
+	logdepth = logdepth + 1
+end
+
+---
+-- Decreases the log indentation level.
+---
+function wunindent()
+	logdepth = math.max(0, logdepth - 1)
 end
 
 ---
