@@ -5,6 +5,8 @@ Version 20200810+dev:
 ---------------------
 * Lua and WML library:
   * Added basic facilities for log indentation.
+  * Added `[harm_multiple_units]` WML action tag to implement animated AoE
+    weapon specials.
 
 
 Version 20200810:
