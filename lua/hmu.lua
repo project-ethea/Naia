@@ -181,7 +181,7 @@ function damage_action:new(source, target, primary_attack, secondary_attack, dat
 
 	o.damage = calculate_damage(base_damage, alignment, tod_bonus, resistance, resistance_multiplier)
 
-	do_wprintf(W_DBG, "damage %d to %d after correction (type/alignment/tod/res/mul = %s/%s/%d/%d/%d)", base_damage, o.damage, damage_type, alignment, tod_bonus, resistance, resistance_multiplier)
+	do_wprintf(W_DBG, "damage %0.1f to %0.1f after correction (type/alignment/tod/res/mul = %s/%s/%d/%d/%0.1f)", base_damage, o.damage, damage_type, alignment, tod_bonus, resistance, resistance_multiplier)
 
 	if o.damage >= o.target.hitpoints then
 		if o.kill == false then
