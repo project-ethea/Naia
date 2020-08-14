@@ -3,7 +3,9 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 
 Version 20200812+dev:
 ---------------------
-
+* Lua and WML library:
+  * Made compatibility layer defer UI actions until the preload event in order
+    to avoid giving Wesnoth an existential crisis (issue #15).
 
 
 Version 20200812:

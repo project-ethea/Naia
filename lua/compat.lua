@@ -10,6 +10,26 @@
 -- #textdomain wesnoth-Naia
 local _ = wesnoth.textdomain "wesnoth-Naia"
 
+local deferred_executes = {}
+
+function wesnoth.wml_actions.naia__deferred_unsynced_execute()
+	for i, func in ipairs(deferred_executes) do
+		wesnoth.unsynced(func)
+	end
+end
+
+--
+-- Used to defer execution of GUI code to preload to avoid issues
+--
+local function defer(func)
+	table.insert(deferred_executes, func)
+	wesnoth.add_event_handler {
+		id   = "naia:deferred_execute",
+		name = "preload",
+		wml.tag.naia__deferred_unsynced_execute {},
+	}
+end
+
 local function do_compat_fail(msg, may_ignore, silent_in_maintainer_mode, feedback_mode)
 	if naia_is_in_maintainer_mode() then
 		wprintf(W_WARN, "COMPAT: Version/configuration issue in maintainer mode: %s", msg)
@@ -19,12 +39,14 @@ local function do_compat_fail(msg, may_ignore, silent_in_maintainer_mode, feedba
 		end
 	end
 
-	wesnoth.wml_actions.bug {
-		message       = msg,
-		should_report = (feedback_mode ~= nil),
-		may_ignore    = (naia_is_in_maintainer_mode() or may_ignore),
-		feedback      = feedback_mode,
-	}
+	defer(function()
+		wesnoth.wml_actions.bug {
+			message       = msg,
+			should_report = (feedback_mode ~= nil),
+			may_ignore    = (naia_is_in_maintainer_mode() or may_ignore),
+			feedback      = feedback_mode,
+		}
+	end)
 end
 
 local function do_host_minimum_version_unmet(host_min, host_max)
