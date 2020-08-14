@@ -84,16 +84,17 @@ local function do_addon_compat_fail(titles)
 		msg = _ "The following add-ons are incompatible with %s and must be removed before continuing:"
 	end
 
-	msg = msg .. "\n\n"
+	msg = tostring(msg):format(naia_get_package_name()) .. "\n\n"
 
 	for i, title in ipairs(titles) do
 		-- U+2022 BULLET
 		msg = msg .. "    • " .. title .. "\n"
 	end
 
-	wesnoth.show_message_box(caption, msg)
-
-	die()
+	defer(function ()
+		wesnoth.show_message_box(caption, msg)
+		die()
+	end)
 end
 
 --
@@ -159,8 +160,8 @@ function check_addon_compatibility(package_blacklist)
 
 	if #bl_found > 0 then
 		table.sort(bl_found, function(a, b) return a < b end)
-		wprintf(W_ERR, "COMPAT: %d incompatible add-ons found, cannot continue", #titles)
-		do_compat_fail(bl_found) -- does not return
+		wprintf(W_ERR, "COMPAT: %d incompatible add-ons found, cannot continue", #bl_found)
+		do_addon_compat_fail(bl_found) -- does not return
 	end
 
 	wprintf(W_INFO, "COMPAT: Add-on compatibility check finished!")

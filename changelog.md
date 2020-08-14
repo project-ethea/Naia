@@ -6,6 +6,9 @@ Version 20200812+dev:
 * Lua and WML library:
   * Made compatibility layer defer UI actions until the preload event in order
     to avoid giving Wesnoth an existential crisis (issue #15).
+  * Fixed grave issues with the compatibility check code resulting in Naia
+    callers not completing root `[lua]` initialization under specific
+    circumstances (<https://r.wesnoth.org/p657381>).
 
 
 Version 20200812:
