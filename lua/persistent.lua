@@ -14,8 +14,12 @@ local PERSISTENT_NS_NAIA = "Project_Ethea.Naia"
 local PERSISTENT_GTABLE = "global_table"
 local GTABLE            = "__naia_gtable"
 
-local function gtable()
-	return wml.variables[GTABLE_TEMPORARY]
+local function gtable_get(key)
+	return wml.variables[("%s.%s"):format(GTABLE, key)]
+end
+
+local function gtable_set(key, value)
+	wml.variables[("%s.%s"):format(GTABLE, key)] = value
 end
 
 function wesnoth.wml_actions.global_table(cfg)
@@ -31,6 +35,17 @@ function wesnoth.wml_actions.global_table(cfg)
 		to_local    = GTABLE,
 	}
 
+	-- Force the global table to exist if this is a fresh persistent store
+
+	if type(wml.variables[GTABLE]) ~= "table" then
+		wml.variables[GTABLE] = nil
+		wml.variables[GTABLE] = {}
+	end
+
+	gtable_set("_gtable_start", 1)
+
+	--wesnoth.wml_actions.inspect {}
+
 	-- Perform global table actions
 
 	local cmds = wml.shallow_literal(cfg)
@@ -44,13 +59,13 @@ function wesnoth.wml_actions.global_table(cfg)
 
 		if cmd_id == "read" then
 			wprintf(W_DBG, " * gtable read %s", key)
-			wml.variables[key] = wml.variables[GTABLE][key]
+			wml.variables[key] = gtable_get(key)
 		elseif cmd_id == "write" then
 			wprintf(W_DBG, " * gtable write %s", key)
-			wml.variables[GTABLE][key] = wml.variables[key]
+			gtable_set(key, wml.variables[key])
 		elseif cmd_id == "delete" then
 			wprintf(W_DBG, " * gtable delete %s", key)
-			wml.variables[GTABLE][key] = nil
+			gtable_set(key, nil)
 		else
 			helper.wml_error(("[global_table] Unrecognized command '%s'"):format(cmd_id))
 		end
