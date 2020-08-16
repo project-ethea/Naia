@@ -1,8 +1,8 @@
 Naia - Project Ethea Phase 1 Shared Library - Changelog
 =======================================================
 
-Version 20200814+dev:
----------------------
+Version 20200816:
+-----------------
 * Lua and WML library:
   * Fixed persistent WML variables API crashing when trying to manipulate the
     global table on a fresh persistent store or a store without a preexisting
