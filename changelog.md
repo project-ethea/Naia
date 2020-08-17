@@ -6,6 +6,7 @@ Version 20200816+dev:
 * Lua and WML library:
   * Add `[variable_is_even]` WML conditional tag along with `VARIABLE_IS_EVEN`
     and `VARIABLE_IS_ODD` macros.
+  * Add `VARIABLE_COPY` and `VARIABLE_ARRAY_COPY` macros.
   * Fix issues with `[harm_multiple_units]` crashing when there isn't a valid
     attack source.
 
