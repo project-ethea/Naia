@@ -3,7 +3,9 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 
 Version 20200816+dev:
 ---------------------
-
+* Lua and WML library:
+  * Fix issues with `[harm_multiple_units]` crashing when there isn't a valid
+    attack source.
 
 
 Version 20200816:

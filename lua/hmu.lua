@@ -255,11 +255,11 @@ end
 function damage_action:process_outcome()
 	-- Deaths and advancements are done here
 
-	if self.source_xp then
+	if self.source_xp ~= 0 then
 		self.source.experience = self.source.experience + self.source_xp
 	end
 
-	if self.target_xp then
+	if self.target_xp ~= 0 then
 		self.target.experience = self.target.experience + self.target_xp
 	end
 
@@ -289,7 +289,7 @@ function damage_action:get_animation()
 	local flag = "defend"
 	local hits
 
-	if  self.target.hitpoints <= self.damage and self.kill then
+	if self.target.hitpoints <= self.damage and self.kill then
 		hits = "kill"
 	else
 		hits = "hit"
@@ -297,12 +297,16 @@ function damage_action:get_animation()
 
 	local primary, secondary = nil, nil
 
-	-- WARNING: Undocumented implementation details for 1.14/1.16 follow.
 	if self.primary_attack then
-		if WESNOTH_VERSION < version_number:new("1.15.0") then
-			primary = helper.find_attack(self.source, self.primary_attack)
+		if self.source and self.source.valid then
+			-- WARNING: Undocumented implementation details for 1.14/1.16 follow.
+			if WESNOTH_VERSION < version_number:new("1.15.0") then
+				primary = helper.find_attack(self.source, self.primary_attack)
+			else
+				primary = self.source:find_attack(self.primary_attack)
+			end
 		else
-			primary = self.source:find_attack(self.primary_attack)
+			primary = wesnoth.create_weapon(self.primary_attack)
 		end
 	end
 
