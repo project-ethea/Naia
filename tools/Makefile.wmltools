@@ -28,6 +28,7 @@ WML_PREPROCESS   := $(WESNOTH) -p
 dist_version ?= $(shell cat $(DIST_VERSION_FILE))
 
 targetdir := $(realpath .)
+pbltrans := $(wildcard $(targetdir)/translations/*.pbltrans)
 
 all: defscope lint
 
@@ -45,7 +46,7 @@ pkg:
 
 pbl: _server.pbl
 
-*.pbl: $(DIST_VERSION_FILE) $(DIST_PASSPHRASE_FILE)
+*.pbl: $(DIST_VERSION_FILE) $(DIST_PASSPHRASE_FILE) $(pbltrans)
 
 %.pbl: %.pbl.in
 	@echo "    PBL     $@ [$(dist_version)]"

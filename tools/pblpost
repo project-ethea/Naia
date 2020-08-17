@@ -108,6 +108,25 @@ def get_addon_version(addon_path=None):
     die("Version stamp file {} does not exist.".format(stamp_path))
     return None
 
+def get_addon_meta_l10n(langcode, addon_path=None):
+    'Retrieves localized .pbl metadata for the add-on.'
+    if not addon_path:
+        trans_path = Path.cwd()
+    else:
+        trans_path = Path(os.path.abspath(addon_path))
+    # NOTE: We can't use .pbl because the _server.ign blacklists .pbl files
+    # which means they won't be in the mkdist output, which is ultimately used
+    # to gather the pieces needed to build the final .pbl.
+    trans_path = trans_path / "translations" / (langcode + ".pbltrans")
+    if trans_path.exists():
+        try:
+            with open(trans_path, 'r', encoding='utf-8') as trans:
+                return trans.read().strip()
+        except FileNotFoundError:
+            pass
+    die("Metadata localization file {} does not exist.".format(trans_path))
+    return None
+
 def _pblpost_re(inner_re, line):
     return re.compile(r'@\s*PBLPOST:' + inner_re + r'\s*@').search(line)
 
@@ -130,6 +149,12 @@ def postprocess_line(line):
         match = _pblpost_re(r'VERSION', line)
         if match:
             line = _pblpost_sub(line, match, get_addon_version())
+            break
+        match = _pblpost_re(r'L10N\s+([^@\s]+)', line)
+        if match:
+            langcode = match.group(1)
+            langcode.replace('%', '@')
+            line = _pblpost_sub(line, match, get_addon_meta_l10n(langcode))
             break
         break
     return line
