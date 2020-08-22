@@ -9,6 +9,8 @@ Version 20200816+dev:
   * Add `VARIABLE_COPY` and `VARIABLE_ARRAY_COPY` macros.
   * Fix issues with `[harm_multiple_units]` crashing when there isn't a valid
     attack source.
+  * Made `AMLA_BUG_4419_WORKAROUND` a no-op on 1.15.4 and later since mainline
+    #4419 is solved there.
 
 
 Version 20200816:
