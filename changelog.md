@@ -17,6 +17,8 @@ Version 20200816+dev:
     deprecated Mushroom Grove `^Uf*` terrain as well as the new Mycelium `T*`
     base terrain proper when running add-ons on Wesnoth 1.15.2 and later
     (issue #11, see also IftU #73 and AtS #83).
+  * Dark Hive transitions no longer draw into Earthy Rockbound Cave `Uhe` or
+    any future Rockbound Cave-like terrains `Uh*`.
 
 
 Version 20200816:
