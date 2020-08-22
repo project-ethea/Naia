@@ -12,6 +12,12 @@ Version 20200816+dev:
   * Made `AMLA_BUG_4419_WORKAROUND` a no-op on 1.15.4 and later since mainline
     #4419 is solved there.
 
+* Terrains:
+  * Implemented a new Dark Hive transition logic to avoid issues with the
+    deprecated Mushroom Grove `^Uf*` terrain as well as the new Mycelium `T*`
+    base terrain proper when running add-ons on Wesnoth 1.15.2 and later
+    (issue #11, see also IftU #73 and AtS #83).
+
 
 Version 20200816:
 -----------------
