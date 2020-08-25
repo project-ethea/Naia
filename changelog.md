@@ -1,8 +1,8 @@
 Naia - Project Ethea Phase 1 Shared Library - Changelog
 =======================================================
 
-Version 20200816+dev:
----------------------
+Version 20200825:
+-----------------
 * General:
   * Initial version with Wesnoth 1.16 (1.15.4) support (issue #4).
 
