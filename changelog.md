@@ -3,6 +3,9 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 
 Version 20200816+dev:
 ---------------------
+* General:
+  * Initial version with Wesnoth 1.16 (1.15.4) support (issue #4).
+
 * Lua and WML library:
   * Add `[variable_is_even]` WML conditional tag along with `VARIABLE_IS_EVEN`
     and `VARIABLE_IS_ODD` macros.
