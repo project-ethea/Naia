@@ -9,8 +9,8 @@
 
 local default_package = {
 	global_id    = "project_ethea.Naia",
-	name         = "",
-	i18n_name    = "",
+	name         = "<Naia>",
+	i18n_name    = "<Naia>", -- intentionally not translatable
 	version      = "0.0.0",
 	abbreviation = "Naia",
 	tracker_url  = "https://github.com/project-ethea/Naia/issues",
