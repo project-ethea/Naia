@@ -51,25 +51,25 @@ end
 
 local function do_host_minimum_version_unmet(host_min, host_max)
 	local msg = _ "This version of %s requires Wesnoth %s – %s and will not run on previous versions."
-	msg = tostring(msg):format(naia_get_package_name(), host_min, host_max)
+	msg = tostring(msg):format(naia_get_package_i18n_name(), host_min, host_max)
 	do_compat_fail(msg)
 end
 
 local function do_host_maximum_version_number_unmet(host_min, host_max)
 	local msg = _ "This version of %s requires Wesnoth %s – %s. Support for later versions is incomplete or untested, and there may be broken functionality. If you choose to continue, you are doing so at your own risk."
-	msg = tostring(msg):format(naia_get_package_name(), host_min, host_max)
+	msg = tostring(msg):format(naia_get_package_i18n_name(), host_min, host_max)
 	do_compat_fail(msg, true)
 end
 
 local function do_host_blacklisted_version(host_bl_version, host_min, host_max)
 	local msg = _ "This version of %s is not compatible with Wesnoth %s. You must use a different version in the %s – %s range."
-	msg = tostring(msg):format(naia_get_package_name(), host_bl_version, host_min, host_max)
+	msg = tostring(msg):format(naia_get_package_i18n_name(), host_bl_version, host_min, host_max)
 	do_compat_fail(msg)
 end
 
 local function do_experimental_port_notice(host_ver)
 	local msg = _ "This is an experimental port of %s to Wesnoth %s.\nIf you choose to continue, you must report any issues to the author on the project’s issue tracker:"
-	msg = tostring(msg):format(naia_get_package_name(), host_ver)
+	msg = tostring(msg):format(naia_get_package_i18n_name(), host_ver)
 	do_compat_fail(msg, true, true, "omgbugseverywhere")
 end
 
@@ -84,7 +84,7 @@ local function do_addon_compat_fail(titles)
 		msg = _ "The following add-ons are incompatible with %s and must be removed before continuing:"
 	end
 
-	msg = tostring(msg):format(naia_get_package_name()) .. "\n\n"
+	msg = tostring(msg):format(naia_get_package_i18n_name()) .. "\n\n"
 
 	for i, title in ipairs(titles) do
 		-- U+2022 BULLET
