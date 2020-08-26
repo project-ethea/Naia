@@ -3,7 +3,8 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 
 Version 20200825+dev:
 ---------------------
-
+* Lua and WML library:
+  * Allow translatable package names.
 
 
 Version 20200825:

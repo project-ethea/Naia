@@ -10,6 +10,7 @@
 local default_package = {
 	global_id    = "project_ethea.Naia",
 	name         = "",
+	i18n_name    = "",
 	version      = "0.0.0",
 	abbreviation = "Naia",
 	tracker_url  = "https://github.com/project-ethea/Naia/issues",
@@ -34,6 +35,9 @@ naia_register_package {
 
     -- The user-visible name for the add-on.
     name         = "After the Storm",
+
+    -- The translatable name for the add-on.
+    i18n_name    = wesnoth.textdomain("wesnoth-After_the_Storm")("After the Storm"),
 
     -- The add-on version.
     version      = "0.10.0",
@@ -61,6 +65,7 @@ function naia_register_package(p)
 
 	package.global_id = p.global_id or default_package.global_id
 	package.name = p.name or default_package.name
+	package.i18n_name = p.i18n_name or package.name -- fall back to untranslated name
 	package.version = p.version or default_package.version
 	package.abbreviation = p.abbreviation or default_package.abbreviation
 	package.tracker_url = p.tracker_url or default_package.tracker_url
@@ -84,6 +89,10 @@ end
 
 function naia_get_package_name()
 	return package.name
+end
+
+function naia_get_package_i18n_name()
+	return tostring(package.i18n_name)
 end
 
 function naia_get_package_name_abbrev()
