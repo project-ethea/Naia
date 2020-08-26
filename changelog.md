@@ -5,6 +5,8 @@ Version 20200825+dev:
 ---------------------
 * Lua and WML library:
   * Allow translatable package names.
+  * Delegated responsibility for Naia's `[binary_path]` definition to Naia
+    itself.
 
 
 Version 20200825:
