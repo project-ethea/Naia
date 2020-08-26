@@ -5,8 +5,12 @@ Version 20200825+dev:
 ---------------------
 * Lua and WML library:
   * Allow translatable package names.
-  * Delegated responsibility for Naia's `[binary_path]` definition to Naia
-    itself.
+  * Add-ons now control Naia's prefix using the `NAIA_EMBEDDED` macro, only
+    allowing a choice between shipping it in the add-on's folder under
+    `./Naia`, or requiring it to be present in `~add-ons/Naia`. The Naia
+    `[binary_path]` is now compulsory and handled by Naia as well.
+  * `NAIA_PREFIX` and `NAIA_BINARY_PATH` are now defined by Naia and should
+    not be defined by add-ons.
 
 
 Version 20200825:
