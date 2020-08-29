@@ -1,4 +1,13 @@
-macros/_initial.cfg
-base-maint.cfg
+# IDE cruft
 *.kate-swp
+.vscode/
+.vstags
+
+# Intermediate output of Naia test target
 .preprocessor.out/
+
+# pbl output
+_server.pbl
+
+# Maintenance mode toggle
+base-maint.cfg
