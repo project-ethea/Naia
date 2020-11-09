@@ -12,6 +12,10 @@ Version 20200825+dev:
   * `NAIA_PREFIX` and `NAIA_BINARY_PATH` are now defined by Naia and should
     not be defined by add-ons.
 
+* Units:
+  * Fixed defend only weapon special having the same internal id as attack
+    only.
+
 
 Version 20200825:
 -----------------
