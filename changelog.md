@@ -3,6 +3,9 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 
 Version 20200825+dev:
 ---------------------
+* Graphics:
+  * Moved Igor's portrait from IftU to Naia.
+
 * Lua and WML library:
   * Allow translatable package names.
   * Add-ons now control Naia's prefix using the `NAIA_EMBEDDED` macro, only
