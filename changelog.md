@@ -14,6 +14,8 @@ Version 20200825+dev:
     `[binary_path]` is now compulsory and handled by Naia as well.
   * `NAIA_PREFIX` and `NAIA_BINARY_PATH` are now defined by Naia and should
     not be defined by add-ons.
+  * Fixed boss pop-up instantly disappearing on current 1.14.x and 1.15.x
+    Wesnoth releases.
 
 * Units:
   * Fixed defend only weapon special having the same internal id as attack
