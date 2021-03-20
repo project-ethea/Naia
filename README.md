@@ -47,8 +47,7 @@ provide a saved game file to reproduce it.
 Contacting the author
 --------------------------------------------------------------------------------
 
-You may contact the author of this campaign via forum PM to shadowm on the
-[Wesnoth.org forums][6] or through her personal [Discord server][7].
+You may contact the author of this campaign via forum PM to Iris on the
+[Wesnoth.org forums][6].
 
 [6]: <https://forums.wesnoth.org/>
-[7]: <https://discord.gg/smJY9aK>
