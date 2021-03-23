@@ -308,7 +308,8 @@ function wesnoth.wml_actions.remove_terrain_overlays(cfg)
 
 	for i, loc in ipairs(locs) do
 		local locstr = wesnoth.get_terrain(loc[1], loc[2])
-		wesnoth.set_terrain(loc[1], loc[2], string.gsub(locstr, "%^.*$", ""))
+		local newstr = string.gsub(locstr, "%^.*$", "")
+		wesnoth.set_terrain(loc[1], loc[2], newstr)
 	end
 end
 

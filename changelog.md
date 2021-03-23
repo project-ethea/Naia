@@ -16,6 +16,8 @@ Version 20200825+dev:
     not be defined by add-ons.
   * Fixed boss pop-up instantly disappearing on current 1.14.x and 1.15.x
     Wesnoth releases.
+  * Fixed `[remove_terrain_overlays]` causing Lua errors in Wesnoth 1.15.x due
+    to stricter parameter checks.
 
 * Units:
   * Fixed defend only weapon special having the same internal id as attack
