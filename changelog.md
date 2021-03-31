@@ -6,6 +6,16 @@ Version 20200825+dev:
 * Graphics:
   * Moved Igor's portrait from IftU to Naia.
 
+* Language and i18n:
+  * Removed obsolete translations below 80%: Hungarian, Italian, Japanese,
+    Turkish.
+  * Spanish translation excluded from snapshots due to being unmaintained, plus
+    no phase 1 campaigns having a usable Spanish translation.
+  * French translation not excluded from snapshots due to the AtS translation
+    being actively developed (even though the IftU translation is largely
+    unusable and unmaintained).
+  * Updated translations: French, Russian.
+
 * Lua and WML library:
   * Allow translatable package names.
   * Add-ons now control Naia's prefix using the `NAIA_EMBEDDED` macro, only
