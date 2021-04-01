@@ -1,8 +1,8 @@
 Naia - Project Ethea Phase 1 Shared Library - Changelog
 =======================================================
 
-Version 20200825+dev:
----------------------
+Version 20210401:
+-----------------
 * Graphics:
   * Moved Igor's portrait from IftU to Naia.
 
