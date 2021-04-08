@@ -3,6 +3,8 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 
 Version 20210401+dev:
 ---------------------
+* Units:
+  * Fixed Chaos Cardinal's arcane ranged attack missing an animation.
 
 
 Version 20210401:
