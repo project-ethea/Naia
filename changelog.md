@@ -11,6 +11,9 @@ Version 20210401+dev:
   * Increased Faerie Dryad's fire resistance from 20% to 30%.
   * Increased Faerie Spirit's cold resistance from 0% to 10%.
   * Increased Faerie Spirit's forest defense from 60% to 70%.
+  * Increased Shaxthal Drone's cold resistance from -10% to 0%.
+  * Increased Shaxthal Drone's fire resistance from -20% to -10%.
+  * Increased Shaxthal Sentry Drone's fire resistance from -20% to -10%.
 
 
 Version 20210401:
