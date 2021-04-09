@@ -5,6 +5,12 @@ Version 20210401+dev:
 ---------------------
 * Units:
   * Fixed Chaos Cardinal's arcane ranged attack missing an animation.
+  * Gave faeries their own movetype instead of piggybacking on woodlandfloat.
+  * Increased Faerie Sprite and Fire Faerie's fire resistance from 10% to 20%.
+  * Increased Fire Faerie's cold resistance from -10% to 0%.
+  * Increased Faerie Dryad's fire resistance from 20% to 30%.
+  * Increased Faerie Spirit's cold resistance from 0% to 10%.
+  * Increased Faerie Spirit's forest defense from 60% to 70%.
 
 
 Version 20210401:
