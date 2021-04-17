@@ -3,6 +3,9 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 
 Version 20210401+dev:
 ---------------------
+* Lua and WML library:
+  * Added `[remove_trait]` WML action.
+
 * Units:
   * Fixed Chaos Cardinal's arcane ranged attack missing an animation.
   * Gave faeries their own movetype instead of piggybacking on woodlandfloat.

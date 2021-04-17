@@ -953,3 +953,10 @@ function wesnoth.wml_actions.unserialize_and_activate_sides(cfg)
 		end
 	end
 end
+
+function wesnoth.wml_actions.remove_trait(cfg)
+	local trait_id = cfg.trait_id
+	for _, u in ipairs(wesnoth.get_units(cfg)) do
+		u:remove_modifications({ id = trait_id }, "trait")
+	end
+end
