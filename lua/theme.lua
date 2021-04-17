@@ -78,6 +78,12 @@ end
 local _ = wesnoth.textdomain "wesnoth-Naia"
 
 register_unit_status_display {
+	id      = "marked",
+	icon    = "misc/marked-status-icon.png",
+	tooltip =  _ "marked: This unit takes additional damage when struck.",
+}
+
+register_unit_status_display {
 	id      = "necrosed",
 	icon    = "misc/necrosed-status-icon.png",
 	tooltip =  _ "necrosed: This unit is undergoing necrosis.",

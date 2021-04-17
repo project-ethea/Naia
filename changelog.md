@@ -19,6 +19,8 @@ Version 20210401+dev:
   * Increased Shaxthal Drone's cold resistance from -10% to 0%.
   * Increased Shaxthal Drone's fire resistance from -20% to -10%.
   * Increased Shaxthal Sentry Drone's fire resistance from -20% to -10%.
+  * Added Testament ability.
+  * Added Mark weapon special.
 
 
 Version 20210401:
