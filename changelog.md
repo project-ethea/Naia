@@ -5,6 +5,7 @@ Version 20210401+dev:
 ---------------------
 * Lua and WML library:
   * Added `[remove_trait]` WML action.
+  * Added `[clear_unit_status]` WML action.
 
 * Units:
   * Fixed Chaos Cardinal's arcane ranged attack missing an animation.

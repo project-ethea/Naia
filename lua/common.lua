@@ -960,3 +960,16 @@ function wesnoth.wml_actions.remove_trait(cfg)
 		u:remove_modifications({ id = trait_id }, "trait")
 	end
 end
+
+function wesnoth.wml_actions.clear_unit_status(cfg)
+	local statuses = cfg.status or helper.wml_error("[clear_unit_status]: No statuses to clear")
+	local suf = wml.get_child(cfg, "filter") or
+		helper.wml_error("[clear_unit_status] Missing unit filter")
+	local units = wesnoth.get_units(suf)
+
+	for _, u in ipairs(wesnoth.get_units(cfg)) do
+		for status in statuses:gmatch("[^,]+") do
+			u.status[status] = nil
+		end
+	end
+end
