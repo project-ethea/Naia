@@ -21,6 +21,9 @@ Version 20210401+dev:
   * Increased Shaxthal Sentry Drone's fire resistance from -20% to -10%.
   * Added Testament ability.
   * Added Mark weapon special.
+  * Renamed Burrow ability/weapon special to Bore to fix warnings in Wesnoth
+    1.15.9 and later caused by the addition of a different Burrow ability to
+    mainline.
 
 
 Version 20210401:
