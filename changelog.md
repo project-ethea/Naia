@@ -24,6 +24,7 @@ Version 20210401+dev:
   * Renamed Burrow ability/weapon special to Bore to fix warnings in Wesnoth
     1.15.9 and later caused by the addition of a different Burrow ability to
     mainline.
+  * Added Faerie Hamadryad.
 
 
 Version 20210401:
