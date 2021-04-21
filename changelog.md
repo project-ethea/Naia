@@ -25,6 +25,8 @@ Version 20210401+dev:
     1.15.9 and later caused by the addition of a different Burrow ability to
     mainline.
   * Added Faerie Hamadryad.
+  * Demon, Demon Zephyr, Demon Grunt, and Demon Warrior can now receive the
+    Fearless trait.
 
 
 Version 20210401:
