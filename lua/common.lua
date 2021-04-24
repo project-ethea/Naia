@@ -973,3 +973,16 @@ function wesnoth.wml_actions.clear_unit_status(cfg)
 		end
 	end
 end
+
+---
+-- Removes all map labels, including player-set ones.
+---
+function wesnoth.wml_actions.clear_map_labels(cfg)
+	local w, h = wesnoth.get_map_size()
+
+	for x = 1, w do
+		for y = 1, h do
+			wesnoth.label { x = x, y = y, text = nil }
+		end
+	end
+end
