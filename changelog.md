@@ -3,6 +3,9 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 
 Version 20210401+dev:
 ---------------------
+* Language and i18n:
+  * Updated translations: Russian.
+
 * Lua and WML library:
   * Added `[remove_trait]` WML action.
   * Added `[clear_unit_status]` WML action.
