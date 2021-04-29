@@ -40,6 +40,7 @@ This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 Inte
  * images/terrain/walls/moss3-sw.png
  * images/units/faeries/dryad.png
  * images/units/faeries/fire.png
+ * images/units/faeries/hamadryad.png
  * images/units/faeries/spirit.png
  * images/units/faeries/sprite.png
 
