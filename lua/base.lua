@@ -104,6 +104,32 @@ function in_range(value, minval, maxval)
 end
 
 ---
+-- Converts a string to a table of bytes.
+--
+-- WARNING: This is a table of BYTES, not CHARACTERS. This function is not
+-- Unicode-safe.
+---
+function str2table(str)
+	local tbl = {}
+	tostring(str):gsub(".", function(ch) table.insert(tbl, ch) end)
+	return tbl
+end
+
+---
+-- Returns a random character from a collection.
+--
+-- WARNING:This does NOT use a synchronized RNG call. You need to synchronize
+-- the result manually yourself.
+--
+-- WARNING 2: This function is not Unicode-safe. If str contains multibyte
+-- characters you're screwed.
+---
+function random_char_unsynced(str)
+	local i = math.random(1, str:len())
+	return str:sub(i, i)
+end
+
+---
 -- Returns the size of a table.
 ---
 function table_size(table_v, include_nil)
