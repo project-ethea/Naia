@@ -9,6 +9,10 @@
 
 local _ = wesnoth.textdomain "wesnoth-Naia"
 
+---------------------------------------------
+-- VERLISSH NAME GENERATORS IMPLEMENTATION --
+---------------------------------------------
+
 -- po: Generator for Verlissh machine part names; see <https://wiki.wesnoth.org/Context-free_grammar> for the
 -- po: syntax documentation.
 -- po: .
@@ -64,14 +68,23 @@ upalpha=@
 ]]
 
 local function do_verlissh_namegen(namegen_cfg)
+	-- Give us a name with placeholder characters.
 	local name = str2table(wesnoth.name_generator('cfg', tostring(namegen_cfg))())
+
+	-- Fill in placeholders in the name generator's output.
 	for i, char in ipairs(name) do
+		-- NOTE: We use an unsynced RNG here in order to avoid altering the
+		--       synced RNG state an excessive number of times per unit
+		--       placement. Our caller is responsible for synchronizing the
+		--       final result.
 		if char == '@' then
 			name[i] = random_char_unsynced("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 		elseif char == '%' then
 			name[i] = random_char_unsynced("0123456789")
 		end
 	end
+
+	-- Deliver the output ready for use with synchronize_choice.
 	return { name = table.concat(name) }
 end
 
