@@ -13,6 +13,7 @@ WESNOTH_DATA_DIR := $(shell $(WESNOTH) --data-path 2>&1 | tail -n 1)
 WESNOTH_CORE_DIR := $(WESNOTH_DATA_DIR)/data/core
 
 DISTDIR          := ../Ethea-dist
+HTMLDIR          := ../Ethea-unit-tree
 
 DEFSCOPE         := $(NAIA_PREFIX)/tools/macro-scope-check
 PBLPOST          := $(NAIA_PREFIX)/tools/pblpost
@@ -22,6 +23,7 @@ AUTO_DELTEMP     ?= 1
 
 WMLLINT          ?= wmllint-1.14 -d
 WMLINDENT        ?= wmlindent-1.14
+WMLUNITS         ?= wmlunits-1.14
 
 WML_PREPROCESS   := $(WESNOTH) -p
 
@@ -80,6 +82,45 @@ stats:
 		test "$(AUTO_DELTEMP)" -ne 0 && rm -rf .preprocessor.out; true; \
 	done; done
 
+#
+# wmlunits is a pain in the bum because of the amount of preparation it
+# requires on top of being inefficient and fragile as fuck.
+#
+# First we need to create a staging directory containing a throwaway Wesnoth
+# profile directory and a separate add-on directory (wmlunits --help says this,
+# don't ask me) containing a symbolic link to the add-on's root. Because we are
+# speeshul we also need to ensure Naia is available using the production
+# deployment file structure, i.e. `Invasion_from_the_Unknown/Naia/` instead of
+# Naia/. For that purpose, we create a symbolic link to NAIA_PREFIX in our own
+# root (unless there is an existing object called `Naia`). At the end we get
+# rid of any symbolic links named `Naia` to avoid accidentally deleting some
+# other thing with the same name that might have been placed ther for testing.
+# Finally, we get rid of the staging directory.
+#
+# Beware that by default this will replace HTML_DIR with wmlunits' output. So
+# make sure you don't have anything of your own in HTML_DIR.
+#
+# NOTE: We currently only produce the English (US) localization. For others
+# you will need to replace `-l en_US` below with `-t $(WESNOTH_DATA_DIR)/translations`
+# or so. Maybe. I think. Yay wmlunits.
+#
+wmlunits:
+	@echo "Building unit tree..."
+
+	@mkdir -p .wmlunits.out
+	@mkdir -p .wmlunits.rt/profile/
+	@mkdir -p .wmlunits.rt/store/
+	@ln -sf `readlink -e .` .wmlunits.rt/store/
+	@test -e Naia || ln -sf $(NAIA_PREFIX) Naia
+	@#touch .wmlunits.rt/store/$(ADDON_NAME)/_info.cfg
+
+	@echo "    WMLUNITS [$(ADDON_NAME)]"
+	@$(WMLUNITS) -l en_US -D $(WESNOTH_DATA_DIR) -o .wmlunits.out -w $(WESNOTH) -C .wmlunits.rt/profile -a .wmlunits.rt/store -L .wmlunits.out/overview.txt -B .wmlunits.out/overview.txt -T 999999 > .wmlunits.out/wmlunits.log 2>&1
+
+	@rm -rf .wmlunits.rt
+	@rm -rf $(HTMLDIR) && mv .wmlunits.out $(HTMLDIR)
+	@test -L Naia && rm -f Naia
+
 optipng:
 	$(OPTIPNG)
 
@@ -93,4 +134,5 @@ clean-wmltools:
 	    -name '*.map.cfg' -o \
 	    -name '*.pbl' \
 	\) -type f -print0 | xargs -0 rm -f
-	rm -rf .preprocessor.out
+	rm -rf .preprocessor.out .wmlunits.rt .wmlunits.out
+	test -L Naia && rm -f Naia
