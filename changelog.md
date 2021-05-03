@@ -4,7 +4,8 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 Version 20210430+dev:
 ---------------------
 * Units:
-  * Verlissh Matrix Core and Verlissh Matrix Flow System can now have randomly
+  * Relabeled Verlissh Matrix Flow System to Verlissh Matrix Structural.
+  * Verlissh Matrix Core and Verlissh Matrix Structural can now have randomly
     generated names in campaigns that define `ENABLE_VERLISSH_MACHINE_NAMES`.
 
 
