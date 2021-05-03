@@ -68,9 +68,11 @@ def warn(msg):
     'Prints a warning message to stderr.'
     print("WARNING: " + msg, file=sys.stderr)
 
+
 def die(msg):
     'Prints an error message to stderr and exits.'
     sys.exit("ERROR: " + msg)
+
 
 def read_base64_file(path):
     'Converts an input file into a Base64 data URI <https://wiki.wesnoth.org/DataURI>.'
@@ -85,12 +87,14 @@ def read_base64_file(path):
     except FileNotFoundError as err:
         die("Could not open base64 file input: {}".format(err.filename))
 
+
 def get_addon_credentials(addon_id):
     'Retrieves the passphrase for the specified add-on.'
     passphrase = ADDON_AUTH.query_passphrase(addon_id)
     if not passphrase:
         die("Passphrase for add-on {} not found in the Naia credentials store.".format(addon_id))
     return passphrase
+
 
 def get_addon_version(addon_path=None):
     'Retrieves the version number for the add-on at the specified path.'
@@ -107,6 +111,7 @@ def get_addon_version(addon_path=None):
             pass
     die("Version stamp file {} does not exist.".format(stamp_path))
     return None
+
 
 def get_addon_meta_l10n(langcode, addon_path=None):
     'Retrieves localized .pbl metadata for the add-on.'
@@ -127,11 +132,14 @@ def get_addon_meta_l10n(langcode, addon_path=None):
     die("Metadata localization file {} does not exist.".format(trans_path))
     return None
 
+
 def _pblpost_re(inner_re, line):
     return re.compile(r'@\s*PBLPOST:' + inner_re + r'\s*@').search(line)
 
+
 def _pblpost_sub(line, match, sub):
     return line[:match.start()] + sub + line[match.end():]
+
 
 def postprocess_line(line):
     'Performs postprocessor substitutions on a single line of text.'
@@ -181,7 +189,7 @@ if __name__ == "__main__":
     try:
         with open(in_path, 'r', encoding='utf-8') as in_file:
             lines = in_file.readlines()
-    except FileNotFoundError as err:
+    except FileNotFoundError:
         die("Could not read input file {}, aborting.".format(in_path))
     try:
         tmp_path = out_path + ".new"
