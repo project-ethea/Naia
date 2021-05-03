@@ -21,7 +21,7 @@ DISTTOOL         := $(NAIA_PREFIX)/tools/mkdist
 
 AUTO_DELTEMP     ?= 1
 
-WMLLINT          ?= wmllint-1.14 -d
+WMLLINT          ?= wmllint-1.14
 WMLINDENT        ?= wmlindent-1.14
 WMLUNITS         ?= wmlunits-1.14
 
@@ -41,7 +41,7 @@ defscope:
 	$(DEFSCOPE) $(SCENARIO_DIRS)
 
 lint:
-	$(WMLLINT) $(WESNOTH_CORE_DIR) $(NAIA_PREFIX) $(targetdir)
+	$(WMLLINT) -d $(WESNOTH_CORE_DIR) $(NAIA_PREFIX) $(targetdir)
 
 pkg:
 	$(DISTTOOL) $(targetdir) $(DISTDIR)
