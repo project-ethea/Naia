@@ -3,6 +3,10 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 
 Version 20210430+dev:
 ---------------------
+* Lua and WML library:
+  * Fixed screen coloring/fade effects causing Lua errors with Wesnoth 1.15.13
+    and later.
+
 * Units:
   * Added Energize ability.
   * Relabeled Verlissh Matrix Flow System to Verlissh Matrix Structural.
