@@ -986,3 +986,23 @@ function wesnoth.wml_actions.clear_map_labels(cfg)
 		end
 	end
 end
+
+---
+-- Resets the screen color adjustment.
+--
+-- This is really just [color_adjust] with all parameters set to 0, but defined
+-- as a separate tag in order to prevent it from being caught by the
+-- is_skipping_messages functionality defined in patch.lua. This is used by the
+-- RESET_SCREEN macro used throughout IftU and AtS.
+--
+-- See also Naia issue #6.
+---
+if wesnoth.compare_versions(wesnoth.game_config.version, ">", "1.15.12") then
+	function wesnoth.wml_actions.reset_screen()
+		wesnoth.interface.color_adjust(0, 0, 0)
+	end
+else
+	function wesnoth.wml_actions.reset_screen()
+		wesnoth.color_adjust { red = 0, green = 0, blue = 0 }
+	end
+end

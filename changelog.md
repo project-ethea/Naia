@@ -6,6 +6,8 @@ Version 20210430+dev:
 * Lua and WML library:
   * Fixed screen coloring/fade effects causing Lua errors with Wesnoth 1.15.13
     and later.
+  * Fixed cutscenes resulting in incorrect screen coloring or black screens if
+    skipped with Escape (issue #6).
 
 * Units:
   * Added Energize ability.
