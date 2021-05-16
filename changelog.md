@@ -3,6 +3,9 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 
 Version 20210430+dev:
 ---------------------
+* Language and i18n:
+  * Updated translations: Russian.
+
 * Lua and WML library:
   * Fixed screen coloring/fade effects causing Lua errors with Wesnoth 1.15.13
     and later.
