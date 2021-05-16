@@ -19,6 +19,8 @@ Version 20210515:
 * Units:
   * Added Energize ability.
   * Relabeled Verlissh Matrix Flow System to Verlissh Matrix Structural.
+  * Gave Verlissh Matrix Structural the Energize+5/15% ability.
+  * Gave Verlissh Matrix Core the Energize+10/30% ability.
   * Verlissh Matrix Core and Verlissh Matrix Structural can now have randomly
     generated names in campaigns that define `ENABLE_VERLISSH_MACHINE_NAMES`.
 
