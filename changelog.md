@@ -3,6 +3,8 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 
 Version 20210515+dev:
 ---------------------
+* Units:
+  * Removed Fire Spirit, replaced with the mainline Fire Ghost.
 
 
 Version 20210515:
