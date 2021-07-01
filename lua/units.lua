@@ -104,3 +104,12 @@ function wesnoth.wml_actions.verlissh_namegen()
 		end).name
 	end
 end
+
+-------------------------
+-- CUSTOM UNIT EFFECTS --
+-------------------------
+
+function wesnoth.effects.level(u, cfg)
+	local level_new = cfg.new_level or helper.wml_error("[effect] apply_to=level requires new_level= value")
+	u.level = level_new
+end

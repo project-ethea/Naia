@@ -3,6 +3,9 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 
 Version 20210515+dev:
 ---------------------
+* Lua and WML library:
+  * Added `[effect] apply_to=level`.
+
 * Units:
   * Removed Fire Spirit, replaced with the mainline Fire Ghost.
   * Removed Spirit race, replaced with Monster + Elemental trait.
