@@ -6,7 +6,6 @@ Version 20210515+dev:
 * Units:
   * Removed Fire Spirit, replaced with the mainline Fire Ghost.
   * Removed Spirit race, replaced with Monster + Elemental trait.
-  * Removed Spirit trait.
 
 
 Version 20210515:
