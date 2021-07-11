@@ -967,7 +967,7 @@ function wesnoth.wml_actions.clear_unit_status(cfg)
 		helper.wml_error("[clear_unit_status] Missing unit filter")
 	local units = wesnoth.get_units(suf)
 
-	for _, u in ipairs(wesnoth.get_units(cfg)) do
+	for _, u in ipairs(units) do
 		for status in statuses:gmatch("[^,]+") do
 			u.status[status] = nil
 		end
