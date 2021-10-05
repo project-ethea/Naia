@@ -3,6 +3,9 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 
 Version 20211005.9000+dev:
 --------------------------
+* Terrains:
+  * Removed obsolete Earthy Rockbound Cave terrain.
+
 * Units:
   * Removed obsolete Fire Wraith backport.
 
