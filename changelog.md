@@ -8,6 +8,7 @@ Version 20211005.9000+dev:
 
 * Units:
   * Removed obsolete Fire Wraith backport.
+  * Removed obsolete Giant Ant unit.
 
 
 Version 20211005:
