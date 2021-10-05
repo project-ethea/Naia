@@ -8,6 +8,9 @@ Version 20210515+dev:
   * Fixed `[clear_unit_stats]` affecting all on-map units and causing a late
     IftU easter egg to negate the undead trait for all undead units.
   * Dropped all instances of Formula AI features in unit spawners.
+  * Disabled changing sound effects volume (not music) on Wesnoth versions
+    1.15.13 through 1.15.18 because of a bug causing it to always be set to 0%
+    when altered through the Lua API.
 
 * Units:
   * Removed Fire Spirit, replaced with the mainline Fire Ghost.

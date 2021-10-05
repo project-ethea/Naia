@@ -52,6 +52,21 @@ function wesnoth.wml_actions.music(cfg)
 end
 
 ---
+-- Avoids an issue with wesnoth.audio.volume = N always setting volume to 0%
+-- by... not touching sound volume at all, which is a preferable alternative
+-- to making the game go silent permanently.
+--
+-- <https://github.com/wesnoth/wesnoth/commit/9c2ad49026282107c3c2e35c595a41ac0e86798f>
+---
+
+if wesnoth.compare_versions(wesnoth.game_config.version, ">=", "1.15.13") and wesnoth.compare_versions(wesnoth.game_config.version, "<=", "1.15.18") then
+	log_patch("lua!wesnoth.sound_volume", "volume always set to zero without rev 9c2ad49026282107c3c2e35c595a41ac0e86798f")
+	-- We currently only use the legacy wesnoth.sound_volume API to set the sound volume,
+	-- so we can just replace it with a no-op instead
+	wesnoth.sound_volume = function() end
+end
+
+--
 -- Extends [remove_sound_source] to take a comma-separated list of sound
 -- sources to remove.
 ---
