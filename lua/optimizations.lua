@@ -23,16 +23,8 @@ function wesnoth.wml_actions.quake(cfg)
 	scroll(  0,   5)
 end
 
-local screen_color_adjust = nil
-
-if wesnoth.compare_versions(wesnoth.game_config.version, ">", "1.15.12") then
-	screen_color_adjust = function(r, g, b)
-		wesnoth.interface.color_adjust(r, g, b)
-	end
-else
-	screen_color_adjust = function(r, g, b)
-		wesnoth.color_adjust { red = r, green = g, blue = b }
-	end
+local function screen_color_adjust(r, g, b)
+	wesnoth.interface.color_adjust(r, g, b)
 end
 
 local function screen_color_fade_step(r, g, b, step_delay)

@@ -997,12 +997,6 @@ end
 --
 -- See also Naia issue #6.
 ---
-if wesnoth.compare_versions(wesnoth.game_config.version, ">", "1.15.12") then
-	function wesnoth.wml_actions.reset_screen()
-		wesnoth.interface.color_adjust(0, 0, 0)
-	end
-else
-	function wesnoth.wml_actions.reset_screen()
-		wesnoth.color_adjust { red = 0, green = 0, blue = 0 }
-	end
+function wesnoth.wml_actions.reset_screen()
+	wesnoth.interface.color_adjust(0, 0, 0)
 end

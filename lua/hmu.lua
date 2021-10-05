@@ -299,12 +299,8 @@ function damage_action:get_animation()
 
 	if self.primary_attack then
 		if self.source and self.source.valid then
-			-- WARNING: Undocumented implementation details for 1.14/1.16 follow.
-			if WESNOTH_VERSION < version_number:new("1.15.0") then
-				primary = helper.find_attack(self.source, self.primary_attack)
-			else
-				primary = self.source:find_attack(self.primary_attack)
-			end
+			-- WARNING: Undocumented implementation details for 1.16 follow.
+			primary = self.source:find_attack(self.primary_attack)
 		else
 			primary = wesnoth.create_weapon(self.primary_attack)
 		end
