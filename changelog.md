@@ -3,6 +3,9 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 
 Version 20211005:
 -----------------
+* Language and i18n:
+  * Updated translations: French, Russian.
+
 * Lua and WML library:
   * Added `[effect] apply_to=level`.
   * Fixed `[clear_unit_stats]` affecting all on-map units and causing a late
