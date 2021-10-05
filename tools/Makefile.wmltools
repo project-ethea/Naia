@@ -3,7 +3,7 @@ NAIA_PREFIX      := ../Naia
 MAKEFLAGS        += -rR --no-print-directory
 
 ifndef USE_WESNOTH_DEV
-WESNOTH          := wesnoth-1.14
+WESNOTH          := wesnoth-1.16
 else
 WESNOTH          := wesnoth
 endif
@@ -21,9 +21,9 @@ DISTTOOL         := $(NAIA_PREFIX)/tools/mkdist
 
 AUTO_DELTEMP     ?= 1
 
-WMLLINT          ?= wmllint-1.14
-WMLINDENT        ?= wmlindent-1.14
-WMLUNITS         ?= wmlunits-1.14
+WMLLINT          ?= wmllint-1.16
+WMLINDENT        ?= wmlindent-1.16
+WMLUNITS         ?= wmlunits-1.16
 
 WML_PREPROCESS   := $(WESNOTH) -p
 
