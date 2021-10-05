@@ -7,6 +7,7 @@ Version 20210515+dev:
   * Added `[effect] apply_to=level`.
   * Fixed `[clear_unit_stats]` affecting all on-map units and causing a late
     IftU easter egg to negate the undead trait for all undead units.
+  * Dropped all instances of Formula AI features in unit spawners.
 
 * Units:
   * Removed Fire Spirit, replaced with the mainline Fire Ghost.
