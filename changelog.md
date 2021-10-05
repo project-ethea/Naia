@@ -1,8 +1,8 @@
 Naia - Project Ethea Phase 1 Shared Library - Changelog
 =======================================================
 
-Version 20210515+dev:
----------------------
+Version 20211005:
+-----------------
 * Lua and WML library:
   * Added `[effect] apply_to=level`.
   * Fixed `[clear_unit_stats]` affecting all on-map units and causing a late
