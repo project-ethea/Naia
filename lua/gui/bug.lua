@@ -40,7 +40,7 @@ inconsistency (see the BUG and BUG_ON macros in core/debug.cfg
 function wesnoth.wml_actions.bug(cfg)
 	local cond = wml.get_child(cfg, "condition")
 
-	if cond and not wesnoth.eval_conditional(cond) then
+	if cond and not wml.eval_conditional(cond) then
 		return
 	end
 

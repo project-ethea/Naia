@@ -616,7 +616,7 @@ function wesnoth.wml_actions.set_conditional_variable(cfg)
 		helper.wml_error("[set_conditional_variable]: Required '[condition]' tag missing")
 	end
 
-	wml.variables[varname] = wesnoth.eval_conditional(condition)
+	wml.variables[varname] = wml.eval_conditional(condition)
 end
 
 ---
