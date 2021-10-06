@@ -17,10 +17,10 @@ local theme_ui_unit_statuses = {}
 
 -- We need to call back to the engine to get its notion of the default status
 -- report for a unit (poisoned, slowed, etc.).
-local _WT_unit_status = wesnoth.theme_items.unit_status
+local _WT_unit_status = wesnoth.interface.game_display.unit_status
 
 -- Not a public function. Don't call this yourself.
-function wesnoth.theme_items.unit_status()
+function wesnoth.interface.game_display.unit_status()
 	local u = wesnoth.get_displayed_unit()
 	if not u then return {} end
 
