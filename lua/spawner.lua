@@ -18,7 +18,7 @@ end
 ---
 function wesnoth.wml_actions.run_spawn_controller(cfg)
 	local ctx = wesnoth.current.event_context
-	local u = wesnoth.get_unit(ctx.x1, ctx.y1)
+	local u = wesnoth.units.get(ctx.x1, ctx.y1)
 	local uv = u.variables
 
 	local respawn_event = uv.spawner_event

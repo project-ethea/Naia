@@ -78,7 +78,7 @@ function wesnoth.wml_actions.sp_mark_calculate_bonus(cfg)
 	local target_var = cfg.variable or "resistances"
 
 	local e = wesnoth.current.event_context
-	local target = wesnoth.get_unit(e.x2, e.y2)
+	local target = wesnoth.units.get(e.x2, e.y2)
 
 	local resistances = {}
 

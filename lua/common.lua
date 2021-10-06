@@ -152,7 +152,7 @@ function wesnoth.wml_actions.set_facing(cfg)
 
 	if not facing then
 		if target_suf then
-			target_u = wesnoth.get_units(target_suf)[1] or
+			target_u = wesnoth.units.find_on_map(target_suf)[1] or
 				helper.wml_error("[set_facing] Could not match the specified [filter_second] unit")
 		elseif target_slf then
 			target_loc = wesnoth.get_locations(target_slf)[1] or
@@ -160,7 +160,7 @@ function wesnoth.wml_actions.set_facing(cfg)
 		end
 	end
 
-	local units = wesnoth.get_units(suf) or
+	local units = wesnoth.units.find_on_map(suf) or
 		helper.wml_error("[set_facing] Could not match any on-map units with [filter]")
 
 	for i, u in ipairs(units) do
@@ -223,7 +223,7 @@ function wesnoth.wml_actions.setup_doors(cfg)
 	local locs = wesnoth.get_locations(cfg)
 
 	for k, loc in ipairs(locs) do
-		if not wesnoth.get_unit(loc[1], loc[2]) then
+		if not wesnoth.units.get(loc[1], loc[2]) then
 			wesnoth.put_unit({
 				type = "Door",
 				side = owner_side,
@@ -257,7 +257,7 @@ function wesnoth.wml_actions.store_unit_ids(cfg)
 		wml.variables[var] = nil
 	end
 
-	for i, u in ipairs(wesnoth.get_units(filter)) do
+	for i, u in ipairs(wesnoth.units.find_on_map(filter)) do
 		wml.variables[("%s[%d].id"):format(var, idx)] = u.id
 		idx = idx + 1
 	end
@@ -356,12 +356,12 @@ function wesnoth.wml_actions.animate_attack(cfg)
 	-- we need to use shallow_literal field, to avoid raising an error if $this_unit (not yet assigned) is used
 	if not cfg.__shallow_literal.amount then helper.wml_error("[animate_attack] has missing required amount= attribute") end
 
-	local attacker = wesnoth.get_units(attacker_filter)[1]
+	local attacker = wesnoth.units.find_on_map(attacker_filter)[1]
 	if not attacker then
 		helper.wml_error("[animate_attack]: Could not match any attackers")
 	end
 
-	local defender = wesnoth.get_units(defender_filter)[1]
+	local defender = wesnoth.units.find_on_map(defender_filter)[1]
 	if not defender then
 		helper.wml_error("[animate_attack]: Could not match any defenders")
 	end
@@ -535,7 +535,7 @@ end
 ---
 
 function wesnoth.wml_actions.count_units(cfg)
-	local units = wesnoth.get_units(cfg)
+	local units = wesnoth.units.find_on_map(cfg)
 	local varname = cfg.variable or "unit_count"
 
 	if units == nil then
@@ -556,7 +556,7 @@ end
 -- [/store_unit_portrait]
 ---
 function wesnoth.wml_actions.store_unit_portrait(cfg)
-	local u = wesnoth.get_units(cfg)[1] or helper.wml_error("[store_unit_portrait]: Could not match any units")
+	local u = wesnoth.units.find_on_map(cfg)[1] or helper.wml_error("[store_unit_portrait]: Could not match any units")
 	local varname = cfg.variable or "unit_portrait"
 
 	local img = u.__cfg.profile
@@ -772,9 +772,9 @@ function wesnoth.wml_actions.check_unit_in_range(cfg)
 		variable = "in_range"
 	end
 
-	local u1 = wesnoth.get_units(primary_suf)[1] or
+	local u1 = wesnoth.units.find_on_map(primary_suf)[1] or
 		helper.wml_error "[check_unit_in_range] could not match primary unit"
-	local u2 = wesnoth.get_units(second_suf)[1] or
+	local u2 = wesnoth.units.find_on_map(second_suf)[1] or
 		helper.wml_error "[check_unit_in_range] could not match secondary unit"
 
 	if wesnoth.map.distance_between(u1.x, u1.y, u2.x, u2.y) <= u1.max_moves then
@@ -799,7 +799,7 @@ end
 -- [/apply_amlas]
 ---
 function wesnoth.wml_actions.apply_amlas(cfg)
-	local u = wesnoth.get_units(cfg)[1] or helper.wml_error("[apply_amlas]: Could not match any units!")
+	local u = wesnoth.units.find_on_map(cfg)[1] or helper.wml_error("[apply_amlas]: Could not match any units!")
 
 	for amla_cfg in wml.child_range(cfg, "advancement") do
 		u:add_modification("advancement", amla_cfg)
@@ -822,7 +822,7 @@ end
 --     ...
 -- [/apply_objects]
 function wesnoth.wml_actions.apply_objects(cfg)
-	local u = wesnoth.get_units(cfg)[1] or helper.wml_error("[apply_objects]: Could not match any units!")
+	local u = wesnoth.units.find_on_map(cfg)[1] or helper.wml_error("[apply_objects]: Could not match any units!")
 
 	local no_internals = cfg.exclude_internal
 	local no_temporaries = cfg.exclude_temporaries
@@ -956,7 +956,7 @@ end
 
 function wesnoth.wml_actions.remove_trait(cfg)
 	local trait_id = cfg.trait_id
-	for _, u in ipairs(wesnoth.get_units(cfg)) do
+	for _, u in ipairs(wesnoth.units.find_on_map(cfg)) do
 		u:remove_modifications({ id = trait_id }, "trait")
 	end
 end
@@ -965,7 +965,7 @@ function wesnoth.wml_actions.clear_unit_status(cfg)
 	local statuses = cfg.status or helper.wml_error("[clear_unit_status]: No statuses to clear")
 	local suf = wml.get_child(cfg, "filter") or
 		helper.wml_error("[clear_unit_status] Missing unit filter")
-	local units = wesnoth.get_units(suf)
+	local units = wesnoth.units.find_on_map(suf)
 
 	for _, u in ipairs(units) do
 		for status in statuses:gmatch("[^,]+") do

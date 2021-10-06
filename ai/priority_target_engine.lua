@@ -19,7 +19,7 @@ return {
 
 			-- The following can be simplified significantly once the 'attacks' variable is available
 			-- All units that have attacks left (but are not leaders)
-			local attackers = wesnoth.get_units{side = wesnoth.current.side, canrecruit = "yes", formula = "$this_unit.attacks_left > 0"}
+			local attackers = wesnoth.units.find_on_map{side = wesnoth.current.side, canrecruit = "yes", formula = "$this_unit.attacks_left > 0"}
 			--print("\nAttackers:",#attackers)
 
 			-- This is the list of reachable targets from the target_ids table.

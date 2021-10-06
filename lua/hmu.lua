@@ -345,7 +345,7 @@ function wesnoth.wml_actions.harm_multiple_units(cfg)
 
 	local this_unit = utils.start_var_scope("this_unit")
 
-	local targets = wesnoth.get_units(filter)
+	local targets = wesnoth.units.find_on_map(filter)
 	if not targets then
 		do_wprintf(W_DBG, "No targets found, nothing to do here")
 		return
@@ -378,7 +378,7 @@ function wesnoth.wml_actions.harm_multiple_units(cfg)
 			local source = nil
 
 			if source_filter then
-				source = wesnoth.get_units(source_filter)[1]
+				source = wesnoth.units.find_on_map(source_filter)[1]
 			end
 
 			local act = damage_action:new(source, target, primary_attack, secondary_attack, cfg)

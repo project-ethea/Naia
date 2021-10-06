@@ -66,7 +66,7 @@ function wesnoth.wml_actions.npc_bird_behavior(cfg)
 	-- Store required units
 	--
 
-	local npcs = wesnoth.get_units {
+	local npcs = wesnoth.units.find_on_map {
 		type = types, side = side_num,
 		x = ("1-%d"):format(map_w),
 		y = ("1-%d"):format(map_h)

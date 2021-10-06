@@ -90,7 +90,7 @@ end
 
 function wesnoth.wml_actions.verlissh_namegen()
 	local ev = wesnoth.current.event_context
-	local u = wesnoth.get_unit(ev.x1, ev.y1)
+	local u = wesnoth.units.get(ev.x1, ev.y1)
 
 	if u and (not u.name or tostring(u.name) == "") then
 		local namegen_cfg = ''
