@@ -29,7 +29,7 @@ end
 
 local function screen_color_fade_step(r, g, b, step_delay)
 	screen_color_adjust(r, g, b)
-	wesnoth.delay(step_delay)
+	wesnoth.interface.delay(step_delay)
 	wesnoth.wml_actions.redraw {}
 end
 

@@ -58,7 +58,7 @@ function wesnoth.wml_actions.ua_testament_terraform()
 
 	if wesnoth.match_location(e.x1, e.y1, { terrain = UA_TESTAMENT_TERRAINS }) and not location_has_items(e.x1, e.y1) then
 		wesnoth.play_sound("wose-attack.ogg")
-		wesnoth.delay(250)
+		wesnoth.interface.delay(250)
 		wesnoth.set_terrain(e.x1, e.y1, "^Fetd", "overlay")
 		wesnoth.wml_actions.redraw {}
 	end

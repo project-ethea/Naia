@@ -75,7 +75,7 @@ log_patch("animate_unit", "render glitch with animations following [message]")
 local _WA_animate_unit = wesnoth.wml_actions.animate_unit
 
 function wesnoth.wml_actions.animate_unit(cfg)
-	wesnoth.delay(1)
+	wesnoth.interface.delay(1)
 	_WA_animate_unit(cfg)
 end
 
@@ -222,7 +222,7 @@ for i, action_id in ipairs(warp_actions) do
 				wesnoth.music_list.add("silence.ogg", true)
 				-- HACK: give the new track a chance to start playing silently before
 				--       resetting to full volume.
-				wesnoth.delay(10)
+				wesnoth.interface.delay(10)
 				wesnoth.music_list.volume = 100.0
 			elseif action_id == "fade_out_sound_effects" then
 				wesnoth.sound_volume(0)

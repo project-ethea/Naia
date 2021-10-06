@@ -657,7 +657,7 @@ function wesnoth.wml_actions.fade_out_music(cfg)
 		local v = helper.round(100 - (100*k / steps))
 		--wesnoth.message(("step %d, volume %d"):format(k, v))
 		wesnoth.music_list.volume = v
-		wesnoth.delay(delay_granularity)
+		wesnoth.interface.delay(delay_granularity)
 	end
 
 	wesnoth.music_list.clear()
@@ -672,7 +672,7 @@ function wesnoth.wml_actions.fade_out_music(cfg)
 
 	-- HACK: give the new track a chance to start playing silently before
 	--       resetting to full volume.
-	wesnoth.delay(10)
+	wesnoth.interface.delay(10)
 
 	wesnoth.music_list.volume = 100.0
 end
@@ -703,7 +703,7 @@ local function wml_sfx_volume_fade_internal(duration, is_fade_out)
 
 		wesnoth.sound_volume(v)
 
-		wesnoth.delay(delay_granularity)
+		wesnoth.interface.delay(delay_granularity)
 	end
 end
 
@@ -863,10 +863,10 @@ function wesnoth.wml_actions.highlight_goal(cfg)
 
 	for i = 1, 3 do
 		wesnoth.wml_actions.item(cfg)
-		wesnoth.delay(300)
+		wesnoth.interface.delay(300)
 		wesnoth.wml_actions.remove_item(cfg)
 		wesnoth.wml_actions.redraw {}
-		wesnoth.delay(300)
+		wesnoth.interface.delay(300)
 	end
 end
 
