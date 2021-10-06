@@ -263,7 +263,7 @@ function wesnoth.wml_actions.store_unit_ids(cfg)
 	end
 
 	if (not filter.x or filter.x == "recall") and (not filter.y or filter.y == "recall") then
-		for i, u in ipairs(wesnoth.get_recall_units(filter)) do
+		for i, u in ipairs(wesnoth.units.find_on_recall(filter)) do
 			wml.variables[("%s[%d].id"):format(var, idx)] = u.id
 			idx = idx + 1
 		end
