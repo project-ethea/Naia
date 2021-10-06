@@ -656,25 +656,25 @@ function wesnoth.wml_actions.fade_out_music(cfg)
 	for k = 1, steps do
 		local v = helper.round(100 - (100*k / steps))
 		--wesnoth.message(("step %d, volume %d"):format(k, v))
-		wesnoth.music_list.volume = v
+		wesnoth.audio.music_list.volume = v
 		wesnoth.interface.delay(delay_granularity)
 	end
 
-	wesnoth.music_list.clear()
+	wesnoth.audio.music_list.clear()
 
 	-- Unset existing ms_after to work around Wesnoth issues #4458, #4459, and #4460.
 	-- This is also done by Naia's version of [music]
-	if wesnoth.music_list.current then
-		wesnoth.music_list.current.ms_after = 0
+	if wesnoth.audio.music_list.current then
+		wesnoth.audio.music_list.current.ms_after = 0
 	end
 
-	wesnoth.music_list.add("silence.ogg", true)
+	wesnoth.audio.music_list.add("silence.ogg", true)
 
 	-- HACK: give the new track a chance to start playing silently before
 	--       resetting to full volume.
 	wesnoth.interface.delay(10)
 
-	wesnoth.music_list.volume = 100.0
+	wesnoth.audio.music_list.volume = 100.0
 end
 
 local function wml_sfx_volume_fade_internal(duration, is_fade_out)

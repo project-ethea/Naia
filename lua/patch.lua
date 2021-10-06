@@ -44,8 +44,8 @@ log_patch("music", "immediate=yes fade-out wait (Wesnoth #4458, #4459, #4460)")
 local _WA_music = wesnoth.wml_actions.music
 
 function wesnoth.wml_actions.music(cfg)
-	if cfg.immediate and wesnoth.music_list.current then
-		wesnoth.music_list.current.ms_after = 0
+	if cfg.immediate and wesnoth.audio.music_list.current then
+		wesnoth.audio.music_list.current.ms_after = 0
 	end
 
 	_WA_music(cfg)
@@ -218,12 +218,12 @@ for i, action_id in ipairs(warp_actions) do
 			wprintf(W_INFO, "Ignoring timing or scrolling delay for [%s] while skipping [message]", action_id)
 
 			if action_id == "fade_out_music" then
-				wesnoth.music_list.clear()
-				wesnoth.music_list.add("silence.ogg", true)
+				wesnoth.audio.music_list.clear()
+				wesnoth.audio.music_list.add("silence.ogg", true)
 				-- HACK: give the new track a chance to start playing silently before
 				--       resetting to full volume.
 				wesnoth.interface.delay(10)
-				wesnoth.music_list.volume = 100.0
+				wesnoth.audio.music_list.volume = 100.0
 			elseif action_id == "fade_out_sound_effects" then
 				wesnoth.sound_volume(0)
 			elseif action_id == "fade_in_sound_effects" then
