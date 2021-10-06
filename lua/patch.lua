@@ -151,7 +151,7 @@ function wesnoth.wml_actions.message(cfg)
 		return
 	end
 
-	if wesnoth.match_unit(u, fback_if_cfg) then
+	if u:matches(fback_if_cfg) then
 		wprintf(W_DBG, "[message] fallback triggered")
 		u = wesnoth.units.find_on_map(fback_to_cfg)[1]
 
