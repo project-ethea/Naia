@@ -13,7 +13,7 @@
 -- [/store_shroud]
 
 function wesnoth.wml_actions.store_shroud(cfg)
-	local side = wesnoth.get_sides( cfg )[1] or helper.wml_error("No matching side found in [store_shroud]")
+	local side = wesnoth.sides.find(cfg)[1] or helper.wml_error("No matching side found in [store_shroud]")
 	local variable = cfg.variable or helper.wml_error("Missing required variable= attribute in [store_shroud].")
 	local current_shroud = side.__cfg.shroud_data
 	wml.variables[variable] = current_shroud
@@ -30,7 +30,7 @@ end
 -- [/set_shroud]
 
 function wesnoth.wml_actions.set_shroud(cfg)
-	local side = wesnoth.get_sides( cfg )[1] or helper.wml_error("No matching side found in [set_shroud]")
+	local side = wesnoth.sides.find(cfg)[1] or helper.wml_error("No matching side found in [set_shroud]")
 	local team_number = side.side
 	local shroud_data = cfg.shroud_data or helper.wml_error("Missing required shroud_data= attribute in [set_shroud]")
 
