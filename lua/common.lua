@@ -654,7 +654,7 @@ function wesnoth.wml_actions.fade_out_music(cfg)
 	--wesnoth.message(("%d steps"):format(steps))
 
 	for k = 1, steps do
-		local v = helper.round(100 - (100*k / steps))
+		local v = mathx.round(100 - (100*k / steps))
 		--wesnoth.message(("step %d, volume %d"):format(k, v))
 		wesnoth.audio.music_list.volume = v
 		wesnoth.interface.delay(delay_granularity)
@@ -694,9 +694,9 @@ local function wml_sfx_volume_fade_internal(duration, is_fade_out)
 		local v = 0
 
 		if is_fade_out then
-			v = helper.round(100 - (100*k / steps))
+			v = mathx.round(100 - (100*k / steps))
 		else
-			v = helper.round(100*k / steps)
+			v = mathx.round(100*k / steps)
 		end
 
 		--wesnoth.message(("step %d, volume %d"):format(k, v))
