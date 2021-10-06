@@ -55,7 +55,7 @@ function wesnoth.wml_actions.global_table(cfg)
 		local cmd_id = t[1]
 		local cmd_cfg = t[2]
 
-		local key = cmd_cfg.key or helper.wml_error("[global_table] Missing required key= attribute in subcommand")
+		local key = cmd_cfg.key or wml.error("[global_table] Missing required key= attribute in subcommand")
 
 		if cmd_id == "read" then
 			wprintf(W_DBG, " * gtable read %s", key)
@@ -67,7 +67,7 @@ function wesnoth.wml_actions.global_table(cfg)
 			wprintf(W_DBG, " * gtable delete %s", key)
 			gtable_set(key, nil)
 		else
-			helper.wml_error(("[global_table] Unrecognized command '%s'"):format(cmd_id))
+			wml.error(("[global_table] Unrecognized command '%s'"):format(cmd_id))
 		end
 	end
 

@@ -87,7 +87,7 @@ function wesnoth.wml_actions.store_direction(cfg)
 	end
 
 	if not a.x or not a.y or not b.x or not b.y then
-		helper.wml_error "[store_direction] missing coordinate!"
+		wml.error "[store_direction] missing coordinate!"
 	end
 
 	local variable = cfg.variable or "direction"
@@ -140,7 +140,7 @@ end
 ---
 function wesnoth.wml_actions.set_facing(cfg)
 	local suf = wml.get_child(cfg, "filter") or
-		helper.wml_error("[set_facing] Missing unit filter")
+		wml.error("[set_facing] Missing unit filter")
 
 	local facing = cfg.facing
 	local target_suf = wml.get_child(cfg, "filter_second")
@@ -153,15 +153,15 @@ function wesnoth.wml_actions.set_facing(cfg)
 	if not facing then
 		if target_suf then
 			target_u = wesnoth.units.find_on_map(target_suf)[1] or
-				helper.wml_error("[set_facing] Could not match the specified [filter_second] unit")
+				wml.error("[set_facing] Could not match the specified [filter_second] unit")
 		elseif target_slf then
 			target_loc = wesnoth.get_locations(target_slf)[1] or
-				helper.wml_error("[set_facing] Could not match the specified [filter_location] location")
+				wml.error("[set_facing] Could not match the specified [filter_location] location")
 		end
 	end
 
 	local units = wesnoth.units.find_on_map(suf) or
-		helper.wml_error("[set_facing] Could not match any on-map units with [filter]")
+		wml.error("[set_facing] Could not match any on-map units with [filter]")
 
 	for i, u in ipairs(units) do
 		local new_facing
@@ -179,7 +179,7 @@ function wesnoth.wml_actions.set_facing(cfg)
 				{ x = target_loc[1], y = target_loc[2] }
 			)
 		else
-			helper.wml_error("[set_facing] Missing facing or [filter_second] or [filter_location]")
+			wml.error("[set_facing] Missing facing or [filter_second] or [filter_location]")
 		end
 
 		if opposite then
@@ -211,7 +211,7 @@ end
 ---
 function wesnoth.wml_actions.setup_doors(cfg)
 	local owner_side = cfg.side or
-		helper.wml_error("[setup_doors] No owner side= specified")
+		wml.error("[setup_doors] No owner side= specified")
 
 	cfg = wml.parsed(cfg)
 
@@ -248,7 +248,7 @@ end
 ---
 function wesnoth.wml_actions.store_unit_ids(cfg)
 	local filter = wml.get_child(cfg, "filter") or
-		helper.wml_error "[store_unit_ids] missing required [filter] tag"
+		wml.error "[store_unit_ids] missing required [filter] tag"
 	local var = cfg.variable or "units"
 	local idx = 0
 	if cfg.mode == "append" then
@@ -349,21 +349,21 @@ end
 -- single attackers and defenders.
 ---
 function wesnoth.wml_actions.animate_attack(cfg)
-	local attacker_filter = wml.get_child(cfg, "filter_second") or helper.wml_error("[animate_attack] missing required [filter_second] tag")
-	local defender_filter = wml.get_child(cfg, "filter") or helper.wml_error("[animate_attack] missing required [filter] tag")
-	local weapon_filter = wml.get_child(cfg, "filter_attack") or helper.wml_error("[animate_attack] missing required [filter_attack] tag")
+	local attacker_filter = wml.get_child(cfg, "filter_second") or wml.error("[animate_attack] missing required [filter_second] tag")
+	local defender_filter = wml.get_child(cfg, "filter") or wml.error("[animate_attack] missing required [filter] tag")
+	local weapon_filter = wml.get_child(cfg, "filter_attack") or wml.error("[animate_attack] missing required [filter_attack] tag")
 
 	-- we need to use shallow_literal field, to avoid raising an error if $this_unit (not yet assigned) is used
-	if not cfg.__shallow_literal.amount then helper.wml_error("[animate_attack] has missing required amount= attribute") end
+	if not cfg.__shallow_literal.amount then wml.error("[animate_attack] has missing required amount= attribute") end
 
 	local attacker = wesnoth.units.find_on_map(attacker_filter)[1]
 	if not attacker then
-		helper.wml_error("[animate_attack]: Could not match any attackers")
+		wml.error("[animate_attack]: Could not match any attackers")
 	end
 
 	local defender = wesnoth.units.find_on_map(defender_filter)[1]
 	if not defender then
-		helper.wml_error("[animate_attack]: Could not match any defenders")
+		wml.error("[animate_attack]: Could not match any defenders")
 	end
 
 	local _ = wesnoth.textdomain "wesnoth"
@@ -556,7 +556,7 @@ end
 -- [/store_unit_portrait]
 ---
 function wesnoth.wml_actions.store_unit_portrait(cfg)
-	local u = wesnoth.units.find_on_map(cfg)[1] or helper.wml_error("[store_unit_portrait]: Could not match any units")
+	local u = wesnoth.units.find_on_map(cfg)[1] or wml.error("[store_unit_portrait]: Could not match any units")
 	local varname = cfg.variable or "unit_portrait"
 
 	local img = u.__cfg.profile
@@ -580,12 +580,12 @@ end
 function wesnoth.wml_actions.variable_default(cfg)
 	local name = cfg.name
 	if name == nil then
-		helper.wml_error("[variable_default]: No variable name= specified")
+		wml.error("[variable_default]: No variable name= specified")
 	end
 
 	local value = cfg.value
 	if value == nil then
-		helper.wml_error("[variable_default]: No variable value= specified")
+		wml.error("[variable_default]: No variable value= specified")
 	end
 
 	if wml.variables[name] == nil then
@@ -609,11 +609,11 @@ function wesnoth.wml_actions.set_conditional_variable(cfg)
 	local condition = wml.get_child(cfg, "condition")
 
 	if varname == nil then
-		helper.wml_error("[set_conditional_variable]: Required 'name' attribute missing")
+		wml.error("[set_conditional_variable]: Required 'name' attribute missing")
 	end
 
 	if condition == nil then
-		helper.wml_error("[set_conditional_variable]: Required '[condition]' tag missing")
+		wml.error("[set_conditional_variable]: Required '[condition]' tag missing")
 	end
 
 	wml.variables[varname] = wml.eval_conditional(condition)
@@ -763,9 +763,9 @@ end
 
 function wesnoth.wml_actions.check_unit_in_range(cfg)
 	local primary_suf = wml.get_child(cfg, "filter") or
-		helper.wml_error "[check_unit_in_range] missing required [filter] tag"
+		wml.error "[check_unit_in_range] missing required [filter] tag"
 	local second_suf = wml.get_child(cfg, "filter_second") or
-		helper.wml_error "[check_unit_in_range] missing required [filter_second] tag"
+		wml.error "[check_unit_in_range] missing required [filter_second] tag"
 	local variable = cfg.variable
 
 	if variable == nil then
@@ -773,9 +773,9 @@ function wesnoth.wml_actions.check_unit_in_range(cfg)
 	end
 
 	local u1 = wesnoth.units.find_on_map(primary_suf)[1] or
-		helper.wml_error "[check_unit_in_range] could not match primary unit"
+		wml.error "[check_unit_in_range] could not match primary unit"
 	local u2 = wesnoth.units.find_on_map(second_suf)[1] or
-		helper.wml_error "[check_unit_in_range] could not match secondary unit"
+		wml.error "[check_unit_in_range] could not match secondary unit"
 
 	if wesnoth.map.distance_between(u1.x, u1.y, u2.x, u2.y) <= u1.max_moves then
 		wml.variables[variable] = true
@@ -799,7 +799,7 @@ end
 -- [/apply_amlas]
 ---
 function wesnoth.wml_actions.apply_amlas(cfg)
-	local u = wesnoth.units.find_on_map(cfg)[1] or helper.wml_error("[apply_amlas]: Could not match any units!")
+	local u = wesnoth.units.find_on_map(cfg)[1] or wml.error("[apply_amlas]: Could not match any units!")
 
 	for amla_cfg in wml.child_range(cfg, "advancement") do
 		u:add_modification("advancement", amla_cfg)
@@ -822,7 +822,7 @@ end
 --     ...
 -- [/apply_objects]
 function wesnoth.wml_actions.apply_objects(cfg)
-	local u = wesnoth.units.find_on_map(cfg)[1] or helper.wml_error("[apply_objects]: Could not match any units!")
+	local u = wesnoth.units.find_on_map(cfg)[1] or wml.error("[apply_objects]: Could not match any units!")
 
 	local no_internals = cfg.exclude_internal
 	local no_temporaries = cfg.exclude_temporaries
@@ -882,7 +882,7 @@ end
 ---
 function wesnoth.wml_actions.scatter_images(cfg)
 	local locs = wesnoth.get_locations(cfg) or
-		helper.wml_error("[scatter_images] No suitable locations found.")
+		wml.error("[scatter_images] No suitable locations found.")
 
 	local count = cfg.limit
 	if count == nil or count == -1 then
@@ -933,7 +933,7 @@ function wesnoth.wml_actions.deactivate_and_serialize_sides(cfg)
 end
 
 function wesnoth.wml_actions.unserialize_and_activate_sides(cfg)
-	local variable = cfg.variable or helper.wml_error("[unserialize_and_activate_sides]: Missing variable!")
+	local variable = cfg.variable or wml.error("[unserialize_and_activate_sides]: Missing variable!")
 
 	local data_set = wml.array_access.get(variable)
 
@@ -962,9 +962,9 @@ function wesnoth.wml_actions.remove_trait(cfg)
 end
 
 function wesnoth.wml_actions.clear_unit_status(cfg)
-	local statuses = cfg.status or helper.wml_error("[clear_unit_status]: No statuses to clear")
+	local statuses = cfg.status or wml.error("[clear_unit_status]: No statuses to clear")
 	local suf = wml.get_child(cfg, "filter") or
-		helper.wml_error("[clear_unit_status] Missing unit filter")
+		wml.error("[clear_unit_status] Missing unit filter")
 	local units = wesnoth.units.find_on_map(suf)
 
 	for _, u in ipairs(units) do

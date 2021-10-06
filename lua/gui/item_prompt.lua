@@ -119,7 +119,7 @@ function wesnoth.wml_actions.item_prompt(cfg)
 	local sound = cfg.sound
 
 	local branch_then = wml.get_child(cfg, "then") or
-		helper.wml_error("[item_prompt] Missing mandatory [then] branch")
+		wml.error("[item_prompt] Missing mandatory [then] branch")
 	local branch_else = wml.get_child(cfg, "else")
 
 	if image == nil then

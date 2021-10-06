@@ -20,7 +20,7 @@ function wesnoth.wml_actions.npc_bird_behavior(cfg)
 	local map_w, map_h, map_border = wesnoth.get_map_size()
 
 	local function do_error(msg)
-		helper.wml_error("[npc_bird_behavior]: " .. msg)
+		wml.error("[npc_bird_behavior]: " .. msg)
 	end
 
 	if map_border ~= 1 then

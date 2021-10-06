@@ -60,7 +60,7 @@ end
 ---
 function wesnoth.wml_actions.spawner_spawn(cfg)
 	local function do_error(msg)
-		helper.wml_error("[spawner_spawn]: " .. msg)
+		wml.error("[spawner_spawn]: " .. msg)
 	end
 
 	local side = cfg.side or do_error("side number missing")

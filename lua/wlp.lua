@@ -13,8 +13,8 @@
 -- [/store_shroud]
 
 function wesnoth.wml_actions.store_shroud(cfg)
-	local side = wesnoth.sides.find(cfg)[1] or helper.wml_error("No matching side found in [store_shroud]")
-	local variable = cfg.variable or helper.wml_error("Missing required variable= attribute in [store_shroud].")
+	local side = wesnoth.sides.find(cfg)[1] or wml.error("No matching side found in [store_shroud]")
+	local variable = cfg.variable or wml.error("Missing required variable= attribute in [store_shroud].")
 	local current_shroud = side.__cfg.shroud_data
 	wml.variables[variable] = current_shroud
 end
@@ -30,12 +30,12 @@ end
 -- [/set_shroud]
 
 function wesnoth.wml_actions.set_shroud(cfg)
-	local side = wesnoth.sides.find(cfg)[1] or helper.wml_error("No matching side found in [set_shroud]")
+	local side = wesnoth.sides.find(cfg)[1] or wml.error("No matching side found in [set_shroud]")
 	local team_number = side.side
-	local shroud_data = cfg.shroud_data or helper.wml_error("Missing required shroud_data= attribute in [set_shroud]")
+	local shroud_data = cfg.shroud_data or wml.error("Missing required shroud_data= attribute in [set_shroud]")
 
-	if shroud_data == nil then helper.wml_error("[set_shroud] was passed an empty shroud string")
-	elseif string.sub(shroud_data,1,1) ~= "|" then helper.wml_error("[set_shroud] was passed an invalid shroud string")
+	if shroud_data == nil then wml.error("[set_shroud] was passed an empty shroud string")
+	elseif string.sub(shroud_data,1,1) ~= "|" then wml.error("[set_shroud] was passed an invalid shroud string")
 	else
 		-- yes, I prefer long variable names. I think that they make the code more understandable. E_H.
 		local width, height, border = wesnoth.get_map_size()
@@ -87,7 +87,7 @@ end
 -- [/load_map]
 
 function wesnoth.wml_actions.save_map(cfg)
-	local variable = cfg.variable or helper.wml_error "[save_map] missing required variable= attribute"
+	local variable = cfg.variable or wml.error "[save_map] missing required variable= attribute"
 	local width, height, border = wesnoth.get_map_size()
 	local t = {} -- not table, to avoid overriding the table library!
 
@@ -105,6 +105,6 @@ function wesnoth.wml_actions.save_map(cfg)
 end
 
 function wesnoth.wml_actions.load_map(cfg)
-	local variable = cfg.variable or helper.wml_error "[load_map] missing required variable= attribute"
+	local variable = cfg.variable or wml.error "[load_map] missing required variable= attribute"
 	wesnoth.wml_actions.replace_map { map = wml.variables[variable], expand = true, shrink = true }
 end

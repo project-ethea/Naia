@@ -93,7 +93,7 @@ local STATUS_EFFECTS = {
 local STATUS_FORMAT = "<span foreground='red'>%s</span>"
 
 local function do_error(msg)
-	helper.wml_error("[harm_multiple_units] " .. msg)
+	wml.error("[harm_multiple_units] " .. msg)
 end
 
 local function do_wprintf(lvl, msg, ...)

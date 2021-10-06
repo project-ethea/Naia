@@ -8,7 +8,7 @@
 --
 
 function wesnoth.wml_conditionals.position_equals(cfg)
-	local var_id = cfg.variable or helper.wml_error("[position_equals] Missing required variable= attribute")
+	local var_id = cfg.variable or wml.error("[position_equals] Missing required variable= attribute")
 	local x = cfg.x or 0
 	local y = cfg.y or 0
 
@@ -23,8 +23,8 @@ function wesnoth.wml_conditionals.position_equals(cfg)
 end
 
 function wesnoth.wml_conditionals.variable_in(cfg)
-	local var_id = cfg.name or helper.wml_error("[variable_in] Missing required name= attribute")
-	local values = cfg.values or helper.wml_error("[variable_in] Missing required values= attribute")
+	local var_id = cfg.name or wml.error("[variable_in] Missing required name= attribute")
+	local values = cfg.values or wml.error("[variable_in] Missing required values= attribute")
 
 	local variable = wml.variables[var_id]
 
@@ -43,7 +43,7 @@ function wesnoth.wml_conditionals.variable_in(cfg)
 end
 
 function wesnoth.wml_conditionals.variable_is_even(cfg)
-	local var_id = cfg.name or helper.wml_error("[variable_is_even] Missing required name= attribute")
+	local var_id = cfg.name or wml.error("[variable_is_even] Missing required name= attribute")
 	return tonumber(wml.variables[var_id]) % 2 == 0
 end
 
