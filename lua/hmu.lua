@@ -196,7 +196,7 @@ function damage_action:new(source, target, primary_attack, secondary_attack, dat
 	o.source_xp, o.target_xp = 0, 0
 
 	if data.experience ~= false and o.source and o.source.valid
-	   and wesnoth.is_enemy(o.target.side, o.source.side) then
+	   and wesnoth.sides.is_enemy(o.target.side, o.source.side) then
 		if o.damage >= o.target.hitpoints then
 			o.source_xp = calculate_xp(o.source, o.target, o.kill)
 			-- Dead man walking, leave XP untouched
