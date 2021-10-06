@@ -224,7 +224,7 @@ function wesnoth.wml_actions.setup_doors(cfg)
 
 	for k, loc in ipairs(locs) do
 		if not wesnoth.units.get(loc[1], loc[2]) then
-			wesnoth.put_unit({
+			wesnoth.units.to_map({
 				type = "Door",
 				side = owner_side,
 				id = ("__door_X%dY%d"):format(loc[1], loc[2]),
