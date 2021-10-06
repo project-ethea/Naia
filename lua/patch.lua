@@ -22,7 +22,7 @@ log_patch("move_unit_fake", "force unsynced execution (AtS #68)")
 local _WA_move_unit_fake = wesnoth.wml_actions.move_unit_fake
 
 function wesnoth.wml_actions.move_unit_fake(cfg)
-	wesnoth.unsynced(function() _WA_move_unit_fake(cfg) end)
+	wesnoth.sync.run_unsynced(function() _WA_move_unit_fake(cfg) end)
 end
 
 log_patch("move_units_fake", "force unsynced execution (AtS #68)")
@@ -30,7 +30,7 @@ log_patch("move_units_fake", "force unsynced execution (AtS #68)")
 local _WA_move_units_fake = wesnoth.wml_actions.move_units_fake
 
 function wesnoth.wml_actions.move_units_fake(cfg)
-	wesnoth.unsynced(function() _WA_move_units_fake(cfg) end)
+	wesnoth.sync.run_unsynced(function() _WA_move_units_fake(cfg) end)
 end
 
 ---

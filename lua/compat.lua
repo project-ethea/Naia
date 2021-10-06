@@ -14,7 +14,7 @@ local deferred_executes = {}
 
 function wesnoth.wml_actions.naia__deferred_unsynced_execute()
 	for i, func in ipairs(deferred_executes) do
-		wesnoth.unsynced(func)
+		wesnoth.sync.run_unsynced(func)
 	end
 end
 

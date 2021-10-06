@@ -956,7 +956,7 @@ function wesnoth.wml_actions.amla_list(cfg)
 	-- [amla_list] is not meant to modify the gamestate, but it makes heavy use
 	-- of unit cloning for the preview pane functionality. All that code needs
 	-- to execute in an unsynced context so replays don't come out weird.
-	wesnoth.unsynced(function() naia_do_amla_menu(cfg) end)
+	wesnoth.sync.run_unsynced(function() naia_do_amla_menu(cfg) end)
 end
 
 --
