@@ -64,6 +64,15 @@ if WESNOTH_VERSION >= V"1.15.13" and WESNOTH_VERSION <= V"1.15.18" then
 	-- We currently only use the legacy wesnoth.sound_volume API to set the sound volume,
 	-- so we can just replace it with a no-op instead
 	wesnoth.sound_volume = function() end
+else
+	log_patch("lua!wesnoth.sound_volume", "silence deprecation warnings due to pre-1.16.0 workaround")
+	-- Shut up Wesnoth, nobody cares.
+	wesnoth.sound_volume = function(param)
+		if param ~= nil then
+			wesnoth.audio.volume = param
+		end
+		return wesnoth.audio.volume
+	end
 end
 
 ---
