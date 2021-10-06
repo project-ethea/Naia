@@ -302,12 +302,12 @@ function damage_action:get_animation()
 			-- WARNING: Undocumented implementation details for 1.16 follow.
 			primary = self.source:find_attack(self.primary_attack)
 		else
-			primary = wesnoth.create_weapon(self.primary_attack)
+			primary = wesnoth.units.create_weapon(self.primary_attack)
 		end
 	end
 
 	if self.secondary_attack then
-		secondary = wesnoth.create_weapon(self.secondary_attack)
+		secondary = wesnoth.units.create_weapon(self.secondary_attack)
 	end
 
 	return flag, hits, {
