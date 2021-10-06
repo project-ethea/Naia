@@ -137,7 +137,7 @@ function wesnoth.wml_actions.npc_bird_behavior(cfg)
 			-- are not restored
 
 			if not oob then
-				npc.x, npc.y = wesnoth.find_vacant_tile(endpoint.x, endpoint.y)
+				npc.x, npc.y = wesnoth.paths.find_vacant_tile(endpoint.x, endpoint.y)
 				npc.facing = path.direction
 
 				npc:to_map()
