@@ -470,7 +470,7 @@ function wesnoth.wml_actions.animate_attack(cfg)
 	end
 
 	if animate then
-		wesnoth.scroll_to_tile(attacker.x, attacker.y, true)
+		wesnoth.interface.scroll_to_hex(attacker.x, attacker.y, true)
 		wesnoth.wml_actions.animate_unit( {
 			flag = "attack",
 			hits = hit_animation_type,
