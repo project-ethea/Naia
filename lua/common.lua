@@ -292,7 +292,7 @@ function wesnoth.wml_actions.item_fast(cfg)
 	for i, loc in ipairs(locs) do
 		-- FIXME: these items aren't going to be removed, so I'm
 		-- not bothering with state tracking right now.
-		wesnoth.add_tile_overlay(loc[1], loc[2], cfg)
+		wesnoth.interface.add_hex_overlay(loc[1], loc[2], cfg)
 	end
 end
 
