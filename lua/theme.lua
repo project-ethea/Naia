@@ -21,7 +21,7 @@ local _WT_unit_status = wesnoth.interface.game_display.unit_status
 
 -- Not a public function. Don't call this yourself.
 function wesnoth.interface.game_display.unit_status()
-	local u = wesnoth.get_displayed_unit()
+	local u = wesnoth.interface.get_displayed_unit()
 	if not u then return {} end
 
 	-- Get the engine's report so we can add to it.
