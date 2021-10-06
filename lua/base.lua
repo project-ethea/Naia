@@ -302,47 +302,18 @@ function global_run_wml(cfg)
 end
 
 ---
--- Version number object.
---
-
-version_number = {}
-version_number.__index = version_number
-
-function version_number:new(value)
-	local o = {}
-
-	setmetatable(o, version_number)
-
-	o.value = tostring(value) or '0.0.0'
-	o._str = o.value
-
-	-- 1.2.x is a glob match on 1.2.*
-	if o.value:match('^[0-9]+%.([0-9]+%.)x$') ~= nil then
-		o.value = o.value:gsub('x$', '9999')
+-- Wrapper around wesnoth.version (e.g. `V"1.14.0"` or `V(some_var)`).
+-- 1.2.3.x becomes 1.2.3.9999.
+---
+function V(version_number)
+	if tostring(version_number):match('%.x$') ~= nil then
+		version_number = tostring(version_number):gsub('x$', '9999')
 	end
 
-	return o
+	return wesnoth.version(version_number)
 end
 
-function version_number:__tostring()
-	return self._str
-end
-
-function version_number:compare(op, b)
-	return wesnoth.compare_versions(self.value, op, b.value)
-end
-
-function version_number.__lt(a, b)
-	return a:compare('<', b)
-end
-function version_number.__le(a, b)
-	return a:compare('<=', b)
-end
-
-function version_number.__eq(a, b)
-	return a:compare('==', b)
-end
-
-WESNOTH_VERSION = version_number:new(wesnoth.game_config.version)
+-- The game host version
+WESNOTH_VERSION = wesnoth.current_version()
 
 wprintf(W_INFO, "codename Naia version %s initializing", PROJECT_ETHEA_NAIA_VERSION)

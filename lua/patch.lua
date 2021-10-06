@@ -59,7 +59,7 @@ end
 -- <https://github.com/wesnoth/wesnoth/commit/9c2ad49026282107c3c2e35c595a41ac0e86798f>
 ---
 
-if wesnoth.compare_versions(wesnoth.game_config.version, ">=", "1.15.13") and wesnoth.compare_versions(wesnoth.game_config.version, "<=", "1.15.18") then
+if WESNOTH_VERSION >= V("1.15.13") and WESNOTH_VERSION <= V("1.15.18") then
 	log_patch("lua!wesnoth.sound_volume", "volume always set to zero without rev 9c2ad49026282107c3c2e35c595a41ac0e86798f")
 	-- We currently only use the legacy wesnoth.sound_volume API to set the sound volume,
 	-- so we can just replace it with a no-op instead

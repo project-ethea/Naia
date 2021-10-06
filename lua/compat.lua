@@ -109,13 +109,13 @@ local naia_addons_bl = {
 }
 
 function check_host_compatibility(host_min, host_max, host_blacklist, is_experimental_port)
-	if WESNOTH_VERSION < version_number:new(host_min) then
+	if WESNOTH_VERSION < V(host_min) then
 		do_host_minimum_version_unmet(host_min, host_max)
 		return
 	end
 
-	if WESNOTH_VERSION > version_number:new(host_max) then
-		do_host_maximum_version_number_unmet(host_min, tostring(version_number:new(host_max)))
+	if WESNOTH_VERSION > V(host_max) then
+		do_host_maximum_version_number_unmet(host_min, host_max)
 		return
 	end
 
@@ -124,7 +124,7 @@ function check_host_compatibility(host_min, host_max, host_blacklist, is_experim
 	end
 
 	for i, host_bad in ipairs(host_blacklist) do
-		if WESNOTH_VERSION == version_number:new(host_bad) then
+		if WESNOTH_VERSION == V(host_bad) then
 			do_host_blacklisted_version(host_bad, host_min, host_max)
 			return
 		end
