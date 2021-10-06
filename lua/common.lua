@@ -520,7 +520,7 @@ function wesnoth.wml_actions.hidden_unit(cfg)
 	-- because we occasionally use this with units that have infinite
 	-- movement costs on all terrains, and there's no need to make
 	-- this smarter than [unit].
-	u.x, u.y = wesnoth.paths.find_vacant_tile(u.x, u.y)
+	u.x, u.y = wesnoth.paths.find_vacant_hex(u.x, u.y)
 	u.hidden = true
 	u:to_map()
 end
