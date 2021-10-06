@@ -133,7 +133,7 @@ function wesnoth.wml_actions.item_prompt(cfg)
 		end
 	end
 
-	local res = wesnoth.synchronize_choice(function()
+	local res = wesnoth.sync.evaluate_single(function()
 		return { value = wesnoth.show_dialog(dd, function()
 			-- #textdomain wesnoth-Naia
 			local _ = wesnoth.textdomain "wesnoth-Naia"

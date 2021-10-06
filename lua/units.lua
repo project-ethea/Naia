@@ -99,7 +99,7 @@ function wesnoth.wml_actions.verlissh_namegen()
 		else
 			namegen_cfg = VERLISSH_PART_NAMES
 		end
-		u.name = wesnoth.synchronize_choice(function()
+		u.name = wesnoth.sync.evaluate_single(function()
 			return do_verlissh_namegen(namegen_cfg)
 		end).name
 	end
