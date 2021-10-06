@@ -323,7 +323,7 @@ function damage_action:play_sounds()
 		if not (status_effect == "poisoned" and self.target.status.unpoisonable) then
 			local sound = STATUS_EFFECTS[status_effect].sound
 			if sound then
-				wesnoth.play_sound(sound)
+				wesnoth.audio.play(sound)
 			end
 		end
 	end

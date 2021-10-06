@@ -13,7 +13,7 @@ function wesnoth.wml_actions.quake(cfg)
 	local sound = cfg.sound
 
 	if sound then
-		wesnoth.play_sound(sound)
+		wesnoth.audio.play(sound)
 	end
 
 	scroll(  5,   0)

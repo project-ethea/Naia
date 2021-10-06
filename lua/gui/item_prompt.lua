@@ -151,7 +151,7 @@ function wesnoth.wml_actions.item_prompt(cfg)
 
 	if res.value == 1 then
 		if sound ~= nil then
-			wesnoth.play_sound(sound)
+			wesnoth.audio.play(sound)
 		end
 
 		utils.handle_event_commands(branch_then, "conditional")

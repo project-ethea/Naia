@@ -447,7 +447,7 @@ function wesnoth.wml_actions.animate_attack(cfg)
 		add_tab = true
 
 		if animate and sound then -- for unhealable, that has no sound
-			wesnoth.play_sound(sound)
+			wesnoth.audio.play(sound)
 		end
 	end
 
