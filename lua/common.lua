@@ -802,7 +802,7 @@ function wesnoth.wml_actions.apply_amlas(cfg)
 	local u = wesnoth.get_units(cfg)[1] or helper.wml_error("[apply_amlas]: Could not match any units!")
 
 	for amla_cfg in wml.child_range(cfg, "advancement") do
-		wesnoth.add_modification(u, "advancement", amla_cfg)
+		u:add_modification("advancement", amla_cfg)
 	end
 end
 
@@ -840,7 +840,7 @@ function wesnoth.wml_actions.apply_objects(cfg)
 		elseif no_internals and object_cfg.description == nil then
 			wprintf(W_DBG, "Skipping description-less object")
 		else
-			wesnoth.add_modification(u, "object", object_cfg)
+			u:add_modification("object", object_cfg)
 		end
 	end
 end
