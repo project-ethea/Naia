@@ -361,7 +361,7 @@ function wesnoth.wml_actions.harm_multiple_units(cfg)
 	-- whole thing ourselves (we'll play the animation first and only once the
 	-- animation has finished the floating damage labels will show up/the
 
-	local animator = wesnoth.create_animator()
+	local animator = wesnoth.units.create_animator()
 
 	local act_sequence = {}
 
