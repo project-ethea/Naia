@@ -140,7 +140,7 @@ function check_addon_compatibility(package_blacklist)
 
 	local function do_single_addon_compat(id, title)
 		wprintf(W_INFO, "COMPAT: Checking for add-on %s...", id)
-		if wesnoth.have_file("~add-ons/" .. id) then
+		if filesystem.have_file("~add-ons/" .. id) then
 			wprintf(W_ERR, "COMPAT: Incompatible add-on %s detected", id)
 			table.insert(bl_found, title)
 		end
