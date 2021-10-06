@@ -515,7 +515,7 @@ end
 ---
 
 function wesnoth.wml_actions.hidden_unit(cfg)
-	local u = wesnoth.create_unit(cfg)
+	local u = wesnoth.units.create(cfg)
 	-- Don't clobber existing units. We don't check for passability
 	-- because we occasionally use this with units that have infinite
 	-- movement costs on all terrains, and there's no need to make
