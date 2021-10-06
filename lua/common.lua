@@ -489,7 +489,7 @@ function wesnoth.wml_actions.animate_attack(cfg)
 			} }
 		} )
 	else
-		wesnoth.float_label( defender.x, defender.y, ("<span foreground='red'>%s</span>"):format(text) )
+		wesnoth.interface.float_label( defender.x, defender.y, ("<span foreground='red'>%s</span>"):format(text) )
 	end
 
 	defender.hitpoints = defender.hitpoints - damage

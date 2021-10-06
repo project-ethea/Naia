@@ -330,7 +330,7 @@ function damage_action:play_sounds()
 end
 
 function damage_action:display_floating_label()
-	wesnoth.float_label(self.target.x, self.target.y, STATUS_FORMAT:format(self.floating_label))
+	wesnoth.interface.float_label(self.target.x, self.target.y, STATUS_FORMAT:format(self.floating_label))
 end
 
 ---------------------------
