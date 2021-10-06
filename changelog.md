@@ -3,10 +3,17 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 
 Version 20211005.9000+dev:
 --------------------------
+* General:
+  * First fully-supported Wesnoth 1.16 release, supporting Wesnoth 1.15.14 and
+    later.
+  * Removed all compatibility code for Wesnoth 1.15.13 and earlier.
+
 * Terrains:
   * Removed obsolete Earthy Rockbound Cave terrain.
 
 * Units:
+  * Switched all units, abilities, and weapon specials to the 1.16 special
+    notes syntax.
   * Removed obsolete Fire Wraith backport.
   * Removed obsolete Giant Ant unit.
 
