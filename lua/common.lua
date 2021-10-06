@@ -890,8 +890,8 @@ function wesnoth.wml_actions.scatter_images(cfg)
 	end
 
 	for i = 1, count do
-		local loc = locs[helper.rand(("1..%d"):format(#locs))]
-		local img = helper.rand(cfg.image)
+		local loc = locs[mathx.random_choice(("1..%d"):format(#locs))]
+		local img = mathx.random_choice(cfg.image)
 
 		wesnoth.wml_actions.item {
 			x = loc[1],
