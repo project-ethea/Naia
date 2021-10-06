@@ -92,7 +92,7 @@ local function do_addon_compat_fail(titles)
 	end
 
 	defer(function ()
-		wesnoth.show_message_box(caption, msg)
+		gui.show_prompt(caption, msg)
 		die()
 	end)
 end
