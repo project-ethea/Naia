@@ -1,24 +1,22 @@
 --
--- Lua core utilities library
---
 -- codename Naia - Project Ethea phase 1 campaigns shared library
 -- Copyright (C) 2006 - 2021 by Iris Morelle <shadowm@wesnoth.org>
 --
 -- See COPYING for usage terms.
 --
 
----
--- Returns a pseudorandom value from a set without syncing replays/MP.
---
--- This will use the same format as WML [set_variable] in the future, maybe,
--- but for now it's just a trivial wrapper around math.random with the added
--- requirement of providing both arguments.
---
--- Do NOT use this for gamestate-altering actions. You've been warned.
----
-function unsynced_random(a, b)
-	return math.random(a, b)
-end
+-------------------------------------------------------------------------------
+--                              COMMON LIBRARY                               --
+-------------------------------------------------------------------------------
+
+PROJECT_ETHEA_NAIA_VERSION = (...).version
+NAIA_PREFIX                = (...).prefix
+WESNOTH_VERSION            = wesnoth.current_version()
+WML_INIT                   = wml.get_child(..., "init")
+
+helper                     = wesnoth.require("helper.lua")
+utils                      = wesnoth.require("wml-utils.lua")
+on_event                   = wesnoth.require("on_event.lua")
 
 ---
 -- Log levels for wput and wprintf.
@@ -101,6 +99,19 @@ end
 ---
 function in_range(value, minval, maxval)
 	return math.max(minval, math.min(value, maxval))
+end
+
+---
+-- Returns a pseudorandom value from a set without syncing replays/MP.
+--
+-- This will use the same format as WML [set_variable] in the future, maybe,
+-- but for now it's just a trivial wrapper around math.random with the added
+-- requirement of providing both arguments.
+--
+-- Do NOT use this for gamestate-altering actions. You've been warned.
+---
+function unsynced_random(a, b)
+	return math.random(a, b)
 end
 
 ---
@@ -313,7 +324,41 @@ function V(version_number)
 	return wesnoth.version(version_number)
 end
 
--- The game host version
-WESNOTH_VERSION = wesnoth.current_version()
+-------------------------------------------------------------------------------
+--                              INITIALIZATION                               --
+-------------------------------------------------------------------------------
+
+local NAIA_PACKAGES = {
+	'package',
+	'common',
+	'abilities',
+	'conditional',
+	'hmu',
+	'npc',
+	'optimizations',
+	'patch',
+	'persistent',
+	'spawner',
+	'theme',
+	'units',
+	'wlp',
+	'gui/amla_list',
+	'gui/bug',
+	'gui/item_prompt',
+	'gui/transient_message',
+	'compat',
+}
 
 wprintf(W_INFO, "codename Naia version %s initializing", PROJECT_ETHEA_NAIA_VERSION)
+
+for _, pkg in ipairs(NAIA_PACKAGES) do
+	local path = ("%s/lua/%s.lua"):format(NAIA_PREFIX, pkg)
+	wprintf(W_INFO, "Init: loading %s", path)
+	wesnoth.dofile(path)
+end
+
+if WML_INIT then
+	-- wmlinit block is executed as a part of a pre-preload WML event
+	wprintf(W_INFO, "Init: execute WML startup block")
+	utils.handle_event_commands(WML_INIT)
+end
