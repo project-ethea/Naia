@@ -79,8 +79,8 @@ function naia_register_package(p)
 
 	package.registered = true
 
-	wprintf(W_INFO, "%s (%s) version %s (Naia %s)", package.name, package.global_id, package.version, package.naia_version)
 	_wsetlogprefix(package.abbreviation)
+	wprintf(W_INFO, "%s (%s) version %s (Naia %s)", package.name, package.global_id, package.version, package.naia_version)
 
 	if package.dev_mode then
 		wprintf(W_INFO, "Maintainer mode enabled")
