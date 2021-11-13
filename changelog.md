@@ -1,8 +1,8 @@
 Naia - Project Ethea Phase 1 Shared Library - Changelog
 =======================================================
 
-Version 20211005.0+dev:
------------------------
+Version 20211005.1:
+-------------------
 * Lua and WML library:
   * Fixed a crash in `[music]` that would happen if the current playlist
     is empty.
