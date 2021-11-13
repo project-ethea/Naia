@@ -44,7 +44,7 @@ log_patch("music", "immediate=yes fade-out wait (Wesnoth #4458, #4459, #4460)")
 local _WA_music = wesnoth.wml_actions.music
 
 function wesnoth.wml_actions.music(cfg)
-	if cfg.immediate and wesnoth.music_list.current then
+	if cfg.immediate and wesnoth.music_list.current and #wesnoth.audio.music_list > 0 then
 		wesnoth.music_list.current.ms_after = 0
 	end
 
