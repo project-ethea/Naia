@@ -2,7 +2,7 @@
 -- Abilities and weapon specials support library
 --
 -- codename Naia - Project Ethea phase 1 campaigns shared library
--- Copyright (C) 2021 by Iris Morelle <shadowm@wesnoth.org>
+-- Copyright (C) 2021 - 2023 by Iris Morelle <shadowm@wesnoth.org>
 --
 -- See COPYING for usage terms.
 --
