@@ -41,10 +41,10 @@ defscope:
 	$(DEFSCOPE) $(SCENARIO_DIRS)
 
 lint:
-	$(WMLLINT) -d $(WESNOTH_CORE_DIR) $(NAIA_PREFIX) $(targetdir)
+	$(WMLLINT) -d "$(WESNOTH_CORE_DIR)" "$(NAIA_PREFIX)" "$(targetdir)"
 
 pkg:
-	$(DISTTOOL) $(targetdir) $(DISTDIR)
+	$(DISTTOOL) "$(targetdir)" "$(DISTDIR)"
 
 pbl: _server.pbl
 
@@ -64,7 +64,7 @@ test:
 
 	@for p in $(PACKS) __WMLUNITS__; do for d in $(DIFFICULTIES); do \
 		echo "    TEST    $$p -> $$d"; \
-		$(WML_PREPROCESS) $(targetdir) .preprocessor.out --preprocess-defines __TEST_SUITE__,$(EXTRASYMS),$(CAMPAIGNSYM),$$d,$$p 2>&1 | tail -n +5 ; \
+		$(WML_PREPROCESS) "$(targetdir)" .preprocessor.out --preprocess-defines __TEST_SUITE__,$(EXTRASYMS),$(CAMPAIGNSYM),$$d,$$p 2>&1 | tail -n +5 ; \
 		test "$(AUTO_DELTEMP)" -ne 0 && rm -rf .preprocessor.out; true; \
 	done; done
 
@@ -77,7 +77,7 @@ stats:
 
 	@for p in $(PACKS) __WMLUNITS__; do for d in $(DIFFICULTIES); do \
 		echo "    WML     $$p -> $$d"; \
-		$(WML_PREPROCESS) $(targetdir) .preprocessor.out --preprocess-defines __TEST_SUITE__,$(EXTRASYMS),$(CAMPAIGNSYM),$$d,$$p 2>&1 2> /dev/null; \
+		$(WML_PREPROCESS) "$(targetdir)"" .preprocessor.out --preprocess-defines __TEST_SUITE__,$(EXTRASYMS),$(CAMPAIGNSYM),$$d,$$p 2>&1 2> /dev/null; \
 		wc -lcm .preprocessor.out/_main.cfg | awk '{printf "            %u lines, %u characters (%1.0f KiB)\n", $$1, $$2, $$3 / 1024}'; \
 		test "$(AUTO_DELTEMP)" -ne 0 && rm -rf .preprocessor.out; true; \
 	done; done
@@ -115,7 +115,7 @@ wmlunits:
 	@#touch .wmlunits.rt/store/$(ADDON_NAME)/_info.cfg
 
 	@echo "    WMLUNITS [$(ADDON_NAME)]"
-	@$(WMLUNITS) -l en_US -D $(WESNOTH_DATA_DIR) -o .wmlunits.out -w $(WESNOTH) -C .wmlunits.rt/profile -a .wmlunits.rt/store -L .wmlunits.out/overview.txt -B .wmlunits.out/overview.txt -T 999999 > .wmlunits.out/wmlunits.log 2>&1
+	@$(WMLUNITS) -l en_US -D "$(WESNOTH_DATA_DIR)" -o .wmlunits.out -w "$(WESNOTH)" -C .wmlunits.rt/profile -a .wmlunits.rt/store -L .wmlunits.out/overview.txt -B .wmlunits.out/overview.txt -T 999999 > .wmlunits.out/wmlunits.log 2>&1
 
 	@rm -rf .wmlunits.rt
 	@rm -rf $(HTMLDIR) && mv .wmlunits.out $(HTMLDIR)
@@ -125,7 +125,7 @@ optipng:
 	$(OPTIPNG)
 
 clean-wmltools:
-	$(WMLLINT) --clean $(targetdir)
+	$(WMLLINT) --clean "$(targetdir)"
 	find \( \
 	    -name '*.new' -o \
 	    -name '*.tmp' -o \
