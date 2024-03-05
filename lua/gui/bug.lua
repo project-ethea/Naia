@@ -2,7 +2,7 @@
 -- Bug check report dialog
 --
 -- codename Naia - Project Ethea phase 1 campaigns shared library
--- Copyright (C) 2006 - 2023 by Iris Morelle <shadowm@wesnoth.org>
+-- Copyright (C) 2006 - 2024 by Iris Morelle <shadowm@wesnoth.org>
 --
 -- See COPYING for usage terms.
 --
