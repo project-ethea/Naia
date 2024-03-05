@@ -95,7 +95,7 @@ function wesnoth.wml_actions.save_map(cfg)
 		local row = {}
 
 		for x = 1 - border, width + border do
-			row[ x + border ] = wesnoth.get_terrain ( x, y )
+			row[ x + border ] = wesnoth.current.map[{x, y}]
 		end
 
 		t[ y + border ] = table.concat ( row, ',' )

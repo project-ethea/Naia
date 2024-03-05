@@ -58,5 +58,5 @@ end
 --
 function wesnoth.wml_conditionals.unit_location_is_passable(cfg)
 	local u = wesnoth.units.find_on_map(cfg)[1]
-	return not not (u and u:movement(wesnoth.get_terrain(u.x, u.y)) < u.max_moves)
+	return not not (u and u:movement(wesnoth.current.map[{u.x, u.y}]) < u.max_moves)
 end
