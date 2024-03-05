@@ -27,7 +27,7 @@ function wesnoth.wml_actions.run_spawn_controller(cfg)
 	if uv.spawner_turns <= 0 and uv.spawner_respawn then
 		dbg(("<CTL> fire '%s' now"):format(respawn_event))
 
-		wesnoth.fire("kill", {
+		wml.fire("kill", {
 			x = ctx.x1,
 			y = ctx.y1,
 			fire_event = false,
@@ -38,7 +38,7 @@ function wesnoth.wml_actions.run_spawn_controller(cfg)
 	else
 		dbg(("<CTL> fire '%s' on turn %d"):format(respawn_event, respawn_turn))
 
-		wesnoth.fire("event", {
+		wml.fire("event", {
 			name = ("turn %d"):format(respawn_turn),
 			first_time_only = true,
 			T.filter_condition {
@@ -113,5 +113,5 @@ function wesnoth.wml_actions.spawner_spawn(cfg)
 
 	-- Run [unit].
 	--dbg(wml.tostring(wml.tovconfig(cfg)))
-	wesnoth.fire("unit", cfg)
+	wml.fire("unit", cfg)
 end

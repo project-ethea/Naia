@@ -7,7 +7,7 @@
 
 function wesnoth.wml_actions.quake(cfg)
 	local function scroll(x, y)
-		wesnoth.fire("scroll", { x = x, y = y })
+		wml.fire("scroll", { x = x, y = y })
 	end
 
 	local sound = cfg.sound
