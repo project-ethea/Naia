@@ -416,7 +416,7 @@ function wesnoth.wml_actions.animate_attack(cfg)
 	local damage = calculate_damage(
 		amount, (cfg.alignment or "neutral"),
 		wesnoth.schedule.get_illumination({ defender.x, defender.y }).lawful_bonus,
-		wesnoth.unit_resistance( defender, cfg.damage_type or "dummy" )
+		100 - defender:resistance_against(cfg.damage_type or "dummy")
 	)
 
 	local hit_animation_type = true

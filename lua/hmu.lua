@@ -174,7 +174,7 @@ function damage_action:new(source, target, primary_attack, secondary_attack, dat
 
 	local damage_type = data.damage_type or "dummy"
 	local tod_bonus = wesnoth.schedule.get_illumination({ o.target.x, o.target.y }).lawful_bonus
-	local resistance = wesnoth.unit_resistance(o.target, damage_type)
+	local resistance = 100 - o.target:resistance_against(damage_type)
 	local resistance_multiplier = tonumber(data.resistance_multiplier) or 1
 	local base_damage = tonumber(data.amount)
 	local alignment = data.alignment or "neutral"
