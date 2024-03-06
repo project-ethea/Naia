@@ -1,7 +1,7 @@
 Art Licenses
 ============
 
-Included content that is not listed below or in the parent add-on's main ART_LICENSE file is provided under the terms of the GNU General Public License as published by the Free Software Foundation, either version 2 or (at your option) any later version.
+Included content that is not listed below or in the parent add-on's main `ART_LICENSE.md` file is provided under the terms of the GNU General Public License as published by the Free Software Foundation, either version 2 or (at your option) any later version.
 
 A copy of the GNU General Public License is provided in COPYING.
 
@@ -13,7 +13,7 @@ Copyright (C) 2006 - 2024 by Iris Morelle <shadowm@wesnoth.org>
 
 This work is licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License. To view a copy of this license, visit <https://creativecommons.org/licenses/by-nc-nd/4.0/> or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
 
-Tara unit sprites:
+### Tara unit sprites
 
  * images/units/faeries/dryad-tara.png
 
@@ -65,7 +65,7 @@ Copyright (C) 2018 - 2021 by WTactics.org/Arcmage.org
 
 This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License. To view a copy of this license, visit <https://creativecommons.org/licenses/by-sa/4.0/> or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
 
-Wight by Santiago Iborra:
+### Wight (by Santiago Iborra)
 
  * images/portraits/mal-hekuba.png
 
