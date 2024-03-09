@@ -81,20 +81,19 @@ function wesnoth.wml_actions.transient_message(cfg)
 	local message = cfg.message
 	if message == nil then message = "" end
 
-	local function preshow()
-		wesnoth.set_dialog_value(caption, "caption")
-		wesnoth.set_dialog_value(message, "message")
-		wesnoth.set_dialog_markup(true, "message")
+	local function preshow(self)
+		self.caption.label = caption
+		self.message.marked_up_text = message
 
 		if cfg.image ~= nil and tostring(cfg.image):len() > 0 then
-			wesnoth.set_dialog_value(cfg.image, "image")
+			self.image.label = cfg.image
 		else
-			wesnoth.set_dialog_visible(false, "image")
+			self.image.visible = false
 		end
 	end
 
 	local sound = cfg.sound
 	if sound ~= nil then wesnoth.audio.play(sound) end
 
-	wesnoth.show_dialog(dd, preshow, nil)
+	gui.show_dialog(dd, preshow, nil)
 end
