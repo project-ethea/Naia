@@ -10,8 +10,7 @@ return {
 
 		local priority_target = {}
 
-		local H = wesnoth.require "lua/helper.lua"
-		local W = H.set_wml_action_metatable {}
+		local W = wml.tag
 
 		function priority_target:change_attacks_aspect(target_ids)
 			-- Set 'attacks' aspect so that only unit with id=target_id
