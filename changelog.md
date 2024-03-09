@@ -11,6 +11,11 @@ Version 20211005.9000+dev:
 * Terrains:
   * Removed obsolete Earthy Rockbound Cave terrain.
 
+* User interface:
+  * Updated `[bug]` UI.
+  * Story text utilities now use resolution-independent text scaling to avoid
+    impossibly tiny captions on high DPI/Retina devices.
+
 * Units:
   * Switched all units, abilities, and weapon specials to the 1.16 special
     notes syntax.
