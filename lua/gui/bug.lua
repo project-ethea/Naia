@@ -9,6 +9,9 @@
 
 local T = wml.tag
 
+-- #textdomain wesnoth-Naia
+local _ = wesnoth.textdomain "wesnoth-Naia"
+
 --[[
 
 Displays an error message on a popup dialog.
@@ -71,16 +74,20 @@ function wesnoth.wml_actions.bug(cfg)
 	local alert_dialog = {
 		maximum_width = 640,
 		maximum_height = 900,
-		T.helptip { id="tooltip_large" }, -- mandatory field
-		T.tooltip { id="tooltip_large" }, -- mandatory field
-		T.grid { -- Title, will be the object name
+		T.helptip { id="tooltip_large" },
+		T.tooltip { id="tooltip_large" },
+		T.grid {
 			T.row {
 				T.column {
 					horizontal_alignment = "left",
-					grow_factor = 1, -- this one makes the title bigger and golden
+					grow_factor = 1,
 					border = "all",
 					border_size = 5,
-					T.label { definition = "title", id = "title", wrap = true }
+					T.label {
+						definition = "title",
+						id = "title",
+						wrap = true
+					}
 				}
 			},
 			T.row {
@@ -88,7 +95,10 @@ function wesnoth.wml_actions.bug(cfg)
 					horizontal_grow = true,
 					border = "all",
 					border_size = 5,
-					T.label { id = "message", wrap = true }
+					T.label {
+						id = "message",
+						wrap = true
+					}
 				}
 			},
 			T.row {
@@ -96,7 +106,10 @@ function wesnoth.wml_actions.bug(cfg)
 					horizontal_grow = true,
 					border = "all",
 					border_size = 5,
-					T.label { id = "feedback", wrap = true }
+					T.label {
+						id = "feedback",
+						wrap = true
+					}
 				}
 			},
 			T.row {
@@ -118,7 +131,11 @@ function wesnoth.wml_actions.bug(cfg)
 									horizontal_alignment = "left",
 									border = "all",
 									border_size = 5,
-									T.label { id = "message2", wrap = true }
+									T.label {
+										id = "message2",
+										label = _("The following WML condition was unexpectedly reached:"),
+										wrap = true
+									}
 								}
 							},
 							T.row {
@@ -128,7 +145,7 @@ function wesnoth.wml_actions.bug(cfg)
 									border = "all",
 									border_size = 5,
 									T.scroll_label {
-										id = "wml",
+										id = "dump",
 										definition = "verbatim",
 										vertical_scrollbar_mode = "always"
 									}
@@ -148,19 +165,30 @@ function wesnoth.wml_actions.bug(cfg)
 								border = "all",
 								border_size = 5,
 								grow_factor = 1,
-								T.button { id = "details" }
+								T.button {
+									id = "details_button",
+									label = _("Details")
+								}
 							},
 							T.column {
 								horizontal_alignment = "right",
 								border = "all",
 								border_size = 5,
-								T.button { id = "ok", label = wgettext("Continue"), return_value = 1 }
+								T.button {
+									id = "ok",
+									label = wgettext("Continue"),
+									return_value = 1
+								}
 							},
 							T.column {
 								horizontal_alignment = "right",
 								border = "all",
 								border_size = 5,
-								T.button { id = "quit", label = wgettext("Quit"), return_value = 2 }
+								T.button {
+									id = "quit",
+									label = wgettext("Quit"),
+									return_value = 2
+								}
 							}
 						}
 					}
@@ -169,22 +197,13 @@ function wesnoth.wml_actions.bug(cfg)
 		}
 	}
 
-	local function show_details()
-		wesnoth.set_dialog_visible(true, "details_area")
-		wesnoth.set_dialog_active(false, "details")
-	end
-
-	local function preshow()
-		-- #textdomain wesnoth-Naia
-		local _ = wesnoth.textdomain "wesnoth-Naia"
+	local function preshow(self)
 		local msg = _ "An inconsistency has been detected, and the scenario might not continue working as originally intended."
-		local msg2 = _ "The following WML condition was unexpectedly reached:"
 
 		if notice ~= nil and notice ~= "" then
 			if feedback ~= "omgbugseverywhere" then
-				msg = msg .. "\n\n" .. _ "Message:"
-				msg = msg .. "\n\t" .. cfg.message
-				msg = msg .. "\n"
+				msg = ("%s\n\n%s\n\t%s\n"):format(
+					msg, _("Message:"), cfg.message)
 			else
 				-- HACK: for the experimental version notice
 				msg = cfg.message
@@ -207,43 +226,39 @@ function wesnoth.wml_actions.bug(cfg)
 			end
 		end
 
-		local cap = _ "Error"
-		local det = _ "Details"
-
 		if feedback == "omgbugseverywhere" then
-			cap = _ "Notice"
-			wesnoth.set_dialog_visible(false, "details")
+			self.title.label = _("Notice")
+			self.details_button.visible = false
+		else
+			self.title.label = _("Error")
 		end
 
-		wesnoth.set_dialog_value(cap,  "title")
-		wesnoth.set_dialog_value(msg,  "message")
-		wesnoth.set_dialog_value(msg2, "message2")
-		wesnoth.set_dialog_value(det,  "details")
-
-		wesnoth.set_dialog_markup(true, "message")
-		wesnoth.set_dialog_markup(true, "feedback")
+		self.message.marked_up_text = msg
 
 		if feedback_msg then
-			wesnoth.set_dialog_value(feedback_msg, "feedback")
+			self.feedback.marked_up_text = feedback_msg
 		else
-			wesnoth.set_dialog_visible(false, "feedback")
+			self.feedback.visible = false
 		end
 
 		if cond then
-			wesnoth.set_dialog_callback(show_details, "details")
-			wesnoth.set_dialog_value(wml.tostring(cond), "wml")
+			self.details_button.on_button_click = function()
+				self.details_area.visible = true
+				self.details_button.enabled = false
+			end
+			self.dump.label = wml.tostring(cond)
 		else
-			wesnoth.set_dialog_active(false, "details")
+			self.details_button.enabled = false
 		end
 
 		if not may_ignore then
-			wesnoth.set_dialog_active(false, "ok")
+			self.ok.enabled = false
 		end
 
-		wesnoth.set_dialog_visible(false, "details_area")
+		self.details_area.visible = false
 	end
 
-	local dialog_result = wesnoth.show_dialog(alert_dialog, preshow, nil)
+	local dialog_result = gui.show_dialog(alert_dialog, preshow, nil)
 
 	if wesnoth.game_config.debug then
 		wesnoth.wml_actions.inspect {}
