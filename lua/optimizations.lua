@@ -6,21 +6,22 @@
 --
 
 function wesnoth.wml_actions.quake(cfg)
-	local function scroll(x, y)
-		wml.fire("scroll", { x = x, y = y })
-	end
-
 	local sound = cfg.sound
 
 	if sound then
 		wesnoth.audio.play(sound)
 	end
 
-	scroll(  5,   0)
-	scroll(-10,   0)
-	scroll(  5,   5)
-	scroll(  0, -10)
-	scroll(  0,   5)
+	local shake_dist = math.max(1, cfg.strength or 10)
+	local length = math.max(1, cfg.length or 4)
+
+	for _ = 1, length do
+		wesnoth.interface.scroll(     shake_dist,               0)
+		wesnoth.interface.scroll(-2 * shake_dist,               0)
+		wesnoth.interface.scroll(     shake_dist,      shake_dist)
+		wesnoth.interface.scroll(              0, -2 * shake_dist)
+		wesnoth.interface.scroll(              0,      shake_dist)
+	end
 end
 
 local function screen_color_adjust(r, g, b)
