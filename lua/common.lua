@@ -910,7 +910,7 @@ function wesnoth.wml_actions.deactivate_and_serialize_sides(cfg)
 
 	wml.variables[variable] = {}
 
-	for t, side_number in helper.get_sides(cfg) do
+	for t, side_number in wesnoth.sides.find(cfg) do
 		-- wesnoth.message("WML", ("store side %u"):format(side_number))
 		local side_store = ("%s[%u]"):format(variable, array_index)
 
