@@ -103,11 +103,52 @@ function wesnoth.wml_actions.bug(cfg)
 			},
 			T.row {
 				T.column {
+					border = "top",
+					border_size = 10,
+					horizontal_grow = true,
+					T.panel {
+						id = "wml_message_area",
+						T.grid {
+							T.row {
+								T.column {
+									horizontal_alignment = "left",
+									border = "all",
+									border_size = 5,
+									T.label {
+										label = _("Developer message:")
+									}
+								}
+							},
+							T.row {
+								T.column {
+									horizontal_grow = true,
+									border = "all",
+									border_size = 5,
+									T.scroll_label {
+										id = "wml_message",
+										definition = "verbatim"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			T.row {
+				T.column {
+					T.spacer {
+						height = 10
+					}
+				}
+			},
+			T.row {
+				T.column {
 					horizontal_grow = true,
 					border = "all",
 					border_size = 5,
 					T.label {
 						id = "feedback",
+						link_aware = true,
 						wrap = true
 					}
 				}
@@ -128,13 +169,29 @@ function wesnoth.wml_actions.bug(cfg)
 						T.grid {
 							T.row {
 								T.column {
-									horizontal_alignment = "left",
-									border = "all",
-									border_size = 5,
-									T.label {
-										id = "message2",
-										label = _("The following WML condition was unexpectedly reached:"),
-										wrap = true
+									horizontal_grow = true,
+									T.grid {
+										T.row {
+											T.column {
+												horizontal_alignment = "left",
+												border = "all",
+												border_size = 5,
+												T.label {
+													id = "message2",
+													label = _("The following WML condition was unexpectedly reached:"),
+													wrap = true
+												}
+											},
+											T.column {
+												horizontal_alignment = "right",
+												border = "all",
+												border_size = 5,
+												T.button {
+													id = "inspect_button",
+													label = _ "Inspect"
+												}
+											}
+										}
 									}
 								}
 							},
@@ -200,13 +257,15 @@ function wesnoth.wml_actions.bug(cfg)
 	local function preshow(self)
 		local msg = _ "An inconsistency has been detected, and the scenario might not continue working as originally intended."
 
+		self.wml_message_area.visible = false
+
 		if notice ~= nil and notice ~= "" then
 			if feedback ~= "omgbugseverywhere" then
-				msg = ("%s\n\n%s\n\t%s\n"):format(
-					msg, _("Message:"), cfg.message)
+				self.wml_message.label = notice
+				self.wml_message_area.visible = true
 			else
 				-- HACK: for the experimental version notice
-				msg = cfg.message
+				msg = notice
 			end
 		end
 
@@ -214,10 +273,10 @@ function wesnoth.wml_actions.bug(cfg)
 
 		if report then
 			if feedback == "forum" then
-				feedback_msg = _ "Please report this to the add-on maintainer on the forums:"
+				feedback_msg = _ "Please report this issue on the forums:"
 				feedback_msg = feedback_msg .. "\n" .. naia_get_package_url()[1]
 			elseif feedback == "tracker" then
-				feedback_msg = _ "Please report this to the add-on maintainer on the issue tracker:"
+				feedback_msg = _ "Please report this issue on the bug tracker:"
 				feedback_msg = feedback_msg .. "\n" .. naia_get_package_url()[2]
 			elseif feedback == "omgbugseverywhere" then
 				feedback_msg = naia_get_package_url()[2]
@@ -251,6 +310,10 @@ function wesnoth.wml_actions.bug(cfg)
 			self.details_button.enabled = false
 		end
 
+		self.inspect_button.on_button_click = function()
+			wesnoth.wml_actions.inspect {}
+		end
+
 		if not may_ignore then
 			self.ok.enabled = false
 		end
@@ -259,10 +322,6 @@ function wesnoth.wml_actions.bug(cfg)
 	end
 
 	local dialog_result = gui.show_dialog(alert_dialog, preshow, nil)
-
-	if wesnoth.game_config.debug then
-		wesnoth.wml_actions.inspect {}
-	end
 
 	if dialog_result == 2 or not may_ignore then
 		die()
