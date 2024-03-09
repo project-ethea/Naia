@@ -9,6 +9,9 @@
 
 local T = wml.tag
 
+-- #textdomain wesnoth-Naia
+local _ = wesnoth.textdomain "wesnoth-Naia"
+
 ---
 -- Displays a prompt for confirming item pick-ups.
 --
@@ -77,6 +80,7 @@ function wesnoth.wml_actions.item_prompt(cfg)
 
 											T.label {
 												id = "message",
+												label = _("Do you want this unit to pick up this item?"),
 												wrap = true
 											}
 										}
@@ -98,7 +102,11 @@ function wesnoth.wml_actions.item_prompt(cfg)
 								border_size = 5,
 								horizontal_alignment = "right",
 
-								T.button { id = "ok", label = wgettext("Yes"), return_value = 1 }
+								T.button {
+									id = "ok",
+									label = wgettext("Yes"),
+									return_value = 1
+								}
 							},
 
 							T.column {
@@ -106,7 +114,11 @@ function wesnoth.wml_actions.item_prompt(cfg)
 								border_size = 5,
 								horizontal_alignment = "right",
 
-								T.button { id = "quit", label = wgettext("No"), return_value = 2 }
+								T.button {
+									id = "quit",
+									label = wgettext("No"),
+									return_value = 2
+								}
 							}
 						}
 					}
@@ -134,15 +146,9 @@ function wesnoth.wml_actions.item_prompt(cfg)
 	end
 
 	local res = wesnoth.sync.evaluate_single(function()
-		return { value = wesnoth.show_dialog(dd, function()
-			-- #textdomain wesnoth-Naia
-			local _ = wesnoth.textdomain "wesnoth-Naia"
-			local message = _ "Do you want this unit to pick up this item?"
-
-			wesnoth.set_dialog_value(message, "message")
-
+		return { value = gui.show_dialog(dd, function(self)
 			if image ~= nil and tostring(image):len() > 0 then
-				wesnoth.set_dialog_value(image, "image")
+				self.image.label = image
 			end
 		end)}
 	end)
