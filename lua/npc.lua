@@ -17,14 +17,11 @@
 -- [/npc_bird_behavior]
 ---
 function wesnoth.wml_actions.npc_bird_behavior(cfg)
-	local map_w, map_h, map_border = wesnoth.get_map_size()
+	local map_w = wesnoth.current.map.playable_width
+	local map_h = wesnoth.current.map.playable_height
 
 	local function do_error(msg)
 		wml.error("[npc_bird_behavior]: " .. msg)
-	end
-
-	if map_border ~= 1 then
-		do_error("maps with border_size != 1 are not supported yet")
 	end
 
 	local function on_board(x, y)
