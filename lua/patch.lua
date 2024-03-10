@@ -213,6 +213,7 @@ local skippable_actions = {
 	"screen_fade",
 	"fade_in",
 	"fade_to_black",
+	"cloak_screen",
 	"floating_text",
 }
 

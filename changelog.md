@@ -15,6 +15,8 @@ Version 20211005.9000+dev:
   * Updated `[bug]` UI.
   * Story text utilities now use resolution-independent text scaling to avoid
     impossibly tiny captions on high DPI/Retina devices.
+  * Reworked `[color_adjust]` screen effects to use `[screen_fade]` internally
+    instead.
 
 * Units:
   * Switched all units, abilities, and weapon specials to the 1.16 special

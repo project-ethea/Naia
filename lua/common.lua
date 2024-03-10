@@ -988,15 +988,76 @@ function wesnoth.wml_actions.clear_map_labels(cfg)
 end
 
 ---
--- Resets the screen color adjustment.
+-- Resets any screen color adjustments in place.
 --
--- This is really just [color_adjust] with all parameters set to 0, but defined
--- as a separate tag in order to prevent it from being caught by the
--- is_skipping_messages functionality defined in patch.lua. This is used by the
--- RESET_SCREEN macro used throughout IftU and AtS.
+-- This is really just [screen_fade] + [color_adjust] with all parameters set
+-- to 0, but defined as a separate tag in order to prevent it from being
+-- caught by the is_skipping_messages functionality defined in patch.lua. This
+-- is used by the RESET_SCREEN macro used throughout IftU and AtS.
 --
 -- See also Naia issue #6.
 ---
 function wesnoth.wml_actions.reset_screen()
+	-- Resets effects from [fade_to_black] and the like
+	wesnoth.interface.screen_fade({0, 0, 0, 0}, 0)
+	-- Resets [color_adjust] effects
 	wesnoth.interface.color_adjust(0, 0, 0)
+end
+
+---
+-- Resets [screen_fade] color adjustment.
+---
+function wesnoth.wml_actions.reset_fade()
+	-- Resets effects from [fade_to_black] and the like
+	wesnoth.interface.screen_fade({0, 0, 0, 0}, 0)
+end
+
+---
+-- Sets a cloaked screen using the screen fade mechanism.
+---
+function wesnoth.wml_actions.cloak_screen(cfg)
+	local r, g, b = cfg.red, cfg.green, cfg.blue
+
+	if wesnoth.current.event_context.name == 'prestart' then
+		-- HACK:
+		-- Wesnoth 1.18 does not actually set the screen fade effect correctly
+		-- when performed in a prestart event, resulting in the game screen
+		-- being completely visible by the time the start event fires. We work
+		-- around this by falling back to the 1.16 and earlier-era mechanism
+		-- where we used [color_adjust], and let the next [fade_to_black] or
+		-- [fade_in] take care of clearing the adjustment for us.
+		-- NOTE:
+		-- There is basically only one situation where the start event will
+		-- NOT begin with a fade-in and that's AtS E3S8C.
+		wml.variables.__naia_prestart_screen_cloak = {
+			red = r, green = g, blue = b
+		}
+		wesnoth.interface.color_adjust(r, g, b)
+	end
+	wesnoth.interface.screen_fade({r, g, b, 255}, 0)
+end
+
+---
+-- Helper for the 1.18 [screen_fade] workaround in [cloak_screen]
+---
+
+local _GE_on_event = wesnoth.game_events.on_event
+
+function wesnoth.game_events.on_event(event_name)
+	if wml.variables.__naia_prestart_screen_cloak then
+		-- Swap [color_adjust] with [screen_fade] effect
+		wesnoth.interface.screen_fade({
+			wml.variables.__naia_prestart_screen_cloak.red,
+			wml.variables.__naia_prestart_screen_cloak.green,
+			wml.variables.__naia_prestart_screen_cloak.blue,
+			255
+		}, 0)
+		wesnoth.interface.color_adjust(0, 0, 0)
+		-- Cleanup
+		wml.variables.__naia_prestart_screen_cloak = nil
+	end
+	-- Chain back
+	if _GE_on_event then
+		_GE_on_event(event_name)
+	end
 end
