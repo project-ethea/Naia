@@ -17,6 +17,8 @@ Version 20211005.9000+dev:
     impossibly tiny captions on high DPI/Retina devices.
   * Reworked `[color_adjust]` screen effects to use `[screen_fade]` internally
     instead.
+  * Added debug UI utilities to the context menu in maintainer mode when debug
+    mode is enabled.
 
 * Units:
   * Switched all units, abilities, and weapon specials to the 1.16 special
