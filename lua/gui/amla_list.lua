@@ -626,7 +626,7 @@ function naia_do_amla_menu(cfg)
 	-- Set-up the actual dialog
 	--
 
-	wesnoth.show_dialog(amla_dlg, function()
+	gui.show_dialog(amla_dlg, function(self)
 		-- Variables
 
 		local current_filter = ADV_FILTERS.adv_display_all
@@ -721,11 +721,11 @@ function naia_do_amla_menu(cfg)
 		end
 
 		local function clear_advancements_listbox()
-			wesnoth.remove_dialog_item(1, 0, "adv_list")
+			self.adv_list:remove_items_at(1, 0)
 		end
 
 		local function get_current_type()
-			local row = wesnoth.get_dialog_value("adv_list")
+			local row = self.adv_list.selected_index
 			if row < 1 then
 				return ADV_NONE
 			end
@@ -733,7 +733,7 @@ function naia_do_amla_menu(cfg)
 		end
 
 		local function get_current_advancement()
-			local row = wesnoth.get_dialog_value("adv_list")
+			local row = self.adv_list.selected_index
 			if row < 1 then
 				return nil
 			end
@@ -773,7 +773,7 @@ function naia_do_amla_menu(cfg)
 		end
 
 		local function preview_toggle()
-			return wesnoth.get_dialog_value("preview_toggle")
+			return self.preview_toggle.selected
 		end
 
 		local function refresh_unit_preview()
@@ -785,15 +785,15 @@ function naia_do_amla_menu(cfg)
 			-- advancement the unit has already acquired, or if the preview is
 			-- disabled.
 			if not preview_toggle() or get_current_type() == ADV_AMLA_ACQUIRED then
-				wesnoth.set_dialog_value(preview_unit, "unit_display")
-				wesnoth.set_dialog_visible(true, "unit_display")
+				self.unit_display.unit = preview_unit
+				self.unit_display.visible = true
 				return
 			end
 
 			local adv = get_current_advancement()
 			if not adv then
 				-- Nothing's selected or the selection is invalid somehow
-				wesnoth.set_dialog_visible("hidden", "unit_display")
+				self.unit_display.visible = "hidden"
 				return
 			elseif not adv.amla then
 				local promotion_ut = adv.unit_type
@@ -803,8 +803,8 @@ function naia_do_amla_menu(cfg)
 				recursive_apply_amla(adv.amla.id)
 			end
 
-			wesnoth.set_dialog_value(preview_unit, "unit_display")
-			wesnoth.set_dialog_visible(true, "unit_display")
+			self.unit_display.unit = preview_unit
+			self.unit_display.visible = true
 		end
 
 		local function rebuild()
@@ -896,12 +896,11 @@ function naia_do_amla_menu(cfg)
 					display_text = pango_colorize(tostring(_("advancements^Advance to: %s")):format(text), ADV_PROMOTION_COLOR)
 				end
 
-				wesnoth.set_dialog_value(icon, "adv_list", i, "adv_icon")
-				wesnoth.set_dialog_value(display_text, "adv_list", i, "adv_label")
-				wesnoth.set_dialog_markup(true, "adv_list", i, "adv_label")
-				wesnoth.set_dialog_value(times, "adv_list", i, "adv_times")
-				wesnoth.set_dialog_markup(true, "adv_list", i, "adv_times")
-				wesnoth.set_dialog_visible(show_times, "adv_list", i, "adv_times")
+				local row = self.adv_list:add_item()
+				row.adv_icon.label = icon
+				row.adv_label.marked_up_text = display_text
+				row.adv_times.marked_up_text = times
+				row.adv_times.visible = show_times
 			end
 
 			refresh_unit_preview()
@@ -910,7 +909,7 @@ function naia_do_amla_menu(cfg)
 		local function do_update_filter_options(new_filter)
 			-- Reflect current selection on the radio buttons
 			for id, mask in pairs(ADV_FILTERS) do
-				wesnoth.set_dialog_value(new_filter == mask, id)
+				self:find(id).selected = new_filter == mask
 			end
 
 			-- Rebuild view
@@ -919,25 +918,27 @@ function naia_do_amla_menu(cfg)
 		end
 
 		for id, mask in pairs(ADV_FILTERS) do
-			wesnoth.set_dialog_callback(function() do_update_filter_options(mask) end, id)
+			self:find(id).on_modified = function()
+				do_update_filter_options(mask)
+			end
 		end
 
-		wesnoth.set_dialog_value(true, "preview_toggle")
+		self.preview_toggle.selected = true
 
-		wesnoth.set_dialog_callback(refresh_unit_preview, "adv_list")
+		self.adv_list.on_modified = refresh_unit_preview
 
-		wesnoth.set_dialog_callback(refresh_unit_preview, "preview_toggle")
+		self.preview_toggle.on_modified = refresh_unit_preview
 
 		-- This will repopulate the list at the start of the dialog's lifecycle
 		do_update_filter_options(ADV_FILTERS.adv_display_all)
 
 		-- Disable options that don't apply. We need to do this after calling
 		-- do_update_filter_options() once in order for state not to be nil.
-		wesnoth.set_dialog_active(state.num_acquired_amlas > 0, "adv_display_current")
+		self.adv_display_current.enabled = state.num_acquired_amlas > 0
 
-		wesnoth.set_dialog_visible(has_hidden_adv, "hidden_adv_notice")
+		self.hidden_adv_notice.visible = has_hidden_adv
 
-		wesnoth.set_dialog_focus("adv_list")
+		self.adv_list:focus()
 	end)
 end
 
