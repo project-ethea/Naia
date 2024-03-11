@@ -24,6 +24,9 @@ local function debug_message(text)
 	wesnoth.interface.add_chat_message("Naia [Debug]", text)
 end
 
+-- Filled in by scenarios via [register_debug_trigger]
+local debug_triggers = {}
+
 -- These are formally defined later
 local debug_ui = {
 	side_selector = function(message) end
@@ -173,6 +176,23 @@ function wesnoth.wml_conditionals.debug_location_on_map()
 	return wesnoth.current.map:on_board(x, y, false)
 end
 
+function wesnoth.wml_conditionals.debug_triggers_available()
+	return #debug_triggers > 0
+end
+
+function wesnoth.wml_actions.register_debug_trigger(cfg)
+	debug_triggers = {}
+	local i = 1
+	for trigger in wml.child_range(cfg, "trigger") do
+		debug_triggers[i] = {
+			event_name = trigger.event_name,
+			label = trigger.label
+		}
+		wprintf(W_DBG, "[register_debug_trigger] Event '%s' registered", trigger.event_name)
+		i = i + 1
+	end
+end
+
 function wesnoth.wml_actions.unit_debug_utilities()
 	local x = wesnoth.current.event_context.unit_x
 	local y = wesnoth.current.event_context.unit_y
@@ -215,6 +235,23 @@ function wesnoth.wml_actions.terrain_debug_utilities()
 	if result > 0 then
 		TERRAIN_DEBUG_MENU[result]._action(x, y)
 		wesnoth.wml_actions.redraw {}
+	end
+end
+
+function wesnoth.wml_actions.event_debug_utilities()
+	local menu = {}
+	for i = 1, #debug_triggers do
+		local trigger_label = tostring( _ "debug^Trigger: %s"):format(debug_triggers[i].label)
+		menu[i] = {
+			icon = DEBUG_ICON,
+			label = trigger_label
+		}
+	end
+
+	local result = gui.show_menu(menu)
+
+	if result > 0 then
+		wesnoth.game_events.fire(debug_triggers[result].event_name)
 	end
 end
 
@@ -369,6 +406,19 @@ end
 ---
 -- Create WML context menu items
 ---
+
+wesnoth.wml_actions.set_menu_item {
+	id = "naia_debug_events",
+	description = _ "debug^Naia: Debug Events",
+	image = DEBUG_ICON,
+	T.show_if {
+		T.debug_utilities_available {},
+		T.debug_triggers_available {}
+	},
+	T.command {
+		T.event_debug_utilities {}
+	}
+}
 
 wesnoth.wml_actions.set_menu_item {
 	id = "naia_debug_unit",
