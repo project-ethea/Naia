@@ -14,11 +14,11 @@ local _ = wesnoth.textdomain "wesnoth-Naia"
 
 local BLANK_ICON = "misc/blank-hex.png~CROP(0,0,18,18)"
 
-local DEBUG_ICON = "icons/action/editor-tool-item_25.png~SCALE(0,0,25,25)"
+local DEBUG_ICON = "icons/action/editor-tool-item_25.png"
 
-local UNIT_ICON = "icons/action/editor-tool-unit_25.png~SCALE(0,0,25,25)"
+local UNIT_ICON = "icons/action/editor-tool-unit_25.png"
 
-local HEX_ICON = "icons/action/minimap-draw-terrain_25.png~SCALE(0,0,25,25)"
+local HEX_ICON = "icons/action/minimap-draw-terrain_25.png"
 
 local function debug_message(text)
 	wesnoth.interface.add_chat_message("Naia [Debug]", text)
