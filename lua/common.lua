@@ -1010,6 +1010,16 @@ function wesnoth.wml_actions.reset_fade()
 	wesnoth.interface.screen_fade({0, 0, 0, 0}, 0)
 end
 
+local function cloak_screen_color_adjust_val(r, g, b)
+	if r == 0 and g == 0 and b == 0 then
+		return -512
+	elseif r == 255 and g == 255 and b == 255 then
+		return 512
+	else
+		return nil
+	end
+end
+
 ---
 -- Sets a cloaked screen using the screen fade mechanism.
 ---
@@ -1023,14 +1033,20 @@ function wesnoth.wml_actions.cloak_screen(cfg)
 		-- being completely visible by the time the start event fires. We work
 		-- around this by falling back to the 1.16 and earlier-era mechanism
 		-- where we used [color_adjust], and let the next [fade_to_black] or
-		-- [fade_in] take care of clearing the adjustment for us.
+		-- [fade_in] take care of clearing the adjustment for us. We only do
+		-- this for pure black or pure white cloaks because that's essentially
+		-- the only situation where this will ever be necessary during the
+		-- prestart/start sequence.
 		-- NOTE:
 		-- There is basically only one situation where the start event will
 		-- NOT begin with a fade-in and that's AtS E3S8C.
-		wml.variables.__naia_prestart_screen_cloak = {
-			red = r, green = g, blue = b
-		}
-		wesnoth.interface.color_adjust(r, g, b)
+		local color_shift = cloak_screen_color_adjust_val(r, g, b)
+		if color_shift then
+			wml.variables.__naia_prestart_screen_cloak = {
+				red = r, green = g, blue = b
+			}
+			wesnoth.interface.color_adjust(color_shift, color_shift, color_shift)
+		end
 	end
 	wesnoth.interface.screen_fade({r, g, b, 255}, 0)
 end
