@@ -1,92 +1,123 @@
-#!/usr/bin/env perl
-#
-# WML macro scope checking tool
-#
-# Checks if macros defined within scenario files are correctly undefined
-# at the end to avoid polluting the namespace.
-#
-# Usage:
-#
-#   macro-scope-check <path to scenarios directory>
-#
-# Copyright (C) 2011 - 2024 by Iris Morelle <shadowm@wesnoth.org>
-#
-# Permission to use, copy, modify, and/or distribute this software for any
-# purpose with or without fee is hereby granted, provided that the above
-# copyright notice and this permission notice is present in all copies.
-#
-# THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
-# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
-# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-# STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
-# IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-# POSSIBILITY OF SUCH DAMAGE.
-#
+#!/usr/bin/python3
+'''
+WML macro scope checking tool
 
-use strict;
-use warnings;
+Checks if macros defined within scenario files are correctly undefined
+at the end to avoid polluting the namespace.
 
-# return non-zero on failure
-sub macro_scope_check_file
-{
-	my $path = shift;
-	my $res = 0;
+Usage:
+  macro-scope-check <path to scenarios directory>
 
-	open my $fh, '<', $path or die "Could not open file $path: $!\n";
+Copyright (C) 2011 - 2024 by Iris Morelle <shadowm@wesnoth.org>
 
-	my %local_defines = ();
-	my $lno = 0;
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice is present in all copies.
 
-	foreach(<$fh>) {
-		++$lno; chomp;
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+'''
 
-		if(/^[^#]*#define\s+([^\s]+)/) {
-			print "warning: $1 redefined at $path:$lno\n"
-				if exists $local_defines{$1};
-			$local_defines{$1} = $lno;
-		} elsif(/^[^#]*#undef\s+([^\s]+)/) {
-			delete $local_defines{$1};
-		}
-	}
+import argparse
+from pathlib import Path
+import os
+import re
+import sys
+from typing import Optional
 
-	close $fh;
 
-	foreach(keys %local_defines) {
-		print "error: $_ defined at $path:".$local_defines{$_}." not undefined before end of file\n";
-	}
-
-	return $res;
+RE = {
+    'define': re.compile(r'^[^#]*#define\s+([^\s]+)'),
+    'undef':  re.compile(r'^[^#]*#undef\s+([^\s]+)'),
 }
 
-# return non-zero on failure
-sub macro_scope_check_dir
-{
-	my $path = shift;
-	my $res = 0;
 
-	opendir my $dirh, $path or die "Could not open directory $path: $!\n";
+def warn(msg: str, filename: Optional[str], lineno: Optional[int]):
+    '''
+    Prints a warning message to stderr.
+    '''
+    if filename is not None and lineno is not None:
+        line = f'{filename}:{lineno}: warning: {msg}'
+    else:
+        line = f'warning: {msg}'
+    print(line, file=sys.stderr)
 
-	foreach(readdir $dirh) {
-		# next if /^\.{1,2}$/;
-		next if /^\./; # ignore dot dentries and hidden files/dirs
 
-		if(-d) {
-			$res += macro_scope_check_dir("$path/$_");
-		} elsif(/\.cfg$/) {
-			$res += macro_scope_check_file("$path/$_");
-		}
-	}
+def die(msg: str, filename: Optional[str], lineno: Optional[int]):
+    '''
+    Prints an error message to stderr and exits.
+    '''
+    if filename is not None and lineno is not None:
+        line = f'{filename}:{lineno}: error: {msg}'
+    else:
+        line = f'error: {msg}'
+    sys.exit(line)
 
-	closedir($dirh);
 
-	return $res;
-}
+def _macro_scope_check_file(path: Path) -> bool:
+    lno = 0
+    defines = {}
+    try:
+        with open(path, 'r', encoding='utf-8') as file:
+            for line in file:
+                lno += 1
+                match = RE['define'].match(line)
+                if match:
+                    if match[1] in defines:
+                        warn(f'{path}:{lno}: {match[1]} redefined - '
+                             f'previously defined on line {defines[match[1]]}',
+                             filename=path.name, lineno=lno)
+                    else:
+                        defines[match[1]] = lno
+                    continue
+                match = RE['undef'].match(line)
+                if match:
+                    if match[1] in defines:
+                        del defines[match[1]]
+                    else:
+                        warn(f'undefining {match[1]} not previously defined',
+                             filename=path.name, lineno=lno)
+                    # continue
+    except FileNotFoundError as err:
+        warn(f'Could not open {path} for reading')
+        return False
+    # Report leaked defines at EOF
+    for define in defines:
+        print(f'{path}:{lno}: {define} not undefined before end of file - '
+              f'previously defined on line {defines[define]}')
+        return False
+    return True
 
-my $res = 0;
-$res += macro_scope_check_dir $_ foreach @ARGV;
-exit !!($res != 0); # return non-zero on failure
+
+def macro_scope_check(path: Path) -> bool:
+    result = True
+    if path.is_dir():
+        for entry in path.iterdir():
+            # Skip dotfiles
+            if entry.name.startswith('.'):
+                continue
+            if entry.is_dir():
+                result = result and macro_scope_check(entry)
+            else:
+                result = result and _macro_scope_check_file(entry)
+    return result
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('paths', metavar='PATH', default='.', nargs='*')
+    args = parser.parse_args()
+    result = True
+    for path in args.paths:
+        result = result and macro_scope_check(Path(path))
+    if not result:
+        sys.exit(1)
