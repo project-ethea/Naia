@@ -54,9 +54,9 @@ This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 Inte
 
  * images/terrain/great-tree-snow.png
  * images/terrain/oak-tree-dead.png
- * images/terrain/dark-hive/air-vent.png
- * images/terrain/dark-hive/air-vent2.png
- * images/terrain/dark-hive/bellows.png
+ * images/terrain/dark-hive/facility.png
+ * images/terrain/dark-hive/heatsink.png
+ * images/terrain/dark-hive/vent.png
  * images/terrain/tile-icons/great-tree-oak-dead.png
  * images/terrain/tile-icons/great-tree-snowy.png
 
