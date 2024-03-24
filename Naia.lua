@@ -343,6 +343,7 @@ local NAIA_PACKAGES = {
 	'wlp',
 	'gui/amla_list',
 	'gui/bug',
+	'gui/campaign_intro',
 	'gui/debug_utilities',
 	'gui/item_prompt',
 	'gui/transient_message',

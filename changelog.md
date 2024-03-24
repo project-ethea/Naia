@@ -19,6 +19,7 @@ Version 20240314.9000+dev:
     instead.
   * Added debug UI utilities to the context menu in maintainer mode when debug
     mode is enabled.
+  * New campaign intro warning UI.
 
 * Terrains:
   * Added Dark Hive Facility, Dark Hive Vent, Dark Hive Heatsink.
