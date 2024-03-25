@@ -70,7 +70,7 @@ This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 Inte
 
 ### Wight (by Santiago Iborra)
 
- * images/portraits/mal-hekuba.png
+ * images/portraits/mal-hekuba.webp
 
 
 Non-Copyrighted Assets (CC0)
