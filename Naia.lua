@@ -323,6 +323,54 @@ function V(version_number)
 	return wesnoth.version(version_number)
 end
 
+local function evctx_id_cleanname(name)
+	return name:gsub("[^0-9A-Za-z]", "")
+end
+
+--
+-- Generates a "hash" of an event context that can be used to identify it in
+-- an opaque yet WML-friendly fashion.
+--
+function event_context_id()
+	local hash = ""
+	local ctx = wesnoth.current.event_context
+
+	-- The resulting "hash" can only contain characters which are valid in WML
+	-- identifiers, which limits our universe considerably.
+	--
+	-- A full hash will look like this, with elements which are empty or zero
+	-- being omitted from the output:
+	--
+	--   N<event dispatch name><trail>
+	--   I<event handler id><trail>
+	--   X<x1>Y<y1>
+	--   U<x2>V<y2>
+	--
+	-- For the event name and id, the <trail> component is the total count of
+	-- whitespace or underscore characters, which are removed from the
+	-- identifier since: a) underscore and whitespace are considered equivalent
+	-- in event dispatch names; b) whitespace is illegal in WML identifiers.
+
+	local id, id_trail = evctx_id_cleanname(ctx.id)
+	local name, name_trail = evctx_id_cleanname(ctx.name)
+
+	if id and id ~= "" then
+		hash = ("N%s%dI%s%d"):format(name, name_trail, id, id_trail)
+	else
+		hash = ("N%s%d"):format(name, name_trail)
+	end
+
+	if ctx.x1 or ctx.y1 then
+		hash = hash .. ("X%dY%d"):format(ctx.x1, ctx.y1)
+	end
+
+	if ctx.x2 or ctx.y2 then
+		hash = hash .. ("U%dV%d"):format(ctx.x2, ctx.y2)
+	end
+
+	return hash
+end
+
 -------------------------------------------------------------------------------
 --                              INITIALIZATION                               --
 -------------------------------------------------------------------------------
@@ -333,6 +381,7 @@ local NAIA_PACKAGES = {
 	'abilities',
 	'conditional',
 	'hmu',
+	'journey',
 	'npc',
 	'optimizations',
 	'patch',
@@ -345,6 +394,7 @@ local NAIA_PACKAGES = {
 	'gui/bug',
 	'gui/campaign_intro',
 	'gui/debug_utilities',
+	'gui/journey_ui',
 	'gui/item_prompt',
 	'gui/transient_message',
 	'compat',
