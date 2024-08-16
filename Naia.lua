@@ -394,6 +394,7 @@ local NAIA_PACKAGES = {
 	'gui/bug',
 	'gui/campaign_intro',
 	'gui/debug_utilities',
+	'gui/gameplay_notification',
 	'gui/journey_ui',
 	'gui/item_prompt',
 	'gui/transient_message',
