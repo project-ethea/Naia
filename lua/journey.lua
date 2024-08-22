@@ -146,12 +146,12 @@ wesnoth.interface.is_skipping_messages = function(i_am_naia)
 	-- Naia, which needs to query the actual skipping state in order to adjust
 	-- the behaviour of various functions including visual effects.
 	if i_am_naia ~= 0x4149414E then
-		jprintf(W_DBG, "foreign code queried user skip, lying and saying no")
+		--jprintf(W_DBG, "foreign code queried user skip, lying and saying no")
 		return false
 	end
 
 	-- Secret handshake from Naia!
-	jprintf(W_DBG, "Naia queried user skip")
+	--jprintf(W_DBG, "Naia queried user skip")
 	return ENG_wesnoth_interface_is_skipping_messages()
 end
 
