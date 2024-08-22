@@ -465,7 +465,7 @@ local journeylog_dlg = {
 								border_size = 5,
 								T.label {
 									definition = "title",
-									label = _ "Journey Log"
+									label = _ "Journal"
 								}
 							}
 						},
@@ -848,7 +848,7 @@ end
 
 wesnoth.wml_actions.set_menu_item {
 	id = "naia:journeylog",
-	description = _ "Journey Log",
+	description = _ "Journal",
 	image = "icons/menu-journeylog.png",
 	T.default_hotkey {
 		key = "j",
