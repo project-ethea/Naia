@@ -7,6 +7,8 @@
 -- See COPYING for usage terms.
 --
 
+journeylog = {}
+
 JOURNEYLOG_TABLE = "__naia_journeylog"
 
 local journeylog_campaign_mn = {}
@@ -24,30 +26,16 @@ on_event("preload", function()
 	wml.variables[("%s.%s.%s.name"):format(JOURNEYLOG_TABLE, wesnoth.scenario.campaign.id, wesnoth.scenario.id)] = wesnoth.scenario.name
 end)
 
-function journeylog_register_campaign_mnemonic(campaign_id, mnemonic)
+function journeylog.register_campaign_mnemonic(campaign_id, mnemonic)
 	journeylog_campaign_mn[campaign_id] = mnemonic
 end
 
 local function journeylog_var_init()
 	local entry_path = ("%s.%s.%s.%s"):format(JOURNEYLOG_TABLE, wesnoth.scenario.campaign.id, wesnoth.scenario.id, event_context_id())
-	--[[local entry_num = 0
-
-	if wml.variables[entry_path] then
-		entry_num = wml.variables[entry_path .. ".length"]
-		entry_path = ("%s[%d]"):format(entry_path, entry_num)
-	else
-		entry_path = ("%s[0]"):format(entry_path)
-
-		wml.variables[entry_path] = {
-			id = wesnoth.current.event_context.id,
-			name = wesnoth.current.event_context.name,
-		}
-	end
-	]]
 	return entry_path
 end
 
-local function journeylog_enumerate_impl_common(wml_container)
+local function _enumerate_impl_common(wml_container)
 	local enum = {}
 
 	for i, cfg in ipairs(wml_container) do
@@ -62,17 +50,17 @@ local function journeylog_enumerate_impl_common(wml_container)
 	return enum
 end
 
-function journeylog_enumerate_campaigns()
+function journeylog.enumerate_campaigns()
 	local journeylog_table = wml.variables[JOURNEYLOG_TABLE]
-	return journeylog_enumerate_impl_common(journeylog_table)
+	return _enumerate_impl_common(journeylog_table)
 end
 
-function journeylog_enumerate_scenarios(campaign_id)
+function journeylog.enumerate_scenarios(campaign_id)
 	local scenario_table = wml.variables[("%s.%s"):format(JOURNEYLOG_TABLE, campaign_id)]
-	return journeylog_enumerate_impl_common(scenario_table)
+	return _enumerate_impl_common(scenario_table)
 end
 
-function journeylog_read_scenario(campaign_id, scenario_id)
+function journeylog.read_scenario(campaign_id, scenario_id)
 	local var_path = ("%s.%s.%s"):format(JOURNEYLOG_TABLE, campaign_id, scenario_id)
 	local scenario_ct = wml.variables[var_path]
 

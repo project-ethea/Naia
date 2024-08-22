@@ -563,8 +563,8 @@ local function clean_campaign_name(text)
 	return tostring(text):gsub("\n", " ")
 end
 
-function journeylog_run_ui()
-	local journeylog = {}
+function journeylog_ui()
+	local journal = {}
 	local current_campaign, current_scenario = 0, 0
 	-- These are collections of current container item refs for easier
 	-- mass-manipulation (e.g. for filtering).
@@ -597,31 +597,31 @@ function journeylog_run_ui()
 			return
 		end
 
-		if campaign_num > #journeylog then
+		if campaign_num > #journal then
 			jprintf(W_ERR, "show_journey() campaign number out of bounds: %d > %d",
-					campaign_num, #journeylog)
+					campaign_num, #journal)
 			return
 		end
 
 		if not scenario_num then
-			scenario_num = #journeylog[campaign_num].scenarios
+			scenario_num = #journal[campaign_num].scenarios
 		end
 
-		if scenario_num > #journeylog[campaign_num].scenarios then
+		if scenario_num > #journal[campaign_num].scenarios then
 			jprintf(W_ERR, "show_journey() scenario number out of bounds: %d > %d",
-					scenario_num, #journeylog[campaign_num].scenarios)
+					scenario_num, #journal[campaign_num].scenarios)
 			return
 		end
 
 		current_scenario = scenario_num
 
-		local campaign_id = journeylog[campaign_num].id
-		local journey = journeylog[campaign_num].scenarios[scenario_num]
+		local campaign_id = journal[campaign_num].id
+		local journey = journal[campaign_num].scenarios[scenario_num]
 		local scenario_id = journey.id
 
 		if not journey.cache_built then
 			-- Didn't cache this journey yet...
-			local raw_journey = journeylog_read_scenario(campaign_id, scenario_id)
+			local raw_journey = journeylog.read_scenario(campaign_id, scenario_id)
 
 			for i, msg_block in ipairs(raw_journey) do
 				if i > 1 then
@@ -736,7 +736,7 @@ function journeylog_run_ui()
 	end
 
 	local function preshow(self)
-		for i, campaign in ipairs(journeylog_enumerate_campaigns()) do
+		for i, campaign in ipairs(journeylog.enumerate_campaigns()) do
 			if campaign.id == wesnoth.scenario.campaign.id then
 				current_campaign = i
 				self.campaigns_menu.label = clean_campaign_name(campaign.name)
@@ -748,7 +748,7 @@ function journeylog_run_ui()
 				scenarios = {},
 			}
 
-			for j, scenario in ipairs(journeylog_enumerate_scenarios(campaign.id)) do
+			for j, scenario in ipairs(journeylog.enumerate_scenarios(campaign.id)) do
 				jprintf(W_DBG, "enumerate scenario %s", scenario.id)
 				if scenario.id == wesnoth.scenario.id then
 					current_scenario = j
@@ -775,7 +775,7 @@ function journeylog_run_ui()
 				table.insert(campaign_journey.scenarios, scenario_journey)
 			end
 
-			table.insert(journeylog, campaign_journey)
+			table.insert(journal, campaign_journey)
 		end
 
 		-- TODO: The campaigns menu causes the script to crash and also does
@@ -789,7 +789,7 @@ function journeylog_run_ui()
 		-- can tolerate the tackiness.
 		self.campaigns_menu.on_button_click = function()
 			local menu_table = {}
-			for i, campaign in ipairs(journeylog) do
+			for i, campaign in ipairs(journal) do
 				table.insert(menu_table, {
 					label = campaign.name
 				})
@@ -798,7 +798,7 @@ function journeylog_run_ui()
 			local index = gui.show_menu(menu_table)
 			if index > 0 then
 				current_campaign = index
-				self.campaigns_menu.label = clean_campaign_name(journeylog[index].name)
+				self.campaigns_menu.label = clean_campaign_name(journal[index].name)
 				show_journey(self, index, 0)
 			end
 		end
@@ -839,7 +839,7 @@ end
 function wesnoth.wml_actions.journeylog()
 	-- [journeylog] does not modify the gamestate, so it does not require a
 	-- synced context to run.
-	wesnoth.sync.run_unsynced(function() journeylog_run_ui() end)
+	wesnoth.sync.run_unsynced(function() journeylog_ui() end)
 end
 
 --
