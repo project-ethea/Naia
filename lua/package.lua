@@ -8,16 +8,20 @@
 --
 
 local default_package = {
-	global_id    = "project_ethea.Naia",
-	name         = "<Naia>",
-	i18n_name    = "<Naia>", -- intentionally not translatable
-	version      = "0.0.0",
-	abbreviation = "Naia",
-	tracker_url  = "https://github.com/project-ethea/Naia/issues",
-	forum_thread = "",
-	dev_mode     = false,
-	naia_version = PROJECT_ETHEA_NAIA_VERSION,
-	registered   = false,
+	global_id      = "project_ethea.Naia",
+	name           = "<Naia>",
+	i18n_name      = "<Naia>", -- intentionally not translatable
+	version        = "0.0.0",
+	abbreviation   = "Naia",
+	tracker_url    = "https://github.com/project-ethea/Naia/issues",
+	forum_thread   = "",
+	dev_mode       = false,
+	minimum_host   = "0.0.0",
+	maximum_host   = "99.99.99",
+	disallow_hosts = {},
+	experimental   = false,
+	naia_version   = PROJECT_ETHEA_NAIA_VERSION,
+	registered     = false,
 }
 
 local package = default_package
@@ -29,7 +33,7 @@ used by certain functionality.
 
 Usage:
 
-naia_register_package {
+naia_package {
     -- The add-on's global id, used e.g. for persistent WML variables.
     global_id    = "project_ethea.After_the_Storm",
 
@@ -54,12 +58,31 @@ naia_register_package {
     -- Whether maintainer mode is enabled, which affects the behavior of
     -- certain debug features.
     maintainer_mode = false,
+
+	-- Minimum host version.
+	minimum_host = "0.0.0",
+
+	-- Maximum host version.
+	maximum_host = "99.99.99",
+
+	-- Disallowed/known-bad host versions.
+	disallow_hosts = {},
+
+	-- Whether the add-on should be marked as experimental for the current
+	-- host/add-on version configuration.
+	experimental = false,
+
+	-- Path prefix which should be used to locate Lua modules,
+	lua_prefix   = '',
+
+	-- List of local Lua modules to initialize during package registration.
+	modules      = {}
 }
 
 ]]
-function naia_register_package(p)
+function naia_package(p)
 	if package.registered then
-		wput(W_WARN, "multiple calls to naia_register_package() detected!")
+		wput(W_WARN, "multiple calls to naia_package() detected!")
 		return
 	end
 
@@ -70,6 +93,10 @@ function naia_register_package(p)
 	package.abbreviation = p.abbreviation or default_package.abbreviation
 	package.tracker_url = p.tracker_url or default_package.tracker_url
 	package.forum_thread = p.forum_thread or default_package.forum_thread
+	package.minimum_host = p.minimum_host or default_package.minimum_host
+	package.maximum_host = p.maximum_host or default_package.maximum_host
+	package.disallow_hosts = p.disallow_hosts or default_package.disallow_hosts
+	package.experimental = p.experimental or default_package.experimental
 
 	if p.maintainer_mode == nil then
 		package.dev_mode = default_package.dev_mode
@@ -84,6 +111,21 @@ function naia_register_package(p)
 
 	if package.dev_mode then
 		wprintf(W_INFO, "Maintainer mode enabled")
+	end
+
+	check_host_compatibility(package.minimum_host, package.maximum_host, package.disallow_hosts, package.experimental)
+	check_addon_compatibility()
+
+	if p.lua_prefix ~= nil and p.modules ~= nil and #p.modules then
+		-- Load local code files.
+        for i, file in ipairs(p.modules)
+        do
+			local path = ("%s/%s.lua"):format(p.lua_prefix, file)
+			wprintf(W_INFO, "Init: loading %s", path)
+			windent()
+            wesnoth.dofile(path)
+			wunindent()
+        end
 	end
 end
 
