@@ -37,7 +37,7 @@ function _wsetlogprefix(str)
 end
 
 function _windentprefix()
-	return string.rep(" ", logdepth * 4)
+	return string.rep(" ", logdepth * 2)
 end
 
 ---
@@ -406,7 +406,9 @@ wprintf(W_INFO, "codename Naia version %s initializing", PROJECT_ETHEA_NAIA_VERS
 for _, pkg in ipairs(NAIA_PACKAGES) do
 	local path = ("%s/lua/%s.lua"):format(NAIA_PREFIX, pkg)
 	wprintf(W_INFO, "Init: loading %s", path)
+	windent()
 	wesnoth.dofile(path)
+	wunindent()
 end
 
 if WML_INIT then
@@ -414,3 +416,5 @@ if WML_INIT then
 	wprintf(W_INFO, "Init: execute WML startup block")
 	utils.handle_event_commands(WML_INIT)
 end
+
+wprintf(W_INFO, "Init: Naia initialization complete")
