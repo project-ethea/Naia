@@ -11,10 +11,9 @@ journeylog = {}
 
 JOURNEYLOG_TABLE = "__naia_journeylog"
 
-local journeylog_campaign_mn = {}
-local journeylog_scenario_mn = {}
+local journeylog_campaign_info = {}
 
-local function jprintf(lvl, msg, ...)
+function jprintf(lvl, msg, ...)
 	wprintf(lvl, "JourneyLog: " .. msg, ...)
 end
 
@@ -25,6 +24,107 @@ on_event("preload", function()
 	wml.variables[("%s.%s.name"):format(JOURNEYLOG_TABLE, wesnoth.scenario.campaign.id)] = wesnoth.scenario.campaign.name
 	wml.variables[("%s.%s.%s.name"):format(JOURNEYLOG_TABLE, wesnoth.scenario.campaign.id, wesnoth.scenario.id)] = wesnoth.scenario.name
 end)
+
+--
+-- Registers the specified campaign.
+--
+-- If mnemonic or label are not proivded, they will be copied from the current
+-- campaign if its id matches campaign_id.
+--
+-- Arguments:
+--
+--   campaign_id             This is the campaign's internal identifier.
+--   label                   This is the campaign's user-friendly name used in
+--                           the user interface.
+--   mnemonic                This is the campaign's abbreviation/mnemonic.
+--
+function journeylog.register_campaign(campaign_id, label, mnemonic)
+	if journeylog_campaign_info[campaign_id] ~= nil then
+		-- Already registered
+		return
+	end
+
+	local baseline = {
+		abbreviation = nil,
+		name = nil
+	}
+
+	if wesnoth.scenario.campaign ~= nil and wesnoth.scenario.campaign.id == campaign_id then
+		baseline = wesnoth.scenario.campaign
+	end
+
+	local entry = {
+		mnemonic = mnemonic or baseline.abbrev,
+		label    = label or baseline.name,
+	}
+
+	if not entry.mnemonic or not entry.label then
+		jprintf(W_ERR, "incomplete data for campaign '%s' which is not the current campaign", campaign_id)
+	end
+
+	journeylog_campaign_info[campaign_id] = entry
+
+	jprintf(W_DBG, "registered campaign %s (mnemonic: %s, label: '%s')", campaign_id, entry.mnemonic, entry.label)
+end
+
+--
+-- Registers the specified scenario.
+--
+-- Arguments:
+--
+--   campaign_id             This is the parent campaign's internal identifier.
+--                           If nil, the current campaign's id is used if
+--                           available.
+--   scenario_id             This is the scenario's internal identifier.
+--   label                   This is the scenarios's regular user-friendly name
+--                           seen in most user interfaces as well as save
+--                           files.
+--   mnemonic                This is the scenario's abbreviation/mnemonic used
+--                           in certain user interfaces.
+--   hidden                  Specifies whether the scenario should be hidden
+--                           from listings in the JourneyLog user interface.
+--                           Use this for cutscene and technical scenarios.
+--
+function journeylog.register_scenario(campaign_id, scenario_id, label, mnemonic, hidden)
+	local real_cid = campaign_id
+
+	if not real_cid then
+		if not wesnoth.scenario.campaign then
+			wml.error("journeylog.register_scenario(): No campaign id provided and not running in a campaign scenario context")
+		end
+
+		real_cid = wesnoth.scenario.campaign.id
+	end
+
+	journeylog.register_campaign(real_cid)
+
+	journeylog_campaign_info[real_cid][scenario_id] = {
+		mnemonic = mnemonic,
+		label    = label,
+		hidden   = hidden
+	}
+
+	jprintf(W_DBG, "registered scenario %s (mnemonic: %s, label: '%s', hidden: %s)", scenario_id, mnemonic, label, tostring(hidden))
+end
+
+--
+-- Scenario initialization-time wrapper for journeylog.register_scenario.
+--
+-- WML arguments:
+--
+--   id                      This is the scenario's internal identifier.
+--   name                    This is the scenarios's regular user-friendly name
+--                           seen in most user interfaces as well as save
+--                           files.
+--   abbrev                  This is the scenario's abbreviation/mnemonic used
+--                           in certain user interfaces.
+--   hidden                  Specifies whether the scenario should be hidden
+--                           from listings in the JourneyLog user interface.
+--                           Use this for cutscene and technical scenarios.
+--
+function journeylog.register_scenario_wml(wml_args)
+	journeylog.register_scenario(nil, wml_args.id, wml_args.title, wml_args.abbrev, wml_args.hidden)
+end
 
 function journeylog.register_campaign_mnemonic(campaign_id, mnemonic)
 	journeylog_campaign_mn[campaign_id] = mnemonic
