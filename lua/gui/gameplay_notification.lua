@@ -136,7 +136,7 @@ local function gameplay_notification_impl(cfg)
 	gui.show_dialog(gameplay_info_dlg, preshow)
 
 	if fade_screen then
-		wesnoth.interface.screen_fade({0, 0, 0, 0}, 500)
+		wesnoth.interface.screen_fade({0, 0, 0, 0}, 250)
 	end
 end
 
