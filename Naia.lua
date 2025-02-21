@@ -382,6 +382,8 @@ local NAIA_PACKAGES = {
 	'conditional',
 	'hmu',
 	'journey',
+	'journey/lore',
+	'journey/milestones',
 	'npc',
 	'optimizations',
 	'patch',
