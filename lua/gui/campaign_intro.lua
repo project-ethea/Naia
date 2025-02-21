@@ -12,45 +12,76 @@ local T = wml.tag
 -- #textdomain wesnoth-Naia
 local _ = wesnoth.textdomain "wesnoth-Naia"
 
-local INTRO_DIALOG_MAIN_GRID = {
-	T.row {
-		T.column {
-			border= "all",
-			border_size = 5,
-			vertical_alignment = "top",
-			horizontal_alignment = "left",
-			T.label {
-				id = "title",
-				definition = "title"
+gui.add_widget_definition("window", "naia_campaign_intro", {
+	id = "naia_campaign_intro",
+	description = "Campaign intro billboard",
+
+	T.resolution {
+		-- Mystery magic numbers from _GUI_RESOLUTION_BORDERLESS_BASE, found
+		-- in data/gui/widget/window_borderless.cfg on Wesnoth 1.18.
+		left_border = 10,
+		right_border = 13,
+		top_border = 10,
+		bottom_border = 13,
+
+		-- We paint the whole screen black to hide the loading screen behind
+		-- our dialog.
+		T.background {
+			T.draw {
+				T.rectangle {
+					x = 0,
+					y = 0,
+					w = "(width)",
+					h = "(height)",
+					fill_color = "0, 0, 0, 255"
+				}
 			}
-		}
-	},
-	T.row {
-		T.column {
-			T.spacer {
-				height = 10,
-			}
-		}
-	},
-	T.row {
-		T.column {
-			border = "all",
-			border_size = 5,
-			vertical_alignment = "top",
-			horizontal_alignment = "left",
-			T.scroll_label {
-				id = "message"
+		},
+		T.foreground {
+			T.draw {}
+		},
+		T.grid {
+			T.row {
+				grow_factor = 1,
+				T.column {
+					horizontal_alignment = "center",
+					vertical_alignment = "center",
+					T.scrollbar_panel {
+						vertical_scrollbar_mode = "initial_auto",
+						horizontal_scrollbar_mode = "initial_auto",
+						T.definition {
+							T.row {
+								T.column {
+									horizontal_grow = true,
+									vertical_grow = true,
+									T.grid {
+										id = "_window_content_grid"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			T.row {
+				T.column {
+					T.button {
+						id = "click_dismiss",
+						definition = "default",
+						label = wgettext("Close", "wesnoth-lib")
+					}
+				}
 			}
 		}
 	}
-}
+})
 
 local INTRO_DIALOG = {
 	maximum_width = 800,
 	maximum_height = 900,
 
 	click_dismiss = true,
-	definition = "message",
+	definition = "naia_campaign_intro",
 
 	T.helptip { id = "tooltip_large" },
 	T.tooltip { id = "tooltip_large" },
@@ -66,12 +97,73 @@ local INTRO_DIALOG = {
 					id = "image"
 				}
 			},
+		},
+
+		T.row {
 			T.column {
+				border= "all",
+				border_size = 5,
 				vertical_alignment = "top",
-				horizontal_grow = true,
-				T.grid(INTRO_DIALOG_MAIN_GRID)
+				horizontal_alignment = "center",
+				T.label {
+					id = "title",
+					definition = "title"
+				}
 			}
 		},
+		T.row {
+			T.column {
+				horizontal_alignment = "center",
+				border = "all",
+				border_size = 10,
+				T.image {
+					label = "misc/loadscreen_decor.png~BLEND(162, 127, 68, 1.0)"
+				}
+			}
+		},
+		T.row {
+			T.column {
+				border = "all",
+				border_size = 5,
+				vertical_alignment = "top",
+				horizontal_alignment = "center",
+				T.scroll_label {
+					id = "message",
+					text_alignment = "center"
+				}
+			}
+		},
+		T.row {
+			T.column {
+				T.spacer {
+					height = 10
+				}
+			}
+		},
+		T.row {
+			T.column {
+				T.grid {
+					T.row {
+						T.column {
+							border = "all",
+							border_size = 5,
+							T.label {
+								definition = "gold",
+								use_markup = true,
+								label = "<span size='larger'>" .. ( _ "Press when ready to start") .. "</span>"
+							}
+						},
+						T.column {
+							border = "all",
+							border_size = 5,
+							T.image {
+								label = "icons/arrows/short_arrow_ornate_right_30.png"
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -112,6 +204,8 @@ local function campaign_intro_screen_impl(cfg)
 		else
 			self.image.visible = false
 		end
+
+		self.title.visible = false
 	end
 
 	gui.show_dialog(INTRO_DIALOG, preshow)
