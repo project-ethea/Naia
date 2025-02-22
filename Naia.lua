@@ -400,6 +400,7 @@ local NAIA_PACKAGES = {
 	'gui/journey_ui',
 	'gui/item_prompt',
 	'gui/transient_message',
+	'gui/widgets',
 	'compat',
 }
 
