@@ -44,7 +44,7 @@ local chara_extend_attributes = {
 -- Prebaked merge to make things easier later.
 -- (NOTE: id is not included here or in the others because it requires special
 -- treatment to avoid shenanigans)
-local chara_all_attributes = table_merge(chara_extend_attributes, chara_override_attributes)
+local chara_all_attributes = array_join(chara_extend_attributes, chara_override_attributes)
 
 -- NOTE:
 -- Currently we internally use storage that replicates the [character_profile]
@@ -53,7 +53,7 @@ local function clone_chara_attributes(source, include_milestone_info)
 	local dest = {}
 	local attrs = chara_all_attributes
 	if include_milestone_info == nil or include_milestone_info then
-		attrs = table_merge(chara_all_attributes, { "requires_milestone" })
+		attrs = array_join(chara_all_attributes, { "requires_milestone" })
 	end
 
 	for _, attr in ipairs(attrs) do
@@ -143,7 +143,7 @@ function journeylog.rebuild_lore()
 		if journeylog.has_milestone(profile.requires_milestone) then
 			local cached_profile = clone_chara_attributes(profile, false)
 
-			cached_profile[id] = id
+			cached_profile.id = id
 
 			-- Process additional information; everything replaces existing
 			-- information except for the description, which gets extended
