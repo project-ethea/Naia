@@ -34,6 +34,11 @@ local EVENT_LABELS = {
 	victory     = _ "event^Victory",
 }
 
+local UI_TAB_LABELS = {
+	_ "Journal",
+	_ "Knowledge",
+}
+
 gui.add_widget_definition("window", "naia_journeylog", {
 	id = "naia_journeylog",
 	description = "a decade and a half later, gui2 still sucks",
@@ -150,7 +155,7 @@ local journeylog_section_listdata = {
 		T.column {
 			T.widget {
 				id = "tab_label",
-				label = _ "Log"
+				label = UI_TAB_LABELS[1]
 			}
 		}
 	},
@@ -158,7 +163,7 @@ local journeylog_section_listdata = {
 		T.column {
 			T.widget {
 				id = "tab_label",
-				label = _ "Notes"
+				label = UI_TAB_LABELS[2]
 			}
 		}
 	}
@@ -400,7 +405,74 @@ local journeylog_messages_treedef = {
 	}
 }
 
-local journeylog_main_grid = {
+local journeylog_archive_listdef = {
+	-- TITLE
+	T.row { T.column {
+		vertical_grow = true,
+		horizontal_grow = true,
+		T.toggle_panel {
+			definition = "fancy",
+			-- NOTE: piggybacking on the scenario list metrics on purpose!
+			linked_group = "scenario_name_group",
+			T.grid {
+				T.row {
+					T.column {
+						border = "top,left,bottom",
+						border_size = 10,
+						T.image {
+							id = "archive_item_image"
+						}
+					},
+					T.column {
+						horizontal_grow = true,
+						grow_factor = 1,
+						border = "all",
+						border_size = 10,
+						T.label {
+							id = "archive_item_label"
+						}
+					}
+				}
+			}
+		}
+	}}
+}
+
+local journeylog_archive_treedef = {
+	id = "archive_entry",
+	horizontal_scrollbar_mode = "never",
+	indentation_step_size = 0,
+	T.node {
+		id = "default",
+		T.node_definition {
+			T.row {
+				T.column {
+					horizontal_alignment = "left",
+					border = "all",
+					border_size = 5,
+					T.label {
+						id = "archive_entry_title",
+						definition = "gold_large",
+						wrap = true
+					}
+				}
+			},
+			T.row {
+				T.column {
+					horizontal_alignment = "left",
+					border = "all",
+					border_size = 5,
+					T.label {
+						id = "archive_entry_body",
+						wrap = true
+					}
+				}
+			}
+		}
+	}
+}
+
+local journeylog_dialoglog_grid = {
 	T.row {
 		T.column {
 			grow_factor = 1,
@@ -420,6 +492,71 @@ local journeylog_main_grid = {
 			border = "all",
 			border_size = 5,
 			T.tree_view(journeylog_messages_treedef)
+		}
+	}
+}
+
+local journeylog_archive_grid = {
+	T.row {
+		T.column {
+			horizontal_grow = true,
+			vertical_alignment = "top",
+			T.grid {
+				T.row {
+					T.column {
+						grow_factor = 1,
+						border = "all",
+						border_size = 5,
+						T.toggle_button {
+							id = "archive_characters",
+							definition = "radio",
+							label = _ "People"
+						}
+					},
+					T.column {
+						grow_factor = 1,
+						border = "all",
+						border_size = 5,
+						T.toggle_button {
+							id = "archive_world",
+							definition = "radio",
+							label = _ "The World"
+						}
+					}
+				}
+			}
+		}
+	},
+
+	T.row {
+		T.column {
+			horizontal_grow = true,
+			vertical_grow = true,
+			-- TODO: a carbon copy of the dialoglog view UI right now. This
+			--       needs to change.
+			T.grid {
+				T.row {
+					T.column {
+						grow_factor = 1,
+						horizontal_grow = true,
+						vertical_alignment = "top",
+						border = "all",
+						border_size = 5,
+						T.listbox {
+							id = "archive_obj_list",
+							T.list_definition(journeylog_archive_listdef)
+						}
+					},
+					T.column {
+						grow_factor = 3,
+						horizontal_alignment = "left",
+						vertical_grow = true,
+						border = "all",
+						border_size = 5,
+						T.tree_view(journeylog_archive_treedef)
+					}
+				}
+			}
 		}
 	}
 }
@@ -464,8 +601,9 @@ local journeylog_dlg = {
 								border = "top,left,right",
 								border_size = 5,
 								T.label {
+									id = "title",
 									definition = "title",
-									label = _ "Journal"
+									label = "<DIALOG_TITLE>"
 								}
 							}
 						},
@@ -484,6 +622,7 @@ local journeylog_dlg = {
 						T.row {
 							T.column {
 								horizontal_alignment = "left",
+								vertical_alignment = "top",
 								T.grid {
 									T.row {
 										T.column {
@@ -500,6 +639,7 @@ local journeylog_dlg = {
 							},
 							T.column {
 								horizontal_alignment = "right",
+								vertical_alignment = "top",
 								border = "all",
 								border_size = 5,
 								T.text_box {
@@ -517,7 +657,27 @@ local journeylog_dlg = {
 			T.column {
 				horizontal_alignment = "center",
 				vertical_grow = true,
-				T.grid(journeylog_main_grid)
+				T.stacked_widget {
+					id = "tabs_container",
+					T.layer {
+						T.row {
+							T.column {
+								horizontal_alignment = "center",
+								vertical_grow = true,
+								T.grid(journeylog_dialoglog_grid)
+							}
+						}
+					},
+					T.layer {
+						T.row {
+							T.column {
+								horizontal_alignment = "center",
+								vertical_grow = true,
+								T.grid(journeylog_archive_grid)
+							}
+						}
+					}
+				}
 			}
 		},
 		T.row {
@@ -565,6 +725,11 @@ end
 
 function journeylog_ui()
 	local journal = {}
+	local archive = {
+		profiles = {},
+		world = {}
+	}
+
 	local current_campaign, current_scenario = 0, 0
 	-- These are collections of current container item refs for easier
 	-- mass-manipulation (e.g. for filtering).
@@ -735,6 +900,13 @@ function journeylog_ui()
 		scenario_listbox_rows[self.scenario_list.selected_index].scenario_icon.label = JOURNEYLOG_UI_SCENARIO_ICON_SELECTED
 	end
 
+	local function show_tab(self, tab_num)
+		self.tabs_container.selected_index = tab_num
+		self.title.label = UI_TAB_LABELS[tab_num] or "OUT_OF_RANGE"
+
+		-- TODO FIXME
+	end
+
 	local function preshow(self)
 		for i, campaign in ipairs(journeylog.enumerate_campaigns()) do
 			if campaign.id == wesnoth.scenario.campaign.id then
@@ -816,13 +988,17 @@ function journeylog_ui()
 			set_journey_filter(self, self.search_box.text)
 		end
 
+		self.log_section_selector.on_modified = function()
+			show_tab(self, self.log_section_selector.selected_index)
+		end
+
 		if not JOURNEYLOG_ALLOW_BROKEN_GARBAGE then
 			self.campaigns_menu.visible = false
-			self.log_section_selector.visible = false
 		end
 
 		-- Set the initial selection.
 		show_journey(self, current_campaign, current_scenario)
+		show_tab(self, 1)
 	end
 
 	gui.show_dialog(journeylog_dlg, preshow)
