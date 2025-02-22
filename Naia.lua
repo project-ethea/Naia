@@ -199,6 +199,26 @@ function table_merge(table_a, table_b)
 end
 
 ---
+-- Returns an array that contains the union of both tables.
+--
+-- This forces the result to have numeric indices. Elements from table_a are
+-- always followed by elements from table_b.
+---
+function array_join(table_a, table_b)
+	local result = {}
+
+	for _, element in ipairs(table_a) do
+		table.insert(result, element)
+	end
+
+	for _, element in ipairs(table_b) do
+		table.insert(result, element)
+	end
+
+	return result
+end
+
+---
 -- Dumps a table in string form.
 ---
 function table_dump(obj, level)
