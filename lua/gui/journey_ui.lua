@@ -18,6 +18,9 @@ local JOURNEYLOG_ALLOW_BROKEN_GARBAGE      = false
 
 local JOURNEYLOG_UI_PORTRAIT_SIZE          = 128
 local JOURNEYLOG_UI_BIO_PORTRAIT_SIZE      = 256
+local JOURNEYLOG_UI_ENTRY_TOP_MARGIN       = 10
+local JOURNEYLOG_UI_LOG_WIDTH_CHARS        = 66
+local JOURNEYLOG_UI_LORE_WIDTH_CHARS       = JOURNEYLOG_UI_LOG_WIDTH_CHARS + 10
 
 local JOURNEYLOG_UI_SCENARIO_ICON          = "help/closed_section.png"
 local JOURNEYLOG_UI_SCENARIO_ICON_SELECTED = "help/open_section.png"
@@ -51,6 +54,9 @@ local BIO_STATUS_LABELS = {
 	dead        = _ "chara_status^Deceased",
 	missing     = _ "chara_status^Missing",
 }
+
+local ARCHIVE_MODE_CHARACTERS = 1
+local ARCHIVE_MODE_WORLD      = 2
 
 local journeylog_log_portrait_canvas = {
 	T.rectangle {
@@ -227,7 +233,7 @@ local journeylog_chara_msg_display = {
 	T.label {
 		id = "chara_msg",
 		linked_group = "message_text_group",
-		characters_per_line = 66,
+		characters_per_line = JOURNEYLOG_UI_LOG_WIDTH_CHARS,
 		wrap = true
 	}
 }
@@ -461,6 +467,16 @@ local journeylog_chara_info_panel = {
 				T.draw(journeylog_bio_portrait_canvas)
 			}
 		}
+	},
+	T.row {
+		T.column {
+			T.spacer {
+				height = JOURNEYLOG_UI_ENTRY_TOP_MARGIN
+			}
+		},
+		T.column {
+			T.spacer {}
+		}
 	}
 }
 
@@ -512,7 +528,46 @@ local journeylog_archive_treedef = {
 					T.label {
 						id = "archive_entry_body",
 						label = "CHARA_DESCRIPTION",
-						characters_per_line = 76,
+						characters_per_line = JOURNEYLOG_UI_LORE_WIDTH_CHARS,
+						wrap = true
+					}
+				}
+			}
+		}
+	},
+
+	T.node {
+		id = "lore_entry",
+		T.node_definition {
+			T.row {
+				T.column {
+					horizontal_grow = true,
+					border = "all",
+					border_size = 5,
+					T.label {
+						id = "archive_entry_title",
+						definition = "gold_large",
+						label = "ENTRY_TITLE",
+						wrap = true
+					}
+				}
+			},
+			T.row {
+				T.column {
+					T.spacer {
+						height = JOURNEYLOG_UI_ENTRY_TOP_MARGIN
+					}
+				}
+			},
+			T.row {
+				T.column {
+					horizontal_grow = true,
+					border = "all",
+					border_size = 5,
+					T.label {
+						id = "archive_entry_body",
+						label = "ENTRY_TEXT",
+						characters_per_line = JOURNEYLOG_UI_LORE_WIDTH_CHARS,
 						wrap = true
 					}
 				}
@@ -758,6 +813,8 @@ function journeylog_ui()
 		world = journeylog.retrieve_world_lore(),
 	}
 
+	local archive_mode = ARCHIVE_MODE_CHARACTERS
+
 	local current_campaign, current_scenario = 0, 0
 	-- These are collections of current container item refs for easier
 	-- mass-manipulation (e.g. for filtering).
@@ -954,13 +1011,28 @@ function journeylog_ui()
 		return BIO_STATUS_LABELS[status] or JOURNEYLOG_UI_STATUS_PLACEHOLDER
 	end
 
-	local function show_profile(self)
-		if not self.archive_obj_list.selected_index then
+	local function populate_lore_entry_list(self)
+		self.archive_obj_list:remove_items_at(1, 0)
+		if archive_mode == ARCHIVE_MODE_CHARACTERS then
+			for i, profile in ipairs(archive.profiles) do
+				local archive_item = self.archive_obj_list:add_item()
+				archive_item.archive_item_label.label = profile.name
+			end
+		elseif archive_mode == ARCHIVE_MODE_WORLD then
+			for i, entry in ipairs(archive.world) do
+				local archive_item = self.archive_obj_list:add_item()
+				archive_item.archive_item_label.label = entry.title
+			end
+		end
+	end
+
+	local function show_chara_bio(self, index)
+		if not index or index > #archive.profiles then
 			self.archive_entry.visible = false
 			return
 		end
 
-		local profile = archive.profiles[self.archive_obj_list.selected_index]
+		local profile = archive.profiles[index]
 
 		if not profile then
 			jprintf(W_ERR, "could not load profile (corrupt lore cache?)")
@@ -997,6 +1069,37 @@ function journeylog_ui()
 
 		if not profile.portrait then
 			page.chara_portrait.visible = false
+		end
+	end
+
+	local function show_world_lore_entry(self, index)
+		if not index or index > #archive.world then
+			self.archive_entry.visible = false
+			return
+		end
+
+		local entry = archive.world[index]
+
+		if not entry then
+			jprintf(W_ERR, "could not load world lore entry (corrupt lore cache?)")
+			return
+		end
+
+		self.archive_entry:remove_items_at(1, 0)
+
+		-- TODO: do we actually need the unfolded container node
+		local container = self.archive_entry:add_item_of_type("container")
+		local page = container:add_item_of_type("lore_entry")
+
+		page.archive_entry_title.marked_up_text = ("<big>%s</big>"):format(entry.title)
+		page.archive_entry_body.marked_up_text = entry.text or JOURNEYLOG_UI_BIO_PLACEHOLDER
+	end
+
+	local function show_archive_item(self, index)
+		if archive_mode == ARCHIVE_MODE_CHARACTERS then
+			show_chara_bio(self, index)
+		elseif archive_mode == ARCHIVE_MODE_WORLD then
+			show_world_lore_entry(self, index)
 		end
 	end
 
@@ -1099,11 +1202,17 @@ function journeylog_ui()
 		end
 
 		self.archive_obj_list.on_modified = function()
-			show_profile(self)
+			show_archive_item(self, self.archive_obj_list.selected_index)
 		end
 
 		self.log_section_selector.on_modified = function()
 			show_tab(self, self.log_section_selector.selected_index)
+		end
+
+		self.archive_mode.on_modified = function()
+			archive_mode = self.archive_mode.selected_index
+			populate_lore_entry_list(self)
+			show_archive_item(self, 1)
 		end
 
 		if not JOURNEYLOG_ALLOW_BROKEN_GARBAGE then
@@ -1112,7 +1221,8 @@ function journeylog_ui()
 
 		-- Set the initial selection.
 		show_journey(self, current_campaign, current_scenario)
-		show_profile(self)
+		populate_lore_entry_list(self)
+		show_archive_item(self, 1)
 		show_tab(self, 1)
 
 		self.title.visible = false
