@@ -17,8 +17,16 @@ local _ = wesnoth.textdomain "wesnoth-Naia"
 local JOURNEYLOG_ALLOW_BROKEN_GARBAGE      = false
 
 local JOURNEYLOG_UI_PORTRAIT_SIZE          = 128
+local JOURNEYLOG_UI_BIO_PORTRAIT_SIZE      = 256
+
 local JOURNEYLOG_UI_SCENARIO_ICON          = "help/closed_section.png"
 local JOURNEYLOG_UI_SCENARIO_ICON_SELECTED = "help/open_section.png"
+
+local JOURNEYLOG_UI_BIO_PLACEHOLDER        = _ "No information is presently available."
+local JOURNEYLOG_UI_RACE_PLACEHOLDER       = _ "race^?"
+local JOURNEYLOG_UI_STATUS_PLACEHOLDER     = _ "chara_status^Living"
+local JOURNEYLOG_UI_GROUPS_PLACEHOLDER     = _ "affiliation^None"
+local JOURNEYLOG_UI_TITLES_PLACEHOLDER     = _ "additional_titles^None"
 
 local EVENT_LABELS = {
 	start       = _ "event^Preparing for combat",
@@ -37,6 +45,61 @@ local EVENT_LABELS = {
 local UI_TAB_LABELS = {
 	_ "Journal",
 	_ "Knowledge",
+}
+
+local BIO_STATUS_LABELS = {
+	dead        = _ "chara_status^Deceased",
+	missing     = _ "chara_status^Missing",
+}
+
+local journeylog_log_portrait_canvas = {
+	T.rectangle {
+		w = "(width)",
+		h = "(height)",
+		border_thickness = 1,
+		border_color = "114, 79, 46, 127",
+		fill_color = "0, 0, 0, 127"
+	},
+	T.image {
+		name = "(text)",
+		x = "(if(image_original_width < width, (width - image_original_width)/2, 0))",
+		y = "(if(image_original_width < height, (height - image_original_height)/2, 0))",
+		-- BIG TODO: scale images proportionally if they don't fit
+		w = "(min(image_original_width, width) * image_original_width/image_original_height)",
+		h = "(min(image_original_height, height))",
+		resize_mode = "scale_sharp"
+	}
+}
+
+local journeylog_bio_portrait_canvas = {
+	T.rectangle {
+		w = "(width)",
+		h = "(height)",
+		fill_color = "0, 0, 0, 127"
+	},
+	T.image {
+		name = "(text)",
+		x = "(if(image_original_width < width, (width - image_original_width)/2, 0))",
+		y = "(if(image_original_width < height, (height - image_original_height)/2, 0))",
+		-- BIG TODO: scale images proportionally if they don't fit
+		w = "(min(image_original_width, width) * image_original_width/image_original_height)",
+		h = "(min(image_original_height, height))",
+		resize_mode = "scale"
+	},
+	T.rectangle {
+		x = 1,
+		y = 1,
+		w = "(width - 2)",
+		h = "(height - 2)",
+		border_thickness = 1,
+		border_color = "0, 0, 0, 255",
+	},
+	T.rectangle {
+		w = "(width)",
+		h = "(height)",
+		border_thickness = 1,
+		border_color = "114, 79, 46, 127",
+	}
 }
 
 local journeylog_section_listdef = {
@@ -135,24 +198,7 @@ local journeylog_chara_img_display = { T.grid { T.row {
 			width = JOURNEYLOG_UI_PORTRAIT_SIZE,
 			height = JOURNEYLOG_UI_PORTRAIT_SIZE,
 			linked_group = "portrait_img_group",
-			T.draw {
-				T.rectangle {
-					w = "(width)",
-					h = "(height)",
-					border_thickness = 1,
-					border_color = "114, 79, 46, 127",
-					fill_color = "0, 0, 0, 127"
-				},
-				T.image {
-					name = "(text)",
-					x = "(if(image_original_width < width, (width - image_original_width)/2, 0))",
-					y = "(if(image_original_width < height, (height - image_original_height)/2, 0))",
-					-- BIG TODO: scale images proportionally if they don't fit
-					w = "(min(image_original_width, width) * image_original_width/image_original_height)",
-					h = "(min(image_original_height, height))",
-					resize_mode = "scale_sharp"
-				}
-			}
+			T.draw(journeylog_log_portrait_canvas)
 		}
 	},
 	T.column {
@@ -206,17 +252,18 @@ local journeylog_msg_spacer_col = {
 
 local journeylog_messages_treedef = {
 	id = "messages_tree",
+	linked_group = "right_side_pane",
 	horizontal_scrollbar_mode = "never",
 	vertical_scrollbar_mode = "always",
 	indentation_step_size = 0,
+
 	T.node {
 		id = "container",
 		unfolded = true,
 		T.node_definition {
 			T.row {
 				T.column {
-					T.spacer {
-					}
+					T.spacer {}
 				}
 			}
 		}
@@ -340,13 +387,6 @@ local journeylog_archive_listdef = {
 			T.grid {
 				T.row {
 					T.column {
-						border = "top,left,bottom",
-						border_size = 10,
-						T.image {
-							id = "archive_item_image"
-						}
-					},
-					T.column {
 						horizontal_grow = true,
 						grow_factor = 1,
 						border = "all",
@@ -361,32 +401,118 @@ local journeylog_archive_listdef = {
 	}}
 }
 
+local function chara_info_panel_field(id, label)
+	if id == nil or label == nil then
+		return {
+			T.column { T.spacer {} },
+			T.column { T.spacer {} }
+		}
+	end
+
+	return {
+		T.column {
+			border = "all",
+			border_size = 5,
+			horizontal_alignment = "left",
+			T.label {
+				id = id .. "_heading",
+				definition = "gold_small",
+				-- TODO: crashes the game in 1.18 if the item is hidden
+				--linked_group = "bio_info_group",
+				label = tostring(label) .. ":"
+			}
+		},
+		T.column {
+			border = "all",
+			border_size = 5,
+			horizontal_grow = true,
+			T.label {
+				id = id,
+				definition = "default_small",
+				label = "BIO_PLACEHOLDER"
+			}
+		}
+	}
+end
+
+local journeylog_chara_info_panel = {
+	T.row {
+		T.column {
+			border = "top,bottom",
+			border_size = 5,
+			horizontal_grow = true,
+			vertical_alignment = "top",
+			T.grid {
+				T.row(chara_info_panel_field("additional_titles", _ "Other titles")),
+				T.row(chara_info_panel_field("affiliation",       _ "Affiliation")),
+				T.row(chara_info_panel_field("status",            _ "Status")),
+				T.row(chara_info_panel_field("race",              _ "Race")),
+			}
+		},
+		T.column {
+			horizontal_alignment = "right",
+			border = "all",
+			border_size = 5,
+			T.drawing {
+				id = "chara_portrait",
+				label = "portraits/galas.png",
+				width = JOURNEYLOG_UI_BIO_PORTRAIT_SIZE,
+				height = JOURNEYLOG_UI_BIO_PORTRAIT_SIZE,
+				T.draw(journeylog_bio_portrait_canvas)
+			}
+		}
+	}
+}
+
 local journeylog_archive_treedef = {
 	id = "archive_entry",
+	linked_group = "right_side_pane",
 	horizontal_scrollbar_mode = "never",
 	indentation_step_size = 0,
+
 	T.node {
-		id = "default",
+		id = "container",
+		unfolded = true,
 		T.node_definition {
 			T.row {
 				T.column {
-					horizontal_alignment = "left",
+					T.spacer {}
+				}
+			}
+		}
+	},
+
+	T.node {
+		id = "chara_profile",
+		T.node_definition {
+			T.row {
+				T.column {
+					horizontal_grow = true,
 					border = "all",
 					border_size = 5,
 					T.label {
 						id = "archive_entry_title",
 						definition = "gold_large",
+						label = "CHARA_NAME",
 						wrap = true
 					}
 				}
 			},
 			T.row {
 				T.column {
-					horizontal_alignment = "left",
+					horizontal_grow = true,
+					T.grid(journeylog_chara_info_panel)
+				}
+			},
+			T.row {
+				T.column {
+					horizontal_grow = true,
 					border = "all",
 					border_size = 5,
 					T.label {
 						id = "archive_entry_body",
+						label = "CHARA_DESCRIPTION",
+						characters_per_line = 76,
 						wrap = true
 					}
 				}
@@ -405,6 +531,7 @@ local journeylog_dialoglog_grid = {
 			border_size = 5,
 			T.listbox {
 				id = "scenario_list",
+				linked_group = "left_side_pane",
 				T.list_definition(journeylog_scenarios_listdef)
 			}
 		},
@@ -422,64 +549,43 @@ local journeylog_dialoglog_grid = {
 local journeylog_archive_grid = {
 	T.row {
 		T.column {
-			horizontal_grow = true,
+			grow_factor = 1,
 			vertical_alignment = "top",
 			T.grid {
 				T.row {
 					T.column {
-						grow_factor = 1,
+						vertical_alignment = "top",
 						border = "all",
 						border_size = 5,
-						T.toggle_button {
-							id = "archive_characters",
-							definition = "radio",
-							label = _ "People"
-						}
-					},
-					T.column {
-						grow_factor = 1,
-						border = "all",
-						border_size = 5,
-						T.toggle_button {
-							id = "archive_world",
-							definition = "radio",
-							label = _ "The World"
+						T.menu_button {
+							id = "archive_mode",
+							linked_group = "left_side_pane",
+							tooltip = _ "Select the type of items to display",
+							T.option { label = _ "People"    },
+							T.option { label = _ "The World" },
 						}
 					}
-				}
-			}
-		}
-	},
-
-	T.row {
-		T.column {
-			horizontal_grow = true,
-			vertical_grow = true,
-			-- TODO: a carbon copy of the dialoglog view UI right now. This
-			--       needs to change.
-			T.grid {
+				},
 				T.row {
 					T.column {
-						grow_factor = 1,
-						horizontal_grow = true,
+						horizontal_alignment = "left",
 						vertical_alignment = "top",
 						border = "all",
 						border_size = 5,
 						T.listbox {
 							id = "archive_obj_list",
+							linked_group = "left_side_pane",
 							T.list_definition(journeylog_archive_listdef)
 						}
-					},
-					T.column {
-						grow_factor = 3,
-						horizontal_alignment = "left",
-						vertical_grow = true,
-						border = "all",
-						border_size = 5,
-						T.tree_view(journeylog_archive_treedef)
 					}
 				}
 			}
+		},
+		T.column {
+			grow_factor = 3,
+			horizontal_alignment = "left",
+			vertical_grow = true,
+			T.tree_view(journeylog_archive_treedef)
 		}
 	}
 }
@@ -508,6 +614,21 @@ local journeylog_dlg = {
 
 	T.linked_group {
 		id = "message_text_group",
+		fixed_width = true
+	},
+
+	T.linked_group {
+		id = "bio_info_group",
+		fixed_width = true
+	},
+
+	T.linked_group {
+		id = "left_side_pane",
+		fixed_width = true
+	},
+
+	T.linked_group {
+		id = "right_side_pane",
 		fixed_width = true
 	},
 
@@ -582,24 +703,8 @@ local journeylog_dlg = {
 				vertical_grow = true,
 				T.stacked_widget {
 					id = "tabs_container",
-					T.layer {
-						T.row {
-							T.column {
-								horizontal_alignment = "center",
-								vertical_grow = true,
-								T.grid(journeylog_dialoglog_grid)
-							}
-						}
-					},
-					T.layer {
-						T.row {
-							T.column {
-								horizontal_alignment = "center",
-								vertical_grow = true,
-								T.grid(journeylog_archive_grid)
-							}
-						}
-					}
+					T.layer(journeylog_dialoglog_grid),
+					T.layer(journeylog_archive_grid)
 				}
 			}
 		},
@@ -649,8 +754,8 @@ end
 function journeylog_ui()
 	local journal = {}
 	local archive = {
-		profiles = {},
-		world = {}
+		profiles = journeylog.retrieve_character_profiles(),
+		world = journeylog.retrieve_world_lore(),
 	}
 
 	local current_campaign, current_scenario = 0, 0
@@ -823,9 +928,87 @@ function journeylog_ui()
 		scenario_listbox_rows[self.scenario_list.selected_index].scenario_icon.label = JOURNEYLOG_UI_SCENARIO_ICON_SELECTED
 	end
 
+	local function bio_race_name_helper(race_id, gender_id)
+		local gender = gender_id
+		if not gender or gender == "unknown" then
+			-- NOTE: Wesnoth 1.18 does not have a concept of an unknown gender
+			gender = "male"
+		end
+
+		local race = wesnoth.races[race_id]
+
+		if race then
+			if gender == "female" then
+				-- TODO: Wesnoth 1.18 does not offer female_name as a first-class
+				--       citizen, why?
+				return race.__cfg.female_name
+			end
+
+			return race.name
+		end
+
+		return JOURNEYLOG_UI_RACE_PLACEHOLDER
+	end
+
+	local function bio_status_helper(status)
+		return BIO_STATUS_LABELS[status] or JOURNEYLOG_UI_STATUS_PLACEHOLDER
+	end
+
+	local function show_profile(self)
+		if not self.archive_obj_list.selected_index then
+			self.archive_entry.visible = false
+			return
+		end
+
+		local profile = archive.profiles[self.archive_obj_list.selected_index]
+
+		if not profile then
+			jprintf(W_ERR, "could not load profile (corrupt lore cache?)")
+			return
+		end
+
+		self.archive_entry:remove_items_at(1, 0)
+
+		-- TODO: do we actually need the unfolded container node
+		local container = self.archive_entry:add_item_of_type("container")
+		local page = container:add_item_of_type("chara_profile")
+
+		page.archive_entry_title.marked_up_text = ("<big>%s</big>"):format(profile.name)
+		page.archive_entry_body.marked_up_text = profile.description or JOURNEYLOG_UI_BIO_PLACEHOLDER
+
+		page.chara_portrait.label = profile.portrait or ""
+		page.race.marked_up_text = bio_race_name_helper(profile.race, profile.gender)
+		page.status.marked_up_text = bio_status_helper(profile.status)
+		page.affiliation.marked_up_text = profile.affiliation or JOURNEYLOG_UI_GROUPS_PLACEHOLDER
+		page.additional_titles.marked_up_text = profile.additional_titles or JOURNEYLOG_UI_TITLES_PLACEHOLDER
+
+		-- FIXME: Wesnoth 1.18 does not appear to support setting .visible on grids
+		--        in Lua even though it is supported in C++
+
+		if not profile.status then
+			page.status.visible = false
+			page.status_heading.visible = false
+		end
+
+		if not profile.additional_titles then
+			page.additional_titles.visible = false
+			page.additional_titles_heading.visible = false
+		end
+
+		if not profile.portrait then
+			page.chara_portrait.visible = false
+		end
+	end
+
 	local function show_tab(self, tab_num)
 		self.tabs_container.selected_index = tab_num
 		self.title.label = UI_TAB_LABELS[tab_num] or "OUT_OF_RANGE"
+
+		if tab_num == 1 then
+			self.scenario_list:focus()
+		elseif tab_num == 2 then
+			self.archive_obj_list:focus()
+		end
 
 		-- TODO FIXME
 	end
@@ -873,6 +1056,11 @@ function journeylog_ui()
 			table.insert(journal, campaign_journey)
 		end
 
+		for i, profile in ipairs(journeylog.retrieve_character_profiles()) do
+			local archive_item = self.archive_obj_list:add_item()
+			archive_item.archive_item_label.label = profile.name
+		end
+
 		-- TODO: The campaigns menu causes the script to crash and also does
 		-- not yet repopulate the scenario list.
 		--self.campaigns_menu.enabled = #journeylog > 1
@@ -899,7 +1087,6 @@ function journeylog_ui()
 		end
 
 		self.scenario_list.selected_index = current_scenario
-		self.scenario_list:focus()
 		update_scenario_icon(self)
 
 		self.scenario_list.on_modified = function()
@@ -909,6 +1096,10 @@ function journeylog_ui()
 
 		self.search_box.on_modified = function()
 			set_journey_filter(self, self.search_box.text)
+		end
+
+		self.archive_obj_list.on_modified = function()
+			show_profile(self)
 		end
 
 		self.log_section_selector.on_modified = function()
@@ -921,7 +1112,10 @@ function journeylog_ui()
 
 		-- Set the initial selection.
 		show_journey(self, current_campaign, current_scenario)
+		show_profile(self)
 		show_tab(self, 1)
+
+		self.title.visible = false
 	end
 
 	gui.show_dialog(journeylog_dlg, preshow)
