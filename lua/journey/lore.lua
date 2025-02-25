@@ -18,6 +18,10 @@ local world_info = {}
 -- Raw collection of character profiles.
 local chara_profiles = {}
 
+-- Index of character ids in order to preserve the original definition order
+-- for UI display purposes.
+local chara_index = {}
+
 -- Public UI-ready cache containing the built profiles and encyclopedia entries
 -- in order to avoid unnecessary data grinding whenever the lore UI is
 -- displayed. This version has been built after processing entry unlock
@@ -33,7 +37,9 @@ local chara_override_attributes = {
 	"additional_titles",
 	"affiliation",
 	"race",
+	"status",
 	"gender",
+	"portrait",
 }
 
 -- Character attributes that should be extended by additional_info.
@@ -115,6 +121,10 @@ function journeylog.register_character_profiles(cfg)
 			table.insert(additional_info, clone_chara_attributes(extra))
 		end
 
+		if chara_profiles[profile.id] == nil then
+			table.insert(chara_index, profile.id)
+		end
+
 		chara_profiles[profile.id] = table_merge(clone_chara_attributes(profile), {
 			id = profile.id,
 			additional_info = additional_info,
@@ -137,7 +147,13 @@ function journeylog.rebuild_lore()
 	local profile_cache = {}
 	local world_cache = {}
 
-	for id, profile in pairs(chara_profiles) do
+	for _, id in ipairs(chara_index) do
+		local profile = chara_profiles[id]
+
+		if profile == nil then
+			wml.error("journeylog.rebuild_lore(): character index corrupted")
+		end
+
 		jprintf(W_INFO, "rebuilding character profile for %s", id)
 
 		if journeylog.has_milestone(profile.requires_milestone) then
@@ -179,6 +195,9 @@ end
 --   affiliation             Affiliations (to groups, orgs, etc.) the character has.
 --   race                    Race/species of the character.
 --   gender                  Gender of the character.
+--   portrait                Portrait image.
+--   status                  Character's living status - one of "dead",
+--                           "missing", or nil (living).
 --   description             Character's detailed bio/description.
 --
 function journeylog.retrieve_character_profiles()
