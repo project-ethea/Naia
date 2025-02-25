@@ -596,7 +596,19 @@ local journeylog_dialoglog_grid = {
 			vertical_grow = true,
 			border = "all",
 			border_size = 5,
-			T.tree_view(journeylog_messages_treedef)
+			T.panel {
+				definition = "naia_journeylog_panel",
+				T.grid {
+					T.row {
+						T.column {
+							vertical_grow = true,
+							border = "all",
+							border_size = 5,
+							T.tree_view(journeylog_messages_treedef)
+						}
+					}
+				}
+			}
 		}
 	}
 }
@@ -640,7 +652,21 @@ local journeylog_archive_grid = {
 			grow_factor = 3,
 			horizontal_alignment = "left",
 			vertical_grow = true,
-			T.tree_view(journeylog_archive_treedef)
+			border = "all",
+			border_size = 5,
+			T.panel {
+				definition = "naia_journeylog_panel",
+				T.grid {
+					T.row {
+						T.column {
+							vertical_grow = true,
+							border = "all",
+							border_size = 5,
+							T.tree_view(journeylog_archive_treedef)
+						}
+					}
+				}
+			}
 		}
 	}
 }

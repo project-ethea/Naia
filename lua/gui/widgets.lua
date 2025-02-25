@@ -12,6 +12,14 @@ local T = wml.tag
 -- #textdomain wesnoth-Naia
 local _ = wesnoth.textdomain "wesnoth-Naia"
 
+-- Constants and helpers
+
+local JOURNEYLOG_PANEL_PADDING = 3
+
+local JOURNEYLOG_PANEL_BORDER_COLOR = "114, 79, 46, 127" -- GUI__BORDER_COLOR_DARK
+
+-- Canvas definition WML
+
 gui.add_widget_definition("window", "naia_campaign_intro", {
 	id = "naia_campaign_intro",
 	description = "Campaign intro billboard",
@@ -149,6 +157,67 @@ gui.add_widget_definition("window", "naia_journeylog", {
 					}
 				}
 			}
+		}
+	}
+})
+
+gui.add_widget_definition("panel", "naia_journeylog_panel", {
+	id = "naia_journeylog_panel",
+	description = "a decade and a half later, gui2 still sucks",
+
+	T.resolution {
+		left_border   = JOURNEYLOG_PANEL_PADDING,
+		right_border  = JOURNEYLOG_PANEL_PADDING,
+		top_border    = JOURNEYLOG_PANEL_PADDING,
+		bottom_border = JOURNEYLOG_PANEL_PADDING,
+
+		T.background {
+			T.draw {
+				T.rectangle {
+					x = 1,
+					y = 1,
+					w = "(width - 2)",
+					h = "(height - 2)",
+					border_thickness = 1,
+					border_color = "0, 0, 0, 255",
+					fill_color = "0, 0, 0, 127" -- GUI__BACKGROUND_COLOR_ENABLED
+				},
+				T.line {
+					x1 = 1,
+					y1 = 0,
+					x2 = "(width - 2)",
+					y2 = 0,
+					thickness = 1,
+					color = JOURNEYLOG_PANEL_BORDER_COLOR
+				},
+				T.line {
+					x1 = 0,
+					y1 = 1,
+					x2 = 0,
+					y2 = "(height - 2)",
+					thickness = 1,
+					color = JOURNEYLOG_PANEL_BORDER_COLOR
+				},
+				T.line {
+					x1 = 1,
+					y1 = "(height - 1)",
+					x2 = "(width - 2)",
+					y2 = "(height - 1)",
+					thickness = 1,
+					color = JOURNEYLOG_PANEL_BORDER_COLOR
+				},
+				T.line {
+					x1 = "(width - 1)",
+					y1 = 1,
+					x2 = "(width - 1)",
+					y2 = "(height - 2)",
+					thickness = 1,
+					color = JOURNEYLOG_PANEL_BORDER_COLOR
+				},
+			}
+		},
+		T.foreground {
+			T.draw {}
 		}
 	}
 })
