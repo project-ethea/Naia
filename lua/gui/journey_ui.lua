@@ -417,25 +417,29 @@ local function chara_info_panel_field(id, label)
 
 	return {
 		T.column {
+			grow_factor = 0,
 			border = "all",
 			border_size = 5,
-			horizontal_alignment = "left",
+			horizontal_grow = true,
 			T.label {
 				id = id .. "_heading",
 				definition = "gold_small",
 				-- TODO: crashes the game in 1.18 if the item is hidden
 				--linked_group = "bio_info_group",
-				label = tostring(label) .. ":"
+				label = tostring(label) .. ":",
+				text_alignment = "right"
 			}
 		},
 		T.column {
+			grow_factor = 1,
 			border = "all",
 			border_size = 5,
 			horizontal_grow = true,
 			T.label {
 				id = id,
 				definition = "default_small",
-				label = "BIO_PLACEHOLDER"
+				label = "BIO_PLACEHOLDER",
+				text_alignment = "left"
 			}
 		}
 	}
@@ -459,12 +463,9 @@ local journeylog_chara_info_panel = {
 			horizontal_alignment = "right",
 			border = "all",
 			border_size = 5,
-			T.drawing {
+			T.button {
 				id = "chara_portrait",
-				label = "portraits/galas.png",
-				width = JOURNEYLOG_UI_BIO_PORTRAIT_SIZE,
-				height = JOURNEYLOG_UI_BIO_PORTRAIT_SIZE,
-				T.draw(journeylog_bio_portrait_canvas)
+				definition = "naia_journeylog_image_viewer_button"
 			}
 		}
 	},
@@ -484,6 +485,7 @@ local journeylog_archive_treedef = {
 	id = "archive_entry",
 	linked_group = "right_side_pane",
 	horizontal_scrollbar_mode = "never",
+	vertical_scrollbar_mode = "always",
 	indentation_step_size = 0,
 
 	T.node {
@@ -810,14 +812,50 @@ local journeylog_dlg = {
 						},
 						T.column {
 							horizontal_alignment = "right",
-							border = "all",
-							border_size = 5,
-							T.button {
-								id = "ok",
-								label = wgettext("Close")
+							T.grid {
+								T.row {
+									T.column {
+										border = "all",
+										border_size = 5,
+										T.toggle_button {
+											id = "show_portraits",
+											label = _ "Show portraits",
+										}
+									},
+									T.column {
+										border = "all",
+										border_size = 5,
+										T.button {
+											id = "ok",
+											label = wgettext("Close")
+										}
+									}
+								}
 							}
 						}
 					}
+				}
+			}
+		}
+	}
+}
+
+local image_viewer_dlg = {
+	definition = "message",
+	maximum_width = 800,
+	maximum_height = 600,
+	click_dismiss = true,
+
+	T.helptip { id = "tooltip" },
+	T.tooltip { id = "tooltip" },
+
+	T.grid {
+		T.row {
+			T.column {
+				border = "all",
+				border_size = 5,
+				T.image {
+					id = "image"
 				}
 			}
 		}
@@ -1095,6 +1133,12 @@ function journeylog_ui()
 
 		if not profile.portrait then
 			page.chara_portrait.visible = false
+		else
+			page.chara_portrait.on_button_click = function ()
+				gui.show_dialog(image_viewer_dlg, function(self)
+					self.image.label = profile.portrait
+				end)
+			end
 		end
 	end
 
