@@ -794,6 +794,13 @@ local image_viewer_dlg = {
 	maximum_height = 600,
 	click_dismiss = true,
 
+	automatic_placement = false,
+
+	x = "(min(max(0, mouse_x - window_width / 2), screen_width - window_width))",
+	y = "(min(max(0, mouse_y - window_height / 2), screen_height - window_height))",
+	width = "(if(window_width > 0, window_width, screen_width))",
+	height = "(if(window_height > 0, window_height, screen_height))",
+
 	T.helptip { id = "tooltip" },
 	T.tooltip { id = "tooltip" },
 
@@ -806,15 +813,30 @@ local image_viewer_dlg = {
 					id = "image"
 				}
 			}
+		},
+		T.row {
+			T.column {
+				border = "all",
+				border_size = 5,
+				T.label {
+					id = "caption",
+					wrap = true,
+					definition = "gold"
+				}
+			}
 		}
 	}
 }
 
 -- Helper to create closures to handle portrait click events.
-local function portrait_image_viewer(image)
+local function portrait_image_viewer(image, caption)
 	return function()
 		gui.show_dialog(image_viewer_dlg, function(self)
-			self.image.label = image
+			self.image.label = image .. "~BG(0,0,0)"
+			self.caption.marked_up_text = caption or ""
+			if caption == nil then
+				self.caption.visible = false
+			end
 		end)
 	end
 end
@@ -933,7 +955,7 @@ function journeylog_ui()
 
 				if msg.image ~= nil then
 					msg_display.image.label = msg.image
-					msg_display.image.on_button_click = portrait_image_viewer(msg.image)
+					msg_display.image.on_button_click = portrait_image_viewer(msg.image, msg.speaker)
 				else
 					msg_display.image.visible = "hidden"
 				end
@@ -1098,7 +1120,7 @@ function journeylog_ui()
 		if not profile.portrait then
 			page.chara_portrait.visible = false
 		else
-			page.chara_portrait.on_button_click = portrait_image_viewer(profile.portrait)
+			page.chara_portrait.on_button_click = portrait_image_viewer(profile.portrait, profile.name)
 		end
 	end
 
