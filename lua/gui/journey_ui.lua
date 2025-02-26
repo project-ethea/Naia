@@ -77,37 +77,6 @@ local journeylog_log_portrait_canvas = {
 	}
 }
 
-local journeylog_bio_portrait_canvas = {
-	T.rectangle {
-		w = "(width)",
-		h = "(height)",
-		fill_color = "0, 0, 0, 127"
-	},
-	T.image {
-		name = "(text)",
-		x = "(if(image_original_width < width, (width - image_original_width)/2, 0))",
-		y = "(if(image_original_width < height, (height - image_original_height)/2, 0))",
-		-- BIG TODO: scale images proportionally if they don't fit
-		w = "(min(image_original_width, width) * image_original_width/image_original_height)",
-		h = "(min(image_original_height, height))",
-		resize_mode = "scale"
-	},
-	T.rectangle {
-		x = 1,
-		y = 1,
-		w = "(width - 2)",
-		h = "(height - 2)",
-		border_thickness = 1,
-		border_color = "0, 0, 0, 255",
-	},
-	T.rectangle {
-		w = "(width)",
-		h = "(height)",
-		border_thickness = 1,
-		border_color = "114, 79, 46, 127",
-	}
-}
-
 local journeylog_section_listdef = {
 	T.row {
 		T.column {
