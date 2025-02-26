@@ -827,6 +827,12 @@ local function clean_campaign_name(text)
 	return tostring(text):gsub("\n", " ")
 end
 
+-- Helper to make markup text fancier by converting certain tags to use color
+-- formatting.
+local function transform_markup(markup)
+	return tostring(markup or ""):gsub("<b>([^<]+)</b>", "<span color='#baac7d'>%0</span>")
+end
+
 function journeylog_ui()
 	local journal = {}
 	local archive = {
@@ -1068,7 +1074,7 @@ function journeylog_ui()
 		local page = container:add_item_of_type("chara_profile")
 
 		page.archive_entry_title.marked_up_text = ("<big>%s</big>"):format(profile.name)
-		page.archive_entry_body.marked_up_text = profile.description or JOURNEYLOG_UI_BIO_PLACEHOLDER
+		page.archive_entry_body.marked_up_text = transform_markup(profile.description) or JOURNEYLOG_UI_BIO_PLACEHOLDER
 
 		page.chara_portrait.label = profile.portrait or ""
 		page.race.marked_up_text = bio_race_name_helper(profile.race, profile.gender)
@@ -1116,7 +1122,7 @@ function journeylog_ui()
 		local page = container:add_item_of_type("lore_entry")
 
 		page.archive_entry_title.marked_up_text = ("<big>%s</big>"):format(entry.title)
-		page.archive_entry_body.marked_up_text = entry.text or JOURNEYLOG_UI_BIO_PLACEHOLDER
+		page.archive_entry_body.marked_up_text = transform_markup(entry.text) or JOURNEYLOG_UI_BIO_PLACEHOLDER
 	end
 
 	local function show_archive_item(self, index)
