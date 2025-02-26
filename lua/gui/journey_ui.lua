@@ -172,6 +172,20 @@ local journeylog_chara_name_display = {
 	}
 }
 
+local journeylog_chara_name_display_compact = {
+	horizontal_alignment = "left",
+	vertical_alignment = "top",
+	border = "all",
+	border_size = 5,
+	T.label {
+		id = "chara_name",
+		definition = "gold",
+		linked_group = "portrait_img_group",
+		characters_per_line = 10,
+		wrap = true
+	}
+}
+
 local journeylog_chara_msg_display = {
 	horizontal_alignment = "left",
 	border = "all",
@@ -253,6 +267,20 @@ local journeylog_messages_treedef = {
 	},
 
 	T.node {
+		id = "plain_message_compact",
+		T.node_definition {
+			T.row {
+				T.column(journeylog_chara_name_display_compact),
+				T.column(journeylog_chara_msg_display)
+			},
+			T.row {
+				T.column(journeylog_msg_spacer_col),
+				T.column(journeylog_msg_spacer_col)
+			}
+		}
+	},
+
+	T.node {
 		id = "message_with_input",
 		T.node_definition {
 			T.row {
@@ -280,6 +308,29 @@ local journeylog_messages_treedef = {
 				}
 			},
 			T.row {
+				T.column(journeylog_msg_spacer_col)
+			}
+		}
+	},
+
+	T.node {
+		id = "message_with_input_compact",
+		T.node_definition {
+			T.row {
+				T.column(journeylog_chara_name_display_compact),
+				T.column {
+					T.grid {
+						T.row {
+							T.column(journeylog_chara_msg_display)
+						},
+						T.row {
+							T.column(journeylog_user_msg_display)
+						}
+					}
+				}
+			},
+			T.row {
+				T.column(journeylog_msg_spacer_col),
 				T.column(journeylog_msg_spacer_col)
 			}
 		}
@@ -859,6 +910,8 @@ local function transform_markup(markup)
 	end
 end
 
+local global_show_portraits = true
+
 function journeylog_ui()
 	local journal = {}
 	local archive = {
@@ -951,17 +1004,27 @@ function journeylog_ui()
 			else
 				local msg_display
 
-				if msg.choice == nil then
-					msg_display = journey_view_add_node(treeview, "plain_message", msg)
+				if global_show_portraits then
+					if msg.choice == nil then
+						msg_display = journey_view_add_node(treeview, "plain_message", msg)
+					else
+						msg_display = journey_view_add_node(treeview, "message_with_input", msg)
+					end
 				else
-					msg_display = journey_view_add_node(treeview, "message_with_input", msg)
+					if msg.choice == nil then
+						msg_display = journey_view_add_node(treeview, "plain_message_compact", msg)
+					else
+						msg_display = journey_view_add_node(treeview, "message_with_input_compact", msg)
+					end
 				end
 
-				if msg.image ~= nil then
-					msg_display.image.label = msg.image
-					msg_display.image.on_button_click = portrait_image_viewer(msg.image, msg.speaker)
-				else
-					msg_display.image.visible = "hidden"
+				if global_show_portraits then
+					if msg.image ~= nil then
+						msg_display.image.label = msg.image
+						msg_display.image.on_button_click = portrait_image_viewer(msg.image, msg.speaker)
+					else
+						msg_display.image.visible = "hidden"
+					end
 				end
 
 				if not msg.is_narrator and msg.speaker ~= nil then
@@ -1029,6 +1092,11 @@ function journeylog_ui()
 				row.set_visible(visible)
 			end
 		end
+	end
+
+	local function set_journey_portraits_shown(self, value)
+		global_show_portraits = value
+		show_journey(self, current_campaign, current_scenario)
 	end
 
 	local function update_scenario_icon(self)
@@ -1165,11 +1233,11 @@ function journeylog_ui()
 
 		if tab_num == 1 then
 			self.scenario_list:focus()
+			self.show_portraits.visible = true
 		elseif tab_num == 2 then
 			self.archive_obj_list:focus()
+			self.show_portraits.visible = false
 		end
-
-		-- TODO FIXME
 	end
 
 	local function preshow(self)
@@ -1245,6 +1313,8 @@ function journeylog_ui()
 			end
 		end
 
+		self.show_portraits.selected = global_show_portraits
+
 		self.scenario_list.selected_index = current_scenario
 		update_scenario_icon(self)
 
@@ -1255,6 +1325,10 @@ function journeylog_ui()
 
 		self.search_box.on_modified = function()
 			set_journey_filter(self, self.search_box.text)
+		end
+
+		self.show_portraits.on_modified = function()
+			set_journey_portraits_shown(self, self.show_portraits.selected)
 		end
 
 		self.archive_obj_list.on_modified = function()
