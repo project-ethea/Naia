@@ -15,6 +15,7 @@ local _ = wesnoth.textdomain "wesnoth-Naia"
 -- Constants and helpers
 
 local JOURNEYLOG_BIO_PORTRAIT_SIZE = 200
+local JOURNEYLOG_BIO_SMALL_PORTRAIT_SIZE = 128
 
 local JOURNEYLOG_PANEL_PADDING = 3
 local JOURNEYLOG_PANEL_BORDER_COLOR = "114, 79, 46, 127" -- GUI__BORDER_COLOR_DARK
@@ -239,21 +240,36 @@ G_widget("panel", "naia_journeylog_panel", {
 	}
 })
 
-local function journeylog_bio_portrait_canvas_image(image_func)
+local function journeylog_bio_portrait_canvas_image(image_func, resize_mode)
+	-- HACK:
+	-- resize_mode is not a formula, so we cannot use a formula to define
+	-- whether an image should be smoothly interpolated (portraits) or NN'd
+	-- (sprites). HOWEVER, name IS a formula, so we render two variants of
+	-- each image instead, with one being set to an empty pathname if it seems
+	-- like the wrong variant for the image type in question.
 	return T.image {
-		name = "('[text][ipf]' where ipf = '" .. (image_func or "") .. "')",
-		--name = "(text)",
+		name = string.format([[(
+			if(resize_mode = 'scale' and is_portrait = 1,
+				img_path,
+				if(resize_mode = 'scale_sharp' and is_portrait = 0,
+					img_path,
+					''
+				))
+			where img_path = '[text]%s',
+				  resize_mode = '%s',
+				  is_portrait = (find_string(text, 'portraits/') = 0)
+			)]], image_func, resize_mode),
+		resize_mode = resize_mode,
 		x = "(if(image_original_width < width, (width - image_original_width)/2, 0))",
 		y = "(if(image_original_width < height, (height - image_original_height)/2, 0))",
 		-- BIG TODO: scale images proportionally if they don't fit
 		w = "(min(image_original_width, width) * image_original_width/image_original_height)",
 		h = "(min(image_original_height, height))",
-		resize_mode = "scale"
 	}
 end
 
 local function journeylog_bio_portrait_canvas(params)
-	local border = params.border or "114, 79, 46, 127"
+	local border = params.border or "114, 79, 46, 92"
 	local bg = params.bg or "0, 0, 0, 127"
 	local image_func = params.image_func or ""
 
@@ -263,7 +279,8 @@ local function journeylog_bio_portrait_canvas(params)
 			h = "(height)",
 			fill_color = bg
 		},
-		journeylog_bio_portrait_canvas_image(image_func),
+		journeylog_bio_portrait_canvas_image(image_func, 'scale'),
+		journeylog_bio_portrait_canvas_image(image_func, 'scale_sharp'),
 		T.rectangle {
 			x = 1,
 			y = 1,
@@ -276,39 +293,54 @@ local function journeylog_bio_portrait_canvas(params)
 	}
 end
 
-G_widget("button", "naia_journeylog_image_viewer_button", {
-	min_width         = JOURNEYLOG_BIO_PORTRAIT_SIZE,
-	min_height        = JOURNEYLOG_BIO_PORTRAIT_SIZE,
-	default_width     = JOURNEYLOG_BIO_PORTRAIT_SIZE,
-	default_height    = JOURNEYLOG_BIO_PORTRAIT_SIZE,
-	max_width         = 0,
-	max_height        = JOURNEYLOG_BIO_PORTRAIT_SIZE,
+local function journeylog_bio_portrait_widget_def(widget_size)
+	return {
+		min_width         = widget_size,
+		min_height        = widget_size,
+		default_width     = widget_size,
+		default_height    = widget_size,
+		max_width         = 0,
+		max_height        = widget_size,
 
-	text_extra_width  = 0,
-	text_extra_height = 0,
-	text_font_size    = 0,
+		text_extra_width  = 0,
+		text_extra_height = 0,
+		text_font_size    = 0,
 
-	T.state_enabled {
-		journeylog_bio_portrait_canvas({})
-	},
-	T.state_disabled {
-		journeylog_bio_portrait_canvas({
-			border = "79, 79, 79, 95",
-			image_func =  "~GS()~O(0.6)"
-		})
-	},
-	T.state_pressed {
-		journeylog_bio_portrait_canvas({
-			image_func = "~BLEND(0,0,0,0.08)"
-		})
-	},
-	T.state_focused {
-		journeylog_bio_portrait_canvas({
-			bg = "18, 24, 40, 127",
-			image_func = "~BLEND(255,255,255,0.02)"
-		})
+		T.state_enabled {
+			journeylog_bio_portrait_canvas({})
+		},
+		T.state_disabled {
+			journeylog_bio_portrait_canvas({
+				border = "79, 79, 79, 92",
+				image_func =  "~GS()~O(0.6)"
+			})
+		},
+		T.state_pressed {
+			journeylog_bio_portrait_canvas({
+				image_func = "~BLEND(0,0,0,0.08)"
+			})
+		},
+		T.state_focused {
+			journeylog_bio_portrait_canvas({
+				border = "114, 79, 46, 110",
+				bg = "18, 24, 40, 127",
+				image_func = "~BLEND(255,255,255,0.02)"
+			})
+		}
 	}
-})
+end
+
+G_widget(
+	"button",
+	"naia_journeylog_image_viewer_button",
+	journeylog_bio_portrait_widget_def(JOURNEYLOG_BIO_PORTRAIT_SIZE)
+)
+
+G_widget(
+	"button",
+	"naia_journeylog_image_viewer_button_small",
+	journeylog_bio_portrait_widget_def(JOURNEYLOG_BIO_SMALL_PORTRAIT_SIZE)
+)
 
 local function journeylog_scroll_canvas(vertical, params)
 	local groove_color = params.groove_color or JOURNEYLOG_SCROLLBAR_GROOVE_COLOR

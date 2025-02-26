@@ -16,8 +16,6 @@ local _ = wesnoth.textdomain "wesnoth-Naia"
 --          functionality!
 local JOURNEYLOG_ALLOW_BROKEN_GARBAGE      = false
 
-local JOURNEYLOG_UI_PORTRAIT_SIZE          = 128
-local JOURNEYLOG_UI_BIO_PORTRAIT_SIZE      = 256
 local JOURNEYLOG_UI_ENTRY_TOP_MARGIN       = 10
 local JOURNEYLOG_UI_LOG_WIDTH_CHARS        = 66
 local JOURNEYLOG_UI_LORE_WIDTH_CHARS       = JOURNEYLOG_UI_LOG_WIDTH_CHARS + 10
@@ -57,25 +55,6 @@ local BIO_STATUS_LABELS = {
 
 local ARCHIVE_MODE_CHARACTERS = 1
 local ARCHIVE_MODE_WORLD      = 2
-
-local journeylog_log_portrait_canvas = {
-	T.rectangle {
-		w = "(width)",
-		h = "(height)",
-		border_thickness = 1,
-		border_color = "114, 79, 46, 127",
-		fill_color = "0, 0, 0, 127"
-	},
-	T.image {
-		name = "(text)",
-		x = "(if(image_original_width < width, (width - image_original_width)/2, 0))",
-		y = "(if(image_original_width < height, (height - image_original_height)/2, 0))",
-		-- BIG TODO: scale images proportionally if they don't fit
-		w = "(min(image_original_width, width) * image_original_width/image_original_height)",
-		h = "(min(image_original_height, height))",
-		resize_mode = "scale_sharp"
-	}
-}
 
 local journeylog_section_listdef = {
 	T.row {
@@ -168,12 +147,10 @@ local journeylog_chara_img_display = { T.grid { T.row {
 		vertical_alignment = "top",
 		border = "all",
 		border_size = 5,
-		T.drawing {
+		T.button {
 			id = "image",
-			width = JOURNEYLOG_UI_PORTRAIT_SIZE,
-			height = JOURNEYLOG_UI_PORTRAIT_SIZE,
 			linked_group = "portrait_img_group",
-			T.draw(journeylog_log_portrait_canvas)
+			definition = "naia_journeylog_image_viewer_button_small"
 		}
 	},
 	T.column {
@@ -833,6 +810,15 @@ local image_viewer_dlg = {
 	}
 }
 
+-- Helper to create closures to handle portrait click events.
+local function portrait_image_viewer(image)
+	return function()
+		gui.show_dialog(image_viewer_dlg, function(self)
+			self.image.label = image
+		end)
+	end
+end
+
 local function jprintf(lvl, msg, ...)
 	wprintf(lvl, "JourneyLogUI: " .. msg, ...)
 end
@@ -941,6 +927,7 @@ function journeylog_ui()
 
 				if msg.image ~= nil then
 					msg_display.image.label = msg.image
+					msg_display.image.on_button_click = portrait_image_viewer(msg.image)
 				else
 					msg_display.image.visible = "hidden"
 				end
@@ -1105,11 +1092,7 @@ function journeylog_ui()
 		if not profile.portrait then
 			page.chara_portrait.visible = false
 		else
-			page.chara_portrait.on_button_click = function ()
-				gui.show_dialog(image_viewer_dlg, function(self)
-					self.image.label = profile.portrait
-				end)
-			end
+			page.chara_portrait.on_button_click = portrait_image_viewer(profile.portrait)
 		end
 	end
 
