@@ -852,7 +852,11 @@ end
 -- Helper to make markup text fancier by converting certain tags to use color
 -- formatting.
 local function transform_markup(markup)
-	return tostring(markup or ""):gsub("<b>([^<]+)</b>", "<span color='#baac7d'>%0</span>")
+	if markup then
+		return tostring(markup):gsub("<b>([^<]+)</b>", "<span color='#baac7d'>%0</span>")
+	else
+		return nil
+	end
 end
 
 function journeylog_ui()
