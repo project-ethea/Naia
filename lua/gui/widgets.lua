@@ -19,6 +19,13 @@ local JOURNEYLOG_BIO_PORTRAIT_SIZE = 200
 local JOURNEYLOG_PANEL_PADDING = 3
 local JOURNEYLOG_PANEL_BORDER_COLOR = "114, 79, 46, 127" -- GUI__BORDER_COLOR_DARK
 
+local JOURNEYLOG_SCROLLBAR_THICKNESS = 7
+local JOURNEYLOG_SCROLLBAR_POSITIONER_LENGTH = 11
+local JOURNEYLOG_SCROLLBAR_GROOVE_COLOR = "0, 0, 0, 47"
+local JOURNEYLOG_SCROLLBAR_GROOVE_COLOR_HOVER = "0, 0, 0, 127"
+local JOURNEYLOG_SCROLLBAR_SLIDER_COLOR = "23, 50, 73, 200"
+local JOURNEYLOG_SCROLLBAR_SLIDER_COLOR_HOVER = "33, 66, 93, 200"
+
 --
 -- Helper to avoid code duplication and odd semantics in GUI2 calls.
 --
@@ -300,5 +307,201 @@ G_widget("button", "naia_journeylog_image_viewer_button", {
 			bg = "18, 24, 40, 127",
 			image_func = "~BLEND(255,255,255,0.02)"
 		})
+	}
+})
+
+local function journeylog_scroll_canvas(vertical, params)
+	local groove_color = params.groove_color or JOURNEYLOG_SCROLLBAR_GROOVE_COLOR
+	local slider_color = params.slider_color or JOURNEYLOG_SCROLLBAR_SLIDER_COLOR
+
+	local x, y, w, h = 0, 0, "(width)", "(height)"
+	local edge1 = { x1 = 0, y1 = 0, x2 = 0, y2 = 0, thickness = 1, color = slider_color }
+	local edge2 = { x1 = 0, y1 = 0, x2 = 0, y2 = 0, thickness = 1, color = slider_color }
+
+	if vertical then
+		y = "(positioner_offset + 1)"
+		h = "(max(0, positioner_length - 2))"
+
+		edge1.x1 = 1
+		edge1.x2 = "(width - 2)"
+		edge1.y1 = "(positioner_offset)"
+		edge1.y2 = edge1.y1
+
+		edge2.x1 = edge1.x1
+		edge2.x2 = edge1.x2
+		edge2.y1 = "(positioner_offset + positioner_length - 1)"
+		edge2.y2 = edge2.y1
+	else
+		x = "(positioner_offset + 1)"
+		w = "(max(0, positioner_length - 2))"
+
+		edge1.x1 = "(positioner_offset)"
+		edge1.x2 = edge1.x1
+		edge1.y1 = 1
+		edge1.y2 = "(height - 2)"
+
+		edge2.x1 = "(positioner_offset + positioner_length - 1)"
+		edge2.x2 = edge2.x1
+		edge2.y1 = edge1.y1
+		edge2.y2 = edge1.y2
+	end
+
+	return T.draw {
+		-- Groove
+		T.rectangle {
+			x = 0,
+			y = 0,
+			w = "(width)",
+			h = "(height)",
+			fill_color = groove_color
+		},
+		-- Positioner
+		T.line(edge1),
+		T.rectangle {
+			x = x,
+			y = y,
+			w = w,
+			h = h,
+			fill_color = slider_color
+		},
+		T.line(edge2)
+	}
+end
+
+local function journeylog_hscroll_canvas(params)
+	return journeylog_scroll_canvas(false, params)
+end
+
+local function journeylog_vscroll_canvas(params)
+	return journeylog_scroll_canvas(true, params)
+end
+
+G_widget("horizontal_scrollbar", "naia_journeylog_viewer_hscroll", {
+	min_width         = 20,
+	min_height        = JOURNEYLOG_SCROLLBAR_THICKNESS,
+	default_width     = 20,
+	default_height    = JOURNEYLOG_SCROLLBAR_THICKNESS,
+	max_width         = 0,
+	max_height        = JOURNEYLOG_SCROLLBAR_THICKNESS,
+	left_offset       = 0,
+	right_offset      = 0,
+	minimum_positioner_length = JOURNEYLOG_SCROLLBAR_POSITIONER_LENGTH,
+
+	T.state_enabled {
+		journeylog_hscroll_canvas({})
+	},
+	T.state_disabled {
+		T.draw {}
+	},
+	T.state_pressed {
+		journeylog_hscroll_canvas({
+			groove_color = JOURNEYLOG_SCROLLBAR_GROOVE_COLOR_HOVER,
+			slider_color = JOURNEYLOG_SCROLLBAR_SLIDER_COLOR_HOVER
+		})
+	},
+	T.state_focused {
+		journeylog_hscroll_canvas({
+			groove_color = JOURNEYLOG_SCROLLBAR_GROOVE_COLOR_HOVER,
+			slider_color = JOURNEYLOG_SCROLLBAR_SLIDER_COLOR_HOVER
+		})
+	}
+})
+
+G_widget("vertical_scrollbar", "naia_journeylog_viewer_vscroll", {
+	min_width         = JOURNEYLOG_SCROLLBAR_THICKNESS,
+	min_height        = 20,
+	default_width     = JOURNEYLOG_SCROLLBAR_THICKNESS,
+	default_height    = 20,
+	max_width         = JOURNEYLOG_SCROLLBAR_THICKNESS,
+	max_height        = 0,
+	top_offset        = 0,
+	bottom_offset     = 0,
+	minimum_positioner_length = JOURNEYLOG_SCROLLBAR_POSITIONER_LENGTH,
+
+	T.state_enabled {
+		journeylog_vscroll_canvas({})
+	},
+	T.state_disabled {
+		T.draw {}
+	},
+	T.state_pressed {
+		journeylog_vscroll_canvas({
+			groove_color = JOURNEYLOG_SCROLLBAR_GROOVE_COLOR_HOVER,
+			slider_color = JOURNEYLOG_SCROLLBAR_SLIDER_COLOR_HOVER
+		})
+	},
+	T.state_focused {
+		journeylog_vscroll_canvas({
+			groove_color = JOURNEYLOG_SCROLLBAR_GROOVE_COLOR_HOVER,
+			slider_color = JOURNEYLOG_SCROLLBAR_SLIDER_COLOR_HOVER
+		})
+	}
+})
+
+G_widget("tree_view", "naia_journeylog_viewer", {
+	min_width         = 0,
+	min_height        = 0,
+	default_width     = 0,
+	default_height    = 0,
+	max_width         = 0,
+	max_height        = 0,
+
+	text_font_size    = 0,
+	text_font_style   = "",
+
+	T.state_enabled { T.draw {} },
+	T.state_disabled { T.draw {} },
+
+	T.grid {
+		T.row {
+			grow_factor = 1,
+			T.column {
+				grow_factor = 1,
+				horizontal_grow = true,
+				vertical_grow = true,
+				T.grid {
+					id = "_content_grid"
+				}
+			},
+			T.column {
+				grow_factor = 0,
+				vertical_grow = true,
+				T.grid {
+					id = "_vertical_scrollbar_grid",
+					T.row {
+						grow_factor = 1,
+						T.column {
+							vertical_grow = true,
+							T.vertical_scrollbar {
+								id = "_vertical_scrollbar",
+								definition = "naia_journeylog_viewer_vscroll"
+							}
+						}
+					}
+				}
+			}
+		},
+		T.row {
+			grow_factor = 0,
+			T.column {
+				horizontal_grow = true,
+				T.grid {
+					id = "_horizontal_scrollbar_grid",
+					T.row {
+						T.column {
+							grow_factor = 1,
+							horizontal_grow = true,
+							T.horizontal_scrollbar {
+								id = "_horizontal_scrollbar",
+								definition = "naia_journeylog_viewer_hscroll"
+							}
+						}
+					}
+				}
+			},
+			T.column {
+				T.spacer {}
+			}
+		}
 	}
 })

@@ -227,6 +227,7 @@ local journeylog_msg_spacer_col = {
 
 local journeylog_messages_treedef = {
 	id = "messages_tree",
+	definition = "naia_journeylog_viewer",
 	linked_group = "right_side_pane",
 	horizontal_scrollbar_mode = "never",
 	vertical_scrollbar_mode = "always",
@@ -452,6 +453,7 @@ local journeylog_chara_info_panel = {
 
 local journeylog_archive_treedef = {
 	id = "archive_entry",
+	definition = "naia_journeylog_viewer",
 	linked_group = "right_side_pane",
 	horizontal_scrollbar_mode = "never",
 	vertical_scrollbar_mode = "always",
