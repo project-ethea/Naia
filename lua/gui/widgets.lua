@@ -504,6 +504,8 @@ G_widget("tree_view", "naia_journeylog_viewer", {
 						grow_factor = 1,
 						T.column {
 							vertical_grow = true,
+							border = "left",
+							border_size = 3,
 							T.vertical_scrollbar {
 								id = "_vertical_scrollbar",
 								definition = "naia_journeylog_viewer_vscroll"
@@ -523,6 +525,8 @@ G_widget("tree_view", "naia_journeylog_viewer", {
 						T.column {
 							grow_factor = 1,
 							horizontal_grow = true,
+							border = "top",
+							border_size = 3,
 							T.horizontal_scrollbar {
 								id = "_horizontal_scrollbar",
 								definition = "naia_journeylog_viewer_hscroll"
