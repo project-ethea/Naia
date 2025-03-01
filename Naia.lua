@@ -399,6 +399,7 @@ local NAIA_PACKAGES = {
 	'package',
 	'common',
 	'abilities',
+	'boss',
 	'conditional',
 	'hmu',
 	'journey/core',
