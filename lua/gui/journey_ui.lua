@@ -523,13 +523,33 @@ local journeylog_archive_treedef = {
 			T.row {
 				T.column {
 					horizontal_grow = true,
-					border = "all",
-					border_size = 5,
-					T.label {
-						id = "archive_entry_title",
-						definition = "gold_large",
-						label = "CHARA_NAME",
-						wrap = true
+					T.grid {
+						T.row {
+							T.column {
+								grow_factor = 1,
+								horizontal_alignment = "left",
+								border = "all",
+								border_size = 5,
+								T.label {
+									id = "archive_entry_title",
+									definition = "gold_large",
+									label = "CHARA_NAME",
+									wrap = true
+								}
+							},
+							T.column {
+								grow_factor = 0,
+								horizontal_alignment = "right",
+								border = "all",
+								border_size = 5,
+								T.button {
+									id = "unit_type_help",
+									definition = "action_about",
+									label = _ "Unit Description",
+									tooltip = _ "Opens the character’s unit description in the Help browser"
+								}
+							}
+						}
 					}
 				}
 			},
@@ -1221,6 +1241,14 @@ function journeylog_ui()
 			page.chara_portrait.visible = false
 		else
 			page.chara_portrait.on_button_click = portrait_image_viewer(profile.portrait, profile.name)
+		end
+
+		if not profile.help_unit_type then
+			page.unit_type_help.visible = false
+		else
+			page.unit_type_help.on_button_click = function()
+				gui.show_help(("unit_%s"):format(profile.help_unit_type))
+			end
 		end
 	end
 

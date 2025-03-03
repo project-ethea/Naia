@@ -44,6 +44,7 @@ local chara_override_attributes = {
 	"status",
 	"gender",
 	"portrait",
+	"help_unit_type",
 }
 
 -- Character attributes that should be extended by additional_info.
