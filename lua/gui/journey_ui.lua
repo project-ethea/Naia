@@ -141,24 +141,45 @@ local journeylog_scenarios_listdef = {
 	}}
 }
 
-local journeylog_chara_img_display = { T.grid { T.row {
-	T.column {
-		horizontal_alignment = "right",
-		vertical_alignment = "top",
-		border = "all",
-		border_size = 5,
-		T.button {
-			id = "image",
-			linked_group = "portrait_img_group",
-			definition = "naia_journeylog_image_viewer_button_small"
+local journeylog_chara_img_display = {
+	vertical_alignment = "top",
+	T.grid {
+		T.row {
+			T.column {
+				horizontal_alignment = "right",
+				vertical_alignment = "top",
+				border = "all",
+				border_size = 5,
+				T.button {
+					id = "image",
+					linked_group = "portrait_img_group",
+					definition = "naia_journeylog_image_viewer_button_small"
+				}
+			},
+			T.column {
+				border = "right",
+				border_size = 10,
+				T.spacer {}
+			}
 		}
-	},
-	T.column {
-		border = "right",
-		border_size = 10,
-		T.spacer {}
 	}
-}}}
+}
+
+local journeylog_chara_name_display_compact = {
+	horizontal_alignment = "right",
+	vertical_alignment = "top",
+	grow_factor = 0,
+	border = "all",
+	border_size = 5,
+	T.label {
+		id = "chara_name",
+		definition = "naia_journeylog_dialog_speaker_inline",
+		linked_group = "portrait_img_group",
+		--characters_per_line = 10,
+		text_alignment = "right",
+		wrap = true
+	}
+}
 
 local journeylog_chara_name_display = {
 	horizontal_alignment = "left",
@@ -166,34 +187,22 @@ local journeylog_chara_name_display = {
 	border_size = 5,
 	T.label {
 		id = "chara_name",
-		definition = "gold_large",
+		definition = "naia_journeylog_dialog_speaker",
 		linked_group = "message_text_group",
-		wrap = true
-	}
-}
-
-local journeylog_chara_name_display_compact = {
-	horizontal_alignment = "left",
-	vertical_alignment = "top",
-	border = "all",
-	border_size = 5,
-	T.label {
-		id = "chara_name",
-		definition = "gold",
-		linked_group = "portrait_img_group",
-		characters_per_line = 10,
 		wrap = true
 	}
 }
 
 local journeylog_chara_msg_display = {
+	grow_factor = 1,
 	horizontal_alignment = "left",
 	border = "all",
 	border_size = 5,
 	T.label {
 		id = "chara_msg",
+		definition = "naia_journeylog_dialog_line",
 		linked_group = "message_text_group",
-		characters_per_line = JOURNEYLOG_UI_LOG_WIDTH_CHARS,
+		--characters_per_line = JOURNEYLOG_UI_LOG_WIDTH_CHARS,
 		wrap = true
 	}
 }
@@ -213,7 +222,12 @@ local journeylog_user_msg_display = {
 local journeylog_msg_spacer_col = {
 	border = "top",
 	border_size = 10,
-	T.spacer {}
+	T.spacer {
+		-- Width used in compact mode to set the minimum width of the column
+		-- holding the character profiles. It's supposed to match the portrait
+		-- button's width + 15 pixels (accounting for margins).
+		width = 128 + 15
+	}
 }
 
 local journeylog_messages_treedef = {
@@ -241,6 +255,7 @@ local journeylog_messages_treedef = {
 		T.node_definition {
 			T.row {
 				T.column {
+					grow_factor = 1,
 					T.grid {
 						T.row {
 							T.column(journeylog_chara_img_display),
@@ -341,6 +356,7 @@ local journeylog_messages_treedef = {
 		T.node_definition {
 			T.row {
 				T.column {
+					grow_factor = 0,
 					horizontal_alignment = "center",
 					T.image {
 						label = "dialogs/multi_create/decor.png"
@@ -446,6 +462,7 @@ end
 local journeylog_chara_info_panel = {
 	T.row {
 		T.column {
+			grow_factor = 1,
 			border = "top,bottom",
 			border_size = 5,
 			horizontal_grow = true,
@@ -458,6 +475,7 @@ local journeylog_chara_info_panel = {
 			}
 		},
 		T.column {
+			grow_factor = 0,
 			horizontal_alignment = "right",
 			border = "all",
 			border_size = 5,
@@ -528,8 +546,9 @@ local journeylog_archive_treedef = {
 					border_size = 5,
 					T.label {
 						id = "archive_entry_body",
+						definition = "naia_journeylog_page",
 						label = "CHARA_DESCRIPTION",
-						characters_per_line = JOURNEYLOG_UI_LORE_WIDTH_CHARS,
+						--characters_per_line = JOURNEYLOG_UI_LORE_WIDTH_CHARS,
 						wrap = true
 					}
 				}
@@ -567,8 +586,9 @@ local journeylog_archive_treedef = {
 					border_size = 5,
 					T.label {
 						id = "archive_entry_body",
+						definition = "naia_journeylog_page",
 						label = "ENTRY_TEXT",
-						characters_per_line = JOURNEYLOG_UI_LORE_WIDTH_CHARS,
+						--characters_per_line = JOURNEYLOG_UI_LORE_WIDTH_CHARS,
 						wrap = true
 					}
 				}
@@ -579,6 +599,7 @@ local journeylog_archive_treedef = {
 
 local journeylog_dialoglog_grid = {
 	T.row {
+		grow_factor = 1,
 		T.column {
 			grow_factor = 1,
 			horizontal_grow = true,
@@ -616,6 +637,7 @@ local journeylog_dialoglog_grid = {
 
 local journeylog_archive_grid = {
 	T.row {
+		grow_factor = 1,
 		T.column {
 			grow_factor = 1,
 			vertical_alignment = "top",
@@ -635,6 +657,7 @@ local journeylog_archive_grid = {
 					}
 				},
 				T.row {
+					grow_factor = 1,
 					T.column {
 						horizontal_alignment = "left",
 						vertical_alignment = "top",
@@ -659,6 +682,7 @@ local journeylog_archive_grid = {
 				definition = "naia_journeylog_panel",
 				T.grid {
 					T.row {
+						grow_factor = 1,
 						T.column {
 							vertical_grow = true,
 							border = "all",
@@ -716,7 +740,9 @@ local journeylog_dlg = {
 
 	T.grid {
 		T.row {
+			grow_factor = 0,
 			T.column {
+				grow_factor = 1,
 				horizontal_grow = true,
 				vertical_alignment = "top",
 				T.stacked_widget {
@@ -780,6 +806,7 @@ local journeylog_dlg = {
 			}
 		},
 		T.row {
+			grow_factor = 1,
 			T.column {
 				horizontal_alignment = "center",
 				vertical_grow = true,
@@ -791,6 +818,7 @@ local journeylog_dlg = {
 			}
 		},
 		T.row {
+			grow_factor = 0,
 			T.column {
 				horizontal_grow = true,
 				vertical_alignment = "bottom",
