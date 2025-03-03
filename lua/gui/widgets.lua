@@ -30,7 +30,12 @@ local JOURNEYLOG_SCROLLBAR_SLIDER_COLOR_HOVER = "33, 66, 93, 200"
 local JOURNEYLOG_DIALOG_COLOR = "215, 215, 215" -- GUI__FONT_COLOR_ENABLED__DEFAULT
 local JOURNEYLOG_SPEAKER_COLOR = "186, 172, 125" -- GUI__FONT_COLOR_ENABLED__TITLE
 
+-- Special fixed-width label definitions are used in the JourneyLog UI in
+-- order to keep the layout consistent between pages and view modes. These
+-- constants are used to determine their sizes.
 local JOURNEYLOG_PAGE_WIDTH = 650
+-- Multiples of 5 in the following constants stem from the application of
+-- margins (border/border_size) around the relevant cells.
 local JOURNEYLOG_SPEAKER_WIDTH = 15 + JOURNEYLOG_BIO_SMALL_PORTRAIT_SIZE
 local JOURNEYLOG_MESSAGE_WIDTH = JOURNEYLOG_PAGE_WIDTH - JOURNEYLOG_SPEAKER_WIDTH - 10
 
