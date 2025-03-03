@@ -797,7 +797,7 @@ local journeylog_dlg = {
 								T.text_box {
 									id = "search_box",
 									hint_text = _ "Search",
-									hint_image = "icons/action/zoomdefault_25.png~FL(horiz)"
+									hint_image = "icons/action/zoomdefault_25.png~FL(horiz)~CS(-80,-90,-100)"
 								}
 							}
 						}
@@ -1262,9 +1262,11 @@ function journeylog_ui()
 		if tab_num == 1 then
 			self.scenario_list:focus()
 			self.show_portraits.visible = true
+			self.search_box.visible = true
 		elseif tab_num == 2 then
 			self.archive_obj_list:focus()
 			self.show_portraits.visible = false
+			self.search_box.visible = false
 		end
 	end
 
