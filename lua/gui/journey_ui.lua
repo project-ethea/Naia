@@ -364,34 +364,6 @@ local journeylog_messages_treedef = {
 				}
 			}
 		}
-	},
-
-	T.node {
-		id = "widget_metrics_hack",
-		T.node_definition {
-			T.row {
-				T.column {
-					horizontal_alignment = "right",
-					vertical_alignment = "top",
-					border = "all",
-					border_size = 5,
-					T.drawing {
-						linked_group = "portrait_img_group",
-						-- Dummy [draw] to avoid CTD on 1.18.2 and earlier
-						-- <https://github.com/wesnoth/wesnoth/issues/9214>
-						T.draw {
-							T.rectangle {
-								x = 0,
-								y = 0,
-								w = 1,
-								h = 1
-							}
-						}
-					}
-				},
-				T.column(journeylog_chara_msg_display)
-			}
-		}
 	}
 }
 
@@ -1097,13 +1069,6 @@ function journeylog_ui()
 				end
 			end
 		end
-
-		-- HACK: Add a hidden item at the end to enforce the maximum width for
-		--       the treeview regardless of message contents. This is unmanaged
-		--       on purpose since we have no need for tinkering with it later.
-		local metrics_hack = treeview:add_item_of_type("widget_metrics_hack")
-		metrics_hack.chara_msg.label = ("PADDING"):rep(12)
-		metrics_hack.chara_msg.visible = "hidden"
 	end
 
 	local function set_journey_filter(self, search_terms)
