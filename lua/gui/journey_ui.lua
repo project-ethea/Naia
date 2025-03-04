@@ -17,8 +17,6 @@ local _ = wesnoth.textdomain "wesnoth-Naia"
 local JOURNEYLOG_ALLOW_BROKEN_GARBAGE      = false
 
 local JOURNEYLOG_UI_ENTRY_TOP_MARGIN       = 10
-local JOURNEYLOG_UI_LOG_WIDTH_CHARS        = 66
-local JOURNEYLOG_UI_LORE_WIDTH_CHARS       = JOURNEYLOG_UI_LOG_WIDTH_CHARS + 10
 
 local JOURNEYLOG_UI_SCENARIO_ICON          = "help/closed_section.png"
 local JOURNEYLOG_UI_SCENARIO_ICON_SELECTED = "help/open_section.png"
@@ -178,7 +176,6 @@ local journeylog_chara_name_display_compact = {
 		id = "chara_name",
 		definition = "naia_journeylog_dialog_speaker_inline",
 		linked_group = "portrait_img_group",
-		--characters_per_line = 10,
 		text_alignment = "right",
 		wrap = true
 	}
@@ -205,7 +202,6 @@ local journeylog_chara_msg_display = {
 		id = "chara_msg",
 		definition = "naia_journeylog_dialog_line",
 		linked_group = "message_text_group",
-		--characters_per_line = JOURNEYLOG_UI_LOG_WIDTH_CHARS,
 		wrap = true
 	}
 }
@@ -219,7 +215,6 @@ local journeylog_narrator_msg_display = {
 		id = "chara_msg",
 		definition = "naia_journeylog_dialog_line",
 		linked_group = "message_text_group",
-		--characters_per_line = JOURNEYLOG_UI_LOG_WIDTH_CHARS,
 		wrap = true
 	}
 }
@@ -536,18 +531,6 @@ local journeylog_archive_treedef = {
 	indentation_step_size = 0,
 
 	T.node {
-		id = "container",
-		unfolded = true,
-		T.node_definition {
-			T.row {
-				T.column {
-					T.spacer {}
-				}
-			}
-		}
-	},
-
-	T.node {
 		id = "chara_profile",
 		T.node_definition {
 			T.row {
@@ -598,7 +581,6 @@ local journeylog_archive_treedef = {
 						id = "archive_entry_body",
 						definition = "naia_journeylog_page",
 						label = "CHARA_DESCRIPTION",
-						--characters_per_line = JOURNEYLOG_UI_LORE_WIDTH_CHARS,
 						wrap = true
 					}
 				}
@@ -638,7 +620,6 @@ local journeylog_archive_treedef = {
 						id = "archive_entry_body",
 						definition = "naia_journeylog_page",
 						label = "ENTRY_TEXT",
-						--characters_per_line = JOURNEYLOG_UI_LORE_WIDTH_CHARS,
 						wrap = true
 					}
 				}
@@ -1024,6 +1005,11 @@ function journeylog_ui()
 	end
 
 	local function journey_view_add_node(treeview, node_type, journey_msg)
+		-- The dialog view uses an indirect approach where the treeview
+		-- contains nodes that are in charge of containing the nodes with the
+		-- true contents so that we can hide the latter by collapsing their
+		-- parent nodes. This is essential since in 1.18, we cannot use the
+		-- visible property on nodes without crashing the game.
 		local container = treeview:add_item_of_type("container")
 		local new_node = container:add_item_of_type(node_type)
 		table.insert(journey_view_rows, {
@@ -1049,6 +1035,8 @@ function journeylog_ui()
 		end
 
 		if not scenario_num then
+			-- Presumably the last scenario on record is the scenario being
+			-- played right now. (FIXME: maybe too optimistic an assumption?)
 			scenario_num = #journal[campaign_num].scenarios
 		end
 
@@ -1095,8 +1083,7 @@ function journeylog_ui()
 
 				if i18n_event_name then
 					local event_heading = journey_view_add_node(treeview, "event_heading")
-					-- TODO FIXME I18N
-					event_heading.event.label = EVENT_LABELS[msg.event_name] or msg.event_name
+					event_heading.event.label = i18n_event_name
 				else
 					journey_view_add_node(treeview, "message_block_separator")
 				end
@@ -1263,9 +1250,7 @@ function journeylog_ui()
 
 		self.archive_entry:remove_items_at(1, 0)
 
-		-- TODO: do we actually need the unfolded container node
-		local container = self.archive_entry:add_item_of_type("container")
-		local page = container:add_item_of_type("chara_profile")
+		local page = self.archive_entry:add_item_of_type("chara_profile")
 
 		page.archive_entry_title.marked_up_text = ("<big>%s</big>"):format(profile.name)
 		page.archive_entry_body.marked_up_text = transform_markup(profile.description) or JOURNEYLOG_UI_BIO_PLACEHOLDER
@@ -1319,9 +1304,7 @@ function journeylog_ui()
 
 		self.archive_entry:remove_items_at(1, 0)
 
-		-- TODO: do we actually need the unfolded container node
-		local container = self.archive_entry:add_item_of_type("container")
-		local page = container:add_item_of_type("lore_entry")
+		local page = self.archive_entry:add_item_of_type("lore_entry")
 
 		page.archive_entry_title.marked_up_text = ("<big>%s</big>"):format(entry.title)
 		page.archive_entry_body.marked_up_text = transform_markup(entry.text) or JOURNEYLOG_UI_BIO_PLACEHOLDER
