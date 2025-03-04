@@ -635,3 +635,9 @@ G_widget(
 	"naia_journeylog_page",
 	journeylog_dialog_line_widget_def(17, JOURNEYLOG_PAGE_WIDTH, JOURNEYLOG_DIALOG_COLOR)
 )
+
+G_widget(
+	"label",
+	"naia_journeylog_event_heading",
+	journeylog_dialog_line_widget_def(17, JOURNEYLOG_PAGE_WIDTH, JOURNEYLOG_SPEAKER_COLOR)
+)

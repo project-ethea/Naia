@@ -28,8 +28,9 @@ function journeylog.read_scenario(campaign_id, scenario_id)
 	for i, cfg in ipairs(scenario_ct) do
 		local messages = {}
 		local event_hash = cfg[1]
+		local event_name = cfg[2].event_name or "<unknown>"
 
-		jprintf(W_DBG, "reading messages in %s.%s event %s", campaign_id, scenario_id, event_hash)
+		jprintf(W_DBG, "reading messages in %s.%s event %s (%s)", campaign_id, scenario_id, event_name, event_hash)
 
 		for message in wml.child_range(cfg[2], "message") do
 			-- Just copy the WML contents, we don't do anything fancier here
@@ -43,7 +44,10 @@ function journeylog.read_scenario(campaign_id, scenario_id)
 			})
 		end
 
-		table.insert(scenario_log, messages)
+		table.insert(scenario_log, {
+			event = event_name,
+			messages = messages
+		})
 	end
 
 	return scenario_log

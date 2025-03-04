@@ -23,6 +23,9 @@ local JOURNEYLOG_UI_LORE_WIDTH_CHARS       = JOURNEYLOG_UI_LOG_WIDTH_CHARS + 10
 local JOURNEYLOG_UI_SCENARIO_ICON          = "help/closed_section.png"
 local JOURNEYLOG_UI_SCENARIO_ICON_SELECTED = "help/open_section.png"
 
+local JOURNEYLOG_UI_MAJOR_DIVIDER          = "misc/loadscreen_decor.png~BLEND(162, 127, 68, 1.0)"
+local JOURNEYLOG_UI_MINOR_DIVIDER          = "misc/ui-gradient.png~BLEND(162, 127, 68, 1.0)"
+
 local JOURNEYLOG_UI_BIO_PLACEHOLDER        = _ "No information is presently available."
 local JOURNEYLOG_UI_RACE_PLACEHOLDER       = _ "race^?"
 local JOURNEYLOG_UI_STATUS_PLACEHOLDER     = _ "chara_status^Living"
@@ -359,7 +362,35 @@ local journeylog_messages_treedef = {
 					grow_factor = 0,
 					horizontal_alignment = "center",
 					T.image {
-						label = "dialogs/multi_create/decor.png"
+						label = JOURNEYLOG_UI_MINOR_DIVIDER
+					}
+				}
+			}
+		}
+	},
+
+	T.node {
+		id = "event_heading",
+		T.node_definition {
+			T.row {
+				T.column {
+					grow_factor = 0,
+					horizontal_alignment = "center",
+					border = "top",
+					border_size = 5,
+					T.label {
+						id = "event",
+						definition = "naia_journeylog_event_heading",
+						text_alignment = "center"
+					}
+				}
+			},
+			T.row {
+				T.column {
+					grow_factor = 0,
+					horizontal_alignment = "center",
+					T.image {
+						label = JOURNEYLOG_UI_MINOR_DIVIDER
 					}
 				}
 			}
@@ -757,7 +788,7 @@ local journeylog_dlg = {
 								border = "all",
 								border_size = 5,
 								T.image {
-									label = "misc/loadscreen_decor.png~BLEND(162, 127, 68, 1.0)"
+									label = JOURNEYLOG_UI_MAJOR_DIVIDER
 								}
 							}
 						}
@@ -1010,12 +1041,14 @@ function journeylog_ui()
 			-- Didn't cache this journey yet...
 			local raw_journey = journeylog.read_scenario(campaign_id, scenario_id)
 
-			for i, msg_block in ipairs(raw_journey) do
+			for i, event_data in ipairs(raw_journey) do
 				if i > 1 then
-					table.insert(journey.messages, { is_separator = true })
+					table.insert(journey.messages, {
+						event_name = event_data.event
+					})
 				end
 
-				for j, msg in ipairs(msg_block) do
+				for j, msg in ipairs(event_data.messages) do
 					-- We don't do anything fancy with messages yet
 					table.insert(journey.messages, msg)
 				end
@@ -1030,8 +1063,16 @@ function journeylog_ui()
 		clear_journey_view(treeview)
 
 		for i, msg in ipairs(journey.messages) do
-			if msg.is_separator then
-				journey_view_add_node(treeview, "message_block_separator")
+			if msg.event_name then
+				local i18n_event_name = EVENT_LABELS[msg.event_name]
+
+				if i18n_event_name then
+					local event_heading = journey_view_add_node(treeview, "event_heading")
+					-- TODO FIXME I18N
+					event_heading.event.label = EVENT_LABELS[msg.event_name] or msg.event_name
+				else
+					journey_view_add_node(treeview, "message_block_separator")
+				end
 			else
 				local msg_display
 
