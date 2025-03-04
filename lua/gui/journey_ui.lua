@@ -991,7 +991,7 @@ function journeylog_ui()
 
 	local archive_mode = ARCHIVE_MODE_CHARACTERS
 
-	local current_campaign, current_scenario = 0, 0
+	local current_campaign, current_scenario, current_page = 0, 0, 0
 	-- These are collections of current container item refs for easier
 	-- mass-manipulation (e.g. for filtering).
 	local scenario_listbox_rows = {}
@@ -1022,9 +1022,13 @@ function journeylog_ui()
 		return new_node
 	end
 
-	local function show_journey(self, campaign_num, scenario_num)
+	local function show_journey(self, campaign_num, scenario_num, force)
 		if not campaign_num then
 			-- TODO: display UI placeholder
+			return
+		end
+
+		if not force and campaign_num == current_campaign and scenario_num == current_scenario then
 			return
 		end
 
@@ -1183,7 +1187,7 @@ function journeylog_ui()
 
 	local function set_journey_portraits_shown(self, value)
 		global_show_portraits = value
-		show_journey(self, current_campaign, current_scenario)
+		show_journey(self, current_campaign, current_scenario, true)
 	end
 
 	local function update_scenario_icon(self)
@@ -1310,12 +1314,18 @@ function journeylog_ui()
 		page.archive_entry_body.marked_up_text = transform_markup(entry.text) or JOURNEYLOG_UI_BIO_PLACEHOLDER
 	end
 
-	local function show_archive_item(self, index)
+	local function show_archive_item(self, index, force)
+		if not force and index == current_page then
+			return
+		end
+
 		if archive_mode == ARCHIVE_MODE_CHARACTERS then
 			show_chara_bio(self, index)
 		elseif archive_mode == ARCHIVE_MODE_WORLD then
 			show_world_lore_entry(self, index)
 		end
+
+		current_page = index
 	end
 
 	local function show_tab(self, tab_num)
@@ -1402,7 +1412,7 @@ function journeylog_ui()
 			if index > 0 then
 				current_campaign = index
 				self.campaigns_menu.label = clean_campaign_name(journal[index].name)
-				show_journey(self, index, 0)
+				show_journey(self, index, 0, true)
 			end
 		end
 
@@ -1435,7 +1445,7 @@ function journeylog_ui()
 		self.archive_mode.on_modified = function()
 			archive_mode = self.archive_mode.selected_index
 			populate_lore_entry_list(self)
-			show_archive_item(self, 1)
+			show_archive_item(self, 1, true)
 		end
 
 		if not JOURNEYLOG_ALLOW_BROKEN_GARBAGE then
@@ -1443,9 +1453,9 @@ function journeylog_ui()
 		end
 
 		-- Set the initial selection.
-		show_journey(self, current_campaign, current_scenario)
+		show_journey(self, current_campaign, current_scenario, true)
 		populate_lore_entry_list(self)
-		show_archive_item(self, 1)
+		show_archive_item(self, 1, true)
 		show_tab(self, 1)
 
 		self.title.visible = false
