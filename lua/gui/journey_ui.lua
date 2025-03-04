@@ -239,12 +239,7 @@ local journeylog_user_msg_display = {
 local journeylog_msg_spacer_col = {
 	border = "top",
 	border_size = 10,
-	T.spacer {
-		-- Width used in compact mode to set the minimum width of the column
-		-- holding the character profiles. It's supposed to match the portrait
-		-- button's width + 15 pixels (accounting for margins).
-		width = 128 + 15
-	}
+	T.spacer {}
 }
 
 local journeylog_messages_treedef = {
@@ -320,12 +315,8 @@ local journeylog_messages_treedef = {
 				T.column(journeylog_narrator_msg_display)
 			},
 			T.row {
-				T.column { T.spacer {} },
-				T.column {
-					border = "top",
-					border_size = 10,
-					T.spacer {}
-				}
+				T.column(journeylog_msg_spacer_col),
+				T.column(journeylog_msg_spacer_col)
 			}
 		}
 	},
@@ -393,6 +384,8 @@ local journeylog_messages_treedef = {
 				T.column {
 					grow_factor = 0,
 					horizontal_alignment = "center",
+					border = "bottom",
+					border_size = 10,
 					T.image {
 						label = JOURNEYLOG_UI_MINOR_DIVIDER
 					}
@@ -421,6 +414,8 @@ local journeylog_messages_treedef = {
 				T.column {
 					grow_factor = 0,
 					horizontal_alignment = "center",
+					border = "bottom",
+					border_size = 5,
 					T.image {
 						label = JOURNEYLOG_UI_MINOR_DIVIDER
 					}
