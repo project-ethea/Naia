@@ -998,6 +998,8 @@ function journeylog_ui()
 	-- For each entry, .message is a ref to the original journeylog message
 	-- while .ui is a ref to the treeview node.
 	local journey_view_rows = {}
+	-- Content filter in use, as a list of words to match
+	local current_filter = {}
 
 	local function clear_journey_view(treeview)
 		journey_view_rows = {}
@@ -1020,6 +1022,76 @@ function journeylog_ui()
 			set_visible = function(value) container.unfolded = value end
 		})
 		return new_node
+	end
+
+	local function apply_journey_filter_row(row)
+		if #current_filter == 0 then
+			-- This is only relevant when this function is called during view
+			-- rebuilds, because set_journey_filter() will manually bail and
+			-- set all rows to visible if the filter is empty.
+			return
+		end
+
+		if not row then
+			-- Just syntactic sugar used when this is called during view
+			-- rebuilds.
+			row = journey_view_rows[#journey_view_rows]
+			if not row then
+				jprintf(W_ERR, "bad row")
+				return
+			end
+		end
+
+		if row.message then
+			local contents = {
+				row.message.speaker,
+				row.message.message
+			}
+
+			local visible = false
+
+			for j, tstring in pairs(contents) do
+				if tstring then
+					-- Unfortunately we need to deep-copy translatable strings
+					-- in order to search through them...
+					local sz = tostring(tstring):lower()
+					for k, word in pairs(current_filter) do
+						--wprintf(W_DBG, "find '%s' in '%s'", word, sz)
+						if sz:find(word, 1, true) then
+							visible = true
+							break
+						end
+					end
+
+				end
+			end
+
+			row.set_visible(visible)
+		end
+	end
+
+	local function set_journey_filter(self, search_terms)
+		local clean_terms = search_terms or ""
+		-- Trim leading and trailing whitespace
+		clean_terms = clean_terms:trim()
+
+		if #clean_terms == 0 then
+			for i, row in ipairs(journey_view_rows) do
+				row.set_visible(true)
+			end
+			return
+		end
+
+		current_filter = {}
+		for word in search_terms:gmatch("[^%s]+") do
+			table.insert(current_filter, word:lower())
+		end
+
+		-- Reapply the journey filter after-the-fact without requiring a full
+		-- rebuild of the current journey view, which would be more expensive.
+		for i, row in ipairs(journey_view_rows) do
+			apply_journey_filter_row(row)
+		end
 	end
 
 	local function show_journey(self, campaign_num, scenario_num, force)
@@ -1135,53 +1207,8 @@ function journeylog_ui()
 					end
 				end
 			end
-		end
-	end
 
-	local function set_journey_filter(self, search_terms)
-		local clean_terms = search_terms or ""
-		-- Trim leading and trailing whitespace
-		clean_terms = clean_terms:trim()
-
-		if #clean_terms == 0 then
-			for i, row in ipairs(journey_view_rows) do
-				row.set_visible(true)
-			end
-			return
-		end
-
-		local words = {}
-		for word in search_terms:gmatch("[^%s]+") do
-			table.insert(words, word:lower())
-		end
-
-		for i, row in ipairs(journey_view_rows) do
-			if row.message then
-				local contents = {
-					row.message.speaker,
-					row.message.message
-				}
-
-				local visible = false
-
-				for j, tstring in pairs(contents) do
-					if tstring then
-						-- Unfortunately we need to deep-copy translatable strings
-						-- in order to search through them...
-						local sz = tostring(tstring):lower()
-						for k, word in pairs(words) do
-							--wprintf(W_DBG, "find '%s' in '%s'", word, sz)
-							if sz:find(word, 1, true) then
-								visible = true
-								break
-							end
-						end
-
-					end
-				end
-
-				row.set_visible(visible)
-			end
+			apply_journey_filter_row()
 		end
 	end
 
