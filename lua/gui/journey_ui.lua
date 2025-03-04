@@ -213,8 +213,7 @@ local journeylog_narrator_msg_display = {
 	border_size = 5,
 	T.label {
 		id = "chara_msg",
-		definition = "naia_journeylog_dialog_line",
-		linked_group = "message_text_group",
+		definition = "naia_journeylog_page",
 		wrap = true
 	}
 }
