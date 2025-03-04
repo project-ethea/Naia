@@ -210,6 +210,20 @@ local journeylog_chara_msg_display = {
 	}
 }
 
+local journeylog_narrator_msg_display = {
+	grow_factor = 1,
+	horizontal_alignment = "right",
+	border = "all",
+	border_size = 5,
+	T.label {
+		id = "chara_msg",
+		definition = "naia_journeylog_dialog_line",
+		linked_group = "message_text_group",
+		--characters_per_line = JOURNEYLOG_UI_LOG_WIDTH_CHARS,
+		wrap = true
+	}
+}
+
 local journeylog_user_msg_display = {
 	horizontal_alignment = "left",
 	border = "all",
@@ -294,6 +308,24 @@ local journeylog_messages_treedef = {
 			T.row {
 				T.column(journeylog_msg_spacer_col),
 				T.column(journeylog_msg_spacer_col)
+			}
+		}
+	},
+
+	T.node {
+		id = "narrator_message",
+		T.node_definition {
+			T.row {
+				T.column { T.spacer {} },
+				T.column(journeylog_narrator_msg_display)
+			},
+			T.row {
+				T.column { T.spacer {} },
+				T.column {
+					border = "top",
+					border_size = 10,
+					T.spacer {}
+				}
 			}
 		}
 	},
@@ -1076,21 +1108,23 @@ function journeylog_ui()
 			else
 				local msg_display
 
-				if global_show_portraits then
+				if global_show_portraits and not msg.is_narrator then
 					if msg.choice == nil then
 						msg_display = journey_view_add_node(treeview, "plain_message", msg)
 					else
 						msg_display = journey_view_add_node(treeview, "message_with_input", msg)
 					end
 				else
-					if msg.choice == nil then
+					if msg.is_narrator  then
+						msg_display = journey_view_add_node(treeview, "narrator_message", msg)
+					elseif msg.choice == nil then
 						msg_display = journey_view_add_node(treeview, "plain_message_compact", msg)
 					else
 						msg_display = journey_view_add_node(treeview, "message_with_input_compact", msg)
 					end
 				end
 
-				if global_show_portraits then
+				if global_show_portraits and not msg.is_narrator then
 					if msg.image ~= nil then
 						msg_display.image.label = msg.image
 						msg_display.image.on_button_click = portrait_image_viewer(msg.image, msg.speaker)
@@ -1099,14 +1133,20 @@ function journeylog_ui()
 					end
 				end
 
-				if not msg.is_narrator and msg.speaker ~= nil then
-					msg_display.chara_name.marked_up_text = msg.speaker
-				else
-					msg_display.chara_name.visible = "hidden"
+				if not msg.is_narrator then
+					if msg.speaker ~= nil then
+						msg_display.chara_name.marked_up_text = msg.speaker
+					else
+						msg_display.chara_name.visible = "hidden"
+					end
 				end
 
 				if msg.message ~= nil then
-					msg_display.chara_msg.marked_up_text = msg.message
+					if not msg.is_narrator then
+						msg_display.chara_msg.marked_up_text = msg.message
+					else
+						msg_display.chara_msg.marked_up_text = ("<span color='#baac7d'>%s</span>"):format(msg.message)
+					end
 				end
 			end
 		end
