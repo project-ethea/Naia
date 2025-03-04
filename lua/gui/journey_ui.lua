@@ -858,18 +858,29 @@ local journeylog_dlg = {
 							}
 						},
 						T.column {
+							grow_factor = 1,
 							horizontal_alignment = "right",
 							T.grid {
 								T.row {
+									grow_factor = 0,
 									T.column {
+										grow_factor = 0,
+										horizontal_alignment = "right",
 										border = "all",
 										border_size = 5,
 										T.toggle_button {
 											id = "show_portraits",
-											label = _ "Show portraits",
+											label = _ "Portraits",
 										}
 									},
 									T.column {
+										T.spacer {
+											width = 30
+										}
+									},
+									T.column {
+										grow_factor = 0,
+										horizontal_alignment = "right",
 										border = "all",
 										border_size = 5,
 										T.button {
