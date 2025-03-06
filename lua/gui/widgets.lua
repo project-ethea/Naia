@@ -68,42 +68,135 @@ local function G_widget2(widget_class, id, resolutions)
 end
 
 --
+-- Helper to build a full canvas by combining both WML tables and individual
+-- WML nodes in the argument list.
+--
+local function C_vcanvas(...)
+	local result = {}
+	local args = {...}
+
+	for i, item in ipairs(args) do
+		if type(item) ~= "table" then
+			wml.error("input does not look like WML")
+		end
+		-- If one of the arguments is the result of wml.tag, it should look
+		-- like this: { 'tagname', { <contents> } }, which is a 2-item array.
+		local is_single_wml_tag =
+			#item == 2 and
+			type(item[1]) == "string" and
+			type(item[2]) == "table"
+
+		if is_single_wml_tag then
+			table.insert(result, item)
+		else
+			-- Append children to result
+			for j, child in ipairs(item) do
+				table.insert(result, child)
+			end
+		end
+	end
+
+	return T.draw(result)
+end
+
+--
 -- Helper to build a round border around the canvas edges.
 --
 local function C_round_frame(params)
 	local color = params.color or "0, 0, 0, 255"
 	local thickness = params.thickness or 1
+	return {
+		T.line {
+			x1 = 1,
+			y1 = 0,
+			x2 = "(width - 2)",
+			y2 = 0,
+			thickness = thickness,
+			color = color
+		},
+		T.line {
+			x1 = 0,
+			y1 = 1,
+			x2 = 0,
+			y2 = "(height - 2)",
+			thickness = thickness,
+			color = color
+		},
+		T.line {
+			x1 = 1,
+			y1 = "(height - 1)",
+			x2 = "(width - 2)",
+			y2 = "(height - 1)",
+			thickness = thickness,
+			color = color
+		},
+		T.line {
+			x1 = "(width - 1)",
+			y1 = 1,
+			x2 = "(width - 1)",
+			y2 = "(height - 2)",
+			thickness = thickness,
+			color = color
+		}
+	}
+end
+
+local function C_line(x1, y1, x2, y2, color)
 	return T.line {
-		x1 = 1,
-		y1 = 0,
-		x2 = "(width - 2)",
-		y2 = 0,
-		thickness = thickness,
+		x1 = x1,
+		y1 = y1,
+		x2 = x2,
+		y2 = y2,
+		thickness = 1,
 		color = color
-	},
-	T.line {
-		x1 = 0,
-		y1 = 1,
-		x2 = 0,
-		y2 = "(height - 2)",
-		thickness = thickness,
-		color = color
-	},
-	T.line {
-		x1 = 1,
-		y1 = "(height - 1)",
-		x2 = "(width - 2)",
-		y2 = "(height - 1)",
-		thickness = thickness,
-		color = color
-	},
-	T.line {
-		x1 = "(width - 1)",
-		y1 = 1,
-		x2 = "(width - 1)",
-		y2 = "(height - 2)",
-		thickness = thickness,
-		color = color
+	}
+end
+
+local function C_point(x1, y1, color)
+	return C_line(x1, y1, x1, y1, color)
+end
+
+--
+-- Helper to generate the horizontal scrollbar grid with an optional custom
+-- scrollbar definition.
+--
+local function G_hscrollbar(definition, border, border_size)
+	return T.grid {
+		id = "_horizontal_scrollbar_grid",
+		T.row {
+			T.column {
+				grow_factor = 1,
+				horizontal_grow = true,
+				border = border,
+				border_size = border_size,
+				T.horizontal_scrollbar {
+					id = "_horizontal_scrollbar",
+					definition = definition
+				}
+			}
+		}
+	}
+end
+
+--
+-- Helper to generate the vertical scrollbar grid with an optional custom
+-- scrollbar definition.
+--
+local function G_vscrollbar(definition, border, border_size)
+	return T.grid {
+		id = "_vertical_scrollbar_grid",
+		T.row {
+			grow_factor = 1,
+			T.column {
+				vertical_grow = true,
+				border = border,
+				border_size = border_size,
+				T.vertical_scrollbar {
+					id = "_vertical_scrollbar",
+					definition = definition
+				}
+			}
+		}
 	}
 end
 
@@ -247,7 +340,7 @@ G_widget("panel", "naia_journeylog_panel", {
 	bottom_border = JOURNEYLOG_PANEL_PADDING,
 
 	T.background {
-		T.draw {
+		C_vcanvas(
 			T.rectangle {
 				x = 1,
 				y = 1,
@@ -258,7 +351,7 @@ G_widget("panel", "naia_journeylog_panel", {
 				fill_color = "0, 0, 0, 127" -- GUI__BACKGROUND_COLOR_ENABLED
 			},
 			C_round_frame({ color = JOURNEYLOG_PANEL_BORDER_COLOR })
-		}
+		)
 	},
 	T.foreground {
 		T.draw {}
@@ -298,7 +391,7 @@ local function journeylog_bio_portrait_canvas(params)
 	local bg = params.bg or "0, 0, 0, 127"
 	local image_func = params.image_func or ""
 
-	return T.draw {
+	return C_vcanvas(
 		T.rectangle {
 			w = "(width)",
 			h = "(height)",
@@ -315,7 +408,7 @@ local function journeylog_bio_portrait_canvas(params)
 			border_color = "0, 0, 0, 255",
 		},
 		C_round_frame({ color = border })
-	}
+	)
 end
 
 local function journeylog_bio_portrait_widget_def(widget_size)
@@ -523,42 +616,14 @@ G_widget("tree_view", "naia_journeylog_viewer", {
 			T.column {
 				grow_factor = 0,
 				vertical_grow = true,
-				T.grid {
-					id = "_vertical_scrollbar_grid",
-					T.row {
-						grow_factor = 1,
-						T.column {
-							vertical_grow = true,
-							border = "left",
-							border_size = 3,
-							T.vertical_scrollbar {
-								id = "_vertical_scrollbar",
-								definition = "naia_journeylog_viewer_vscroll"
-							}
-						}
-					}
-				}
+				G_vscrollbar("naia_journeylog_viewer_vscroll", "left", 3)
 			}
 		},
 		T.row {
 			grow_factor = 0,
 			T.column {
 				horizontal_grow = true,
-				T.grid {
-					id = "_horizontal_scrollbar_grid",
-					T.row {
-						T.column {
-							grow_factor = 1,
-							horizontal_grow = true,
-							border = "top",
-							border_size = 3,
-							T.horizontal_scrollbar {
-								id = "_horizontal_scrollbar",
-								definition = "naia_journeylog_viewer_hscroll"
-							}
-						}
-					}
-				}
+				G_hscrollbar("naia_journeylog_viewer_hscroll", "top", 3)
 			},
 			T.column {
 				T.spacer {}
