@@ -64,7 +64,7 @@ local INTRO_PAGE_SINGLE_OPTION = {
 							id = "checkbox_label",
 							definition = "naia_campaign_intro_option_label",
 							wrap = true,
-							text_alignment = "left"
+							text_alignment = "right"
 						}
 					},
 					T.column {
