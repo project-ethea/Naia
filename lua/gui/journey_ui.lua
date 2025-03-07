@@ -969,16 +969,6 @@ local function clean_campaign_name(text)
 	return tostring(text):gsub("\n", " ")
 end
 
--- Helper to make markup text fancier by converting certain tags to use color
--- formatting.
-local function transform_markup(markup)
-	if markup then
-		return tostring(markup):gsub("<b>([^<]+)</b>", "<span color='#baac7d'>%0</span>")
-	else
-		return nil
-	end
-end
-
 local global_show_portraits = true
 
 function journeylog_ui()

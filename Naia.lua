@@ -414,6 +414,7 @@ local NAIA_PACKAGES = {
 	'theme',
 	'units',
 	'wlp',
+	'gui/utils',
 	'gui/amla_list',
 	'gui/bug',
 	'gui/campaign_intro',
