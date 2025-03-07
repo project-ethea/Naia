@@ -220,6 +220,7 @@ local function intro_page_impl(pages_cfg)
 		wesnoth.audio.music_list.play(music)
 	end
 
+	local initial_page = 0
 	local pages = {}
 
 	-- WML variable state that should be synced by the dialog's caller. This
@@ -270,10 +271,15 @@ local function intro_page_impl(pages_cfg)
 
 		self.progress_bar.marked_up_text = make_progress_bar(num, #pages)
 
+		initial_page = num
+
 		return true
 	end
 
 	local function preshow(self)
+		pages = {}
+		vars = {}
+
 		for i, cfg in ipairs(pages_cfg) do
 			local message = cfg.message
 			local checkbox_cfg = wml.get_child(cfg, "checkbox")
@@ -313,10 +319,21 @@ local function intro_page_impl(pages_cfg)
 			end
 		end
 
-		select_page(self, 1)
+		select_page(self, initial_page)
 	end
 
-	gui.show_dialog(INTRO_DIALOG, preshow)
+	local res = -1
+
+	-- Little trick to make enter/esc seem like they have the same effect as
+	-- clicking on the button.
+	while res < 0 do
+		initial_page = initial_page + 1
+		if #pages == 0 or initial_page <= #pages then
+			res = gui.show_dialog(INTRO_DIALOG, preshow)
+		else
+			res = 0
+		end
+	end
 
 	if music then
 		-- Restore original playlist
