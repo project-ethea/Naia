@@ -14,6 +14,25 @@ local _ = wesnoth.textdomain "wesnoth-Naia"
 
 -- Constants and helpers
 
+local INTRO_TEXT_WIDTH = 600
+local INTRO_TEXT_SIZE = 17
+local INTRO_TEXT_COLOR = "186, 172, 125"
+local INTRO_TEXT_COLOR_HOVER = "215, 215, 215"
+
+local INTRO_CHECKBOX_WIDTH = 40
+local INTRO_CHECKBOX_HEIGHT = 36
+local INTRO_CHECKBOX_TEXT_OFFSET = 10 + INTRO_CHECKBOX_WIDTH
+local INTRO_CHECKBOX_FILES = {
+	unchecked          = "buttons/checkbox@2x.png",
+	unchecked_hover    = "buttons/checkbox-active@2x.png",
+	unchecked_disabled = "buttons/checkbox@2x.png~GS()",
+
+	checked            = "buttons/checkbox-pressed@2x.png",
+	checked_hover      = "buttons/checkbox-active-pressed@2x.png",
+	checked_pressed    = "buttons/checkbox-active-pressed@2x.png",
+	checked_disabled   = "buttons/checkbox-pressed@2x.png~GS()",
+}
+
 local JOURNEYLOG_BIO_PORTRAIT_SIZE = 200
 local JOURNEYLOG_BIO_SMALL_PORTRAIT_SIZE = 128
 
@@ -156,6 +175,48 @@ local function C_point(x1, y1, color)
 	return C_line(x1, y1, x1, y1, color)
 end
 
+local FRAME_BORDER_BG = "1, 10, 16, 255"
+
+--
+-- Helper to generate a button frame in the Wesnoth 1.18 style.
+-- (Based on GUI__BUTTON_NORMAL_FRAME.)
+--
+local function C_button_frame(params)
+	local background_image_path = ("buttons/button_normal/%s"):format(params.background_image_path)
+	local border_color          = params.border_color
+	local border_color_dark     = params.border_color_dark
+	local highlight_line_color  = params.highlight_line_color
+	local ipf = params.ipf or ""
+
+	return {
+		T.image {
+			x = 2,
+			y = 2,
+			w = "(width - 2)",
+			h = "(height - 2)",
+			name = ("%s.png%s"):format(background_image_path, ipf)
+		},
+		-- Dark background borders
+		C_line(0,             1,              0,             "(height - 2)", FRAME_BORDER_BG),
+		C_line(2,             1,              "(width - 2)", 1,              FRAME_BORDER_BG),
+		C_line(1,             "(height - 1)", "(width - 2)", "(height - 1)", FRAME_BORDER_BG),
+		C_line("(width - 2)", 1,              "(width - 2)", "(height - 1)", FRAME_BORDER_BG),
+		-- Gold colored borders
+		C_line(2,             0,              "(width - 2)", 0,              border_color),
+		C_line("(width - 1)", 1,              "(width - 1)", "(height - 3)", border_color),
+		C_line(1,             1,              1,             "(height - 3)", border_color_dark),
+		C_line(2,             "(height - 2)", "(width - 2)", "(height - 2)", border_color_dark),
+		-- Blue tint borders on the top and right
+		C_line(3,             2,              "(width - 3)", 2,              highlight_line_color),
+		C_line("(width - 3)", 2,              "(width - 3)", "(height - 4)", highlight_line_color),
+		-- Round the corners
+		C_point(2,             1,              border_color_dark),
+		C_point(2,             "(height - 3)", border_color_dark),
+		C_point("(width - 2)", 1,              border_color),
+		C_point("(width - 2)", "(height - 3)", border_color)
+	}
+end
+
 --
 -- Helper to generate the horizontal scrollbar grid with an optional custom
 -- scrollbar definition.
@@ -259,6 +320,236 @@ G_widget("window", "naia_campaign_intro", {
 			}
 		}
 	}
+})
+
+local function intro_text_factory(width)
+	return {
+		min_width        = 0,
+		min_height       = 0,
+		default_width    = width,
+		default_height   = 0,
+		max_width        = width,
+		max_height       = 0,
+		text_font_family = "",
+		text_font_size   = INTRO_TEXT_SIZE,
+		text_font_style  = "",
+		link_color       = "255, 255, 0",
+
+		T.state_enabled {
+			T.draw {
+				T.text {
+					x               = 0,
+					y               = 0,
+					w               = "(width)",
+					h               = "(text_height)",
+					maximum_width   = "(width)",
+					font_family     = "",
+					font_size       = INTRO_TEXT_SIZE,
+					font_style      = "",
+					color           = "([215, 215, 215, text_alpha])",
+					text            = "(text)",
+					text_markup     = "(text_markup)",
+					text_alignment  = "(text_alignment)",
+					text_link_aware = "(text_link_aware)",
+					text_link_color = "(text_link_color)"
+				}
+			}
+		},
+		-- Never used
+		T.state_disabled { T.draw {} }
+	}
+end
+
+G_widget(
+	"label",
+	"naia_campaign_intro_text",
+	intro_text_factory(INTRO_TEXT_WIDTH)
+)
+
+G_widget(
+	"label",
+	"naia_campaign_intro_option_label",
+	intro_text_factory(INTRO_TEXT_WIDTH - 20 - INTRO_CHECKBOX_WIDTH)
+)
+
+local function intro_button_text(color)
+	return T.text {
+		x               = "(max((width - text_width) / 2, 0))",
+		y               = "(max((height - text_height - 2) / 2, 0))",
+		w               = "(width - 40)",
+		h               = "(text_height)",
+		maximum_width   = "(width - 40)",
+		font_size       = 22,
+		font_style      = "",
+		color           = ("%s, 255"):format(color),
+		text            = "(text)",
+		text_markup     = false,
+		text_alignment  = "left"
+	}
+end
+
+local function intro_button_image(name)
+	return T.image {
+		x    = "(width - 40)",
+		y    = "(max(pos, 0) where pos = floor((height - image_height) / 2))",
+		w    = "(min(width, image_original_width))",
+		h    = "(min(height, image_original_height))",
+		name = ("icons/arrows/%s"):format(name)
+	}
+end
+
+G_widget("button", "naia_campaign_intro_button", {
+	min_width         = 250,
+	min_height        = 50,
+	default_width     = 250,
+	default_height    = 50,
+	max_width         = 0,
+	max_height        = 50,
+	text_extra_width  = 50,
+	text_extra_height = 15,
+	text_font_size    = 20,
+
+	T.state_enabled {
+		C_vcanvas(
+			C_button_frame({
+				background_image_path = "background",
+				border_color          = "162, 127, 68, 255",   -- GUI__BORDER_COLOR
+				border_color_dark     = "114, 79, 46, 255",    -- GUI__BORDER_COLOR_DARK
+				highlight_line_color  = "21, 79, 109, 255"
+			}),
+			intro_button_text(INTRO_TEXT_COLOR),
+			intro_button_image("short_arrow_ornate_right_30.png")
+		)
+	},
+	T.state_focused {
+		C_vcanvas(
+			C_button_frame({
+				background_image_path = "background-active",
+				border_color          = "162, 127, 68, 255",   -- GUI__BORDER_COLOR
+				border_color_dark     = "114, 79, 46, 255",    -- GUI__BORDER_COLOR_DARK
+				highlight_line_color  = "12, 108, 157, 255"
+			}),
+			intro_button_text(INTRO_TEXT_COLOR),
+			-- Pressed for active and active for pressed looks better
+			intro_button_image("short_arrow_ornate_right_30-pressed.png")
+		)
+	},
+	T.state_pressed {
+		C_vcanvas(
+			C_button_frame({
+				background_image_path = "background-pressed",
+				border_color          = "162, 127, 68, 255",   -- GUI__BORDER_COLOR
+				border_color_dark     = "114, 79, 46, 255",    -- GUI__BORDER_COLOR_DARK
+				highlight_line_color  = "1, 10, 16, 255"
+			}),
+			intro_button_text(INTRO_TEXT_COLOR),
+			intro_button_image("short_arrow_ornate_right_30-active.png")
+		)
+	},
+	T.state_disabled {
+		C_vcanvas(
+			C_button_frame({
+				background_image_path = "background",
+				border_color          = "128, 128, 128, 255",  -- GUI__FONT_COLOR_DISABLED__DEFAULT
+				border_color_dark     = "89, 89, 89, 255",
+				highlight_line_color  = "60, 60, 60, 255",
+				ipf                   = "~GS()"
+			}),
+			intro_button_text("128, 128, 128"),
+			intro_button_image("short_arrow_ornate_right_30.png~GS()")
+		)
+	}
+})
+
+--[[
+local function naia_campaign_options_checkbox_text(params)
+	if not params then
+		params = {}
+	end
+	local color = params.color or INTRO_TEXT_COLOR
+	return T.text {
+		x         = INTRO_CHECKBOX_TEXT_OFFSET,
+		y         = "(max((height - text_height - 2) / 2, 0))",
+		w         = ("(if(width < x_offset, 0, width - x_offset) where x_offset = %d)"):format(INTRO_CHECKBOX_TEXT_OFFSET),
+		h         = "(text_height)",
+		maximum_width = ("(if(width < x_offset, 0, width - x_offset) where x_offset = %d)"):format(INTRO_CHECKBOX_TEXT_OFFSET),
+		text_alignment = "left",
+		font_size = INTRO_TEXT_SIZE,
+		color     = ("%s, 255"):format(color),
+		text      = "(text)"
+	}
+end
+]]--
+
+G_widget("toggle_button", "naia_campaign_options_checkbox", {
+	min_width        = INTRO_CHECKBOX_WIDTH,
+	min_height       = INTRO_CHECKBOX_HEIGHT,
+	default_width    = INTRO_CHECKBOX_WIDTH,
+	default_height   = INTRO_CHECKBOX_HEIGHT,
+	max_width        = INTRO_TEXT_WIDTH,
+	max_height       = 0,
+	-- FIXME: we do not actually use the text in practice because
+	-- toggle_button does not support setting the can_wrap internal property
+	-- as of Wesnoth 1.18.
+	--text_extra_width = INTRO_CHECKBOX_TEXT_OFFSET,
+	text_extra_width = 0,
+	text_font_size   = 17,
+
+	-- Unchecked state
+	T.state {
+		T.enabled {
+			T.draw {
+				T.image {
+					name = INTRO_CHECKBOX_FILES.unchecked
+				},
+				--naia_campaign_options_checkbox_text()
+			}
+		},
+		T.disabled {
+			T.draw {
+				T.image {
+					name = INTRO_CHECKBOX_FILES.unchecked_disabled
+				},
+				--naia_campaign_options_checkbox_text({ color = "0, 0, 0" })
+			}
+		},
+		T.focused {
+			T.draw {
+				T.image {
+					name = INTRO_CHECKBOX_FILES.unchecked_hover
+				},
+				--naia_campaign_options_checkbox_text()
+			}
+		}
+	},
+	-- Checked state
+	T.state {
+		T.enabled {
+			T.draw {
+				T.image {
+					name = INTRO_CHECKBOX_FILES.checked
+				},
+				--naia_campaign_options_checkbox_text()
+			}
+		},
+		T.disabled {
+			T.draw {
+				T.image {
+					name = INTRO_CHECKBOX_FILES.checked_disabled
+				},
+				--naia_campaign_options_checkbox_text({ color = "0, 0, 0" })
+			}
+		},
+		T.focused {
+			T.draw {
+				T.image {
+					name = INTRO_CHECKBOX_FILES.checked_hover
+				},
+				--naia_campaign_options_checkbox_text()
+			}
+		}
+	}
+
 })
 
 G_widget("window", "naia_journeylog", {
