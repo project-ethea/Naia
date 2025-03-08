@@ -1,6 +1,6 @@
 --
 -- codename Naia - Project Ethea phase 1 campaigns shared library
--- Copyright (C) 2006 - 2024 by Iris Morelle <shadowm@wesnoth.org>
+-- Copyright (C) 2006 - 2025 by Iris Morelle <iris@irydacea.me>org>
 --
 -- See COPYING for usage terms.
 --

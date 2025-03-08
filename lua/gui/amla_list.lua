@@ -2,7 +2,7 @@
 -- [amla_list] dialog
 --
 -- codename Naia - Project Ethea phase 1 campaigns shared library
--- Copyright (C) 2019 - 2024 by Iris Morelle <shadowm@wesnoth.org>
+-- Copyright (C) 2019 - 2025 by Iris Morelle <iris@irydacea.me>
 --
 -- See COPYING for usage terms.
 --

@@ -2,7 +2,7 @@
 -- Mainline Lua/WML action compatibility or extension patches.
 --
 -- codename Naia - Project Ethea phase 1 campaigns shared library
--- Copyright (C) 2006 - 2024 by Iris Morelle <shadowm@wesnoth.org>
+-- Copyright (C) 2006 - 2025 by Iris Morelle <iris@irydacea.me>
 --
 -- See COPYING for usage terms.
 --
