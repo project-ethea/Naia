@@ -9,7 +9,58 @@
 
 local T = wml.tag
 
+-- #textdomain wesnoth-Naia
+local _ = wesnoth.textdomain "wesnoth-Naia"
+
 local ALL_DAMAGE_TYPES = { "blade", "pierce", "impact", "fire", "cold", "arcane" }
+
+-----------------------
+-- ABILITY - STEALTH --
+-----------------------
+
+local STEALTH_TERRAINS = {
+	{
+		label  = _ "Forest",
+		icon   = "terrain/grass/green4.png~BLIT(terrain/forest/mixed-summer-tile.png)",
+		filter = "*^F*,*^Qhhf,*^Qhuf"
+	},
+	{
+		label  = _ "Sand",
+		icon   = "terrain/sand/desert5.png~BLIT(terrain/embellishments/plants/desert-plant9.png)",
+		filter = "D*, D*^*, *^D*"
+	},
+	{
+		label  = _ "Cave",
+		icon   = "terrain/cave/floor4.png",
+		filter = "U*, U*^*, *^U*, T*, T*^*, *^T*"
+	}
+}
+
+function wesnoth.wml_actions.stealth_ability_ui(cfg)
+	local units = wesnoth.units.find_on_map(cfg)
+	if not units then
+		wprintf(W_DBG, "[stealth_ability_ui] No units to modify found")
+		return
+	end
+
+	local menu = {}
+	for i = 1, #STEALTH_TERRAINS do
+		table.insert(menu, {
+			icon = ("%s~SCALE(30,30)"):format(STEALTH_TERRAINS[i].icon),
+			label = STEALTH_TERRAINS[i].label
+		})
+	end
+
+	local result = wesnoth.sync.evaluate_single(function()
+		return { value = gui.show_menu(menu) }
+	end).value
+
+	if result > 0 then
+		for i, unit in ipairs(units) do
+			unit.variables.stealth_terrain = STEALTH_TERRAINS[result].filter
+		end
+	end
+end
 
 -------------------------
 -- ABILITY - TESTAMENT --
