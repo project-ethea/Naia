@@ -32,6 +32,7 @@ Version 20240314.9000+dev:
   * Removed obsolete Fire Wraith backport.
   * Removed obsolete Giant Ant unit.
   * New stealth ability.
+  * New tactician ability.
   * Removed ambush ability from Elvish Prowler.
   * Added stealth ability to Elvish Prowler.
 
