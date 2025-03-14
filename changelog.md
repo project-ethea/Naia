@@ -20,6 +20,8 @@ Version 20240314.9000+dev:
   * Added debug UI utilities to the context menu in maintainer mode when debug
     mode is enabled.
   * New campaign intro warning UI.
+  * New Journey Log system.
+  * New gameplay mechanics info UI.
 
 * Terrains:
   * Added Dark Hive Facility, Dark Hive Vent, Dark Hive Heatsink.
@@ -29,6 +31,7 @@ Version 20240314.9000+dev:
     notes syntax.
   * Removed obsolete Fire Wraith backport.
   * Removed obsolete Giant Ant unit.
+  * New stealth ability.
 
 
 Version 20211005:
