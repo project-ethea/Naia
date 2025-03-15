@@ -35,6 +35,10 @@ Version 20240314.9000+dev:
   * New tactician ability.
   * Removed ambush ability from Elvish Prowler.
   * Added stealth ability to Elvish Prowler.
+  * New unit line: Elvish Patrol Captain (advances to Elvish Field Steward,
+    Elvish Pathfinder, Elvish Wayfarer).
+    * Uses a custom AMLA system instead of regular unit line progression.
+    * Intended to be used by IftU and AtS.
 
 
 Version 20211005:
