@@ -420,6 +420,7 @@ local NAIA_PACKAGES = {
 	'gui/campaign_intro',
 	'gui/debug_utilities',
 	'gui/gameplay_notification',
+	'gui/horizontal_choice',
 	'gui/journey_ui',
 	'gui/item_prompt',
 	'gui/transient_message',

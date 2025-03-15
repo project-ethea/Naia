@@ -36,6 +36,9 @@ local STEALTH_TERRAINS = {
 	}
 }
 
+-- FIXME: experimental!
+local STEALTH_USE_CUSTOM_MENU = true
+
 function wesnoth.wml_actions.stealth_ability_ui(cfg)
 	local units = wesnoth.units.find_on_map(cfg)
 	if not units then
@@ -45,15 +48,25 @@ function wesnoth.wml_actions.stealth_ability_ui(cfg)
 
 	local menu = {}
 	for i = 1, #STEALTH_TERRAINS do
+		local icon = STEALTH_TERRAINS[i].icon
+		if not STEALTH_USE_CUSTOM_MENU then
+			icon = icon .. "~SCALE(30,30)"
+		end
 		table.insert(menu, {
-			icon = ("%s~SCALE(30,30)"):format(STEALTH_TERRAINS[i].icon),
+			icon = icon,
 			label = STEALTH_TERRAINS[i].label
 		})
 	end
 
-	local result = wesnoth.sync.evaluate_single(function()
-		return { value = gui.show_menu(menu) }
-	end).value
+	local result = 0
+
+	if STEALTH_USE_CUSTOM_MENU then
+		result = synced_horizontal_choice(menu, _ "Select Stealth Terrain", nil, true)
+	else
+		result = wesnoth.sync.evaluate_single(function()
+			return { value = gui.show_menu(menu) }
+		end).value
+	end
 
 	if result > 0 then
 		for i, unit in ipairs(units) do
