@@ -997,3 +997,77 @@ G_widget(
 	"naia_journeylog_event_heading",
 	journeylog_dialog_line_widget_def(17, JOURNEYLOG_PAGE_WIDTH, JOURNEYLOG_SPEAKER_COLOR)
 )
+
+local function mini_button_text(text, color)
+	return T.text {
+		x               = 0,
+		y               = "(max((height - text_height - 2) / 2, 0))",
+		w               = "(width)",
+		h               = "(text_height)",
+		maximum_width   = "(width)",
+		font_size       = 20,
+		font_style      = "bold",
+		color           = ("%s, 255"):format(color),
+		text            = text,
+		text_markup     = false,
+		text_alignment  = "center"
+	}
+end
+
+G_widget("button", "naia_mini_close", {
+	min_width         = 30,
+	min_height        = 30,
+	default_width     = 30,
+	default_height    = 30,
+	max_width         = 30,
+	max_height        = 30,
+	text_extra_width  = 0,
+	text_extra_height = 0,
+	text_font_size    = 20,
+
+	T.state_enabled {
+		C_vcanvas(
+			C_button_frame({
+				background_image_path = "background",
+				border_color          = "162, 127, 68, 255",   -- GUI__BORDER_COLOR
+				border_color_dark     = "114, 79, 46, 255",    -- GUI__BORDER_COLOR_DARK
+				highlight_line_color  = "21, 79, 109, 255"
+			}),
+			mini_button_text("×", INTRO_TEXT_COLOR)
+		)
+	},
+	T.state_focused {
+		C_vcanvas(
+			C_button_frame({
+				background_image_path = "background-active",
+				border_color          = "162, 127, 68, 255",   -- GUI__BORDER_COLOR
+				border_color_dark     = "114, 79, 46, 255",    -- GUI__BORDER_COLOR_DARK
+				highlight_line_color  = "12, 108, 157, 255"
+			}),
+			mini_button_text("×", INTRO_TEXT_COLOR)
+		)
+	},
+	T.state_pressed {
+		C_vcanvas(
+			C_button_frame({
+				background_image_path = "background-pressed",
+				border_color          = "162, 127, 68, 255",   -- GUI__BORDER_COLOR
+				border_color_dark     = "114, 79, 46, 255",    -- GUI__BORDER_COLOR_DARK
+				highlight_line_color  = "1, 10, 16, 255"
+			}),
+			mini_button_text("×", INTRO_TEXT_COLOR)
+		)
+	},
+	T.state_disabled {
+		C_vcanvas(
+			C_button_frame({
+				background_image_path = "background",
+				border_color          = "128, 128, 128, 255",  -- GUI__FONT_COLOR_DISABLED__DEFAULT
+				border_color_dark     = "89, 89, 89, 255",
+				highlight_line_color  = "60, 60, 60, 255",
+				ipf                   = "~GS()"
+			}),
+			mini_button_text("×", "128, 128, 128")
+		)
+	}
+})
