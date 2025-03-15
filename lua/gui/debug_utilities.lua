@@ -20,6 +20,8 @@ local UNIT_ICON = "icons/action/editor-tool-unit_25.png"
 
 local HEX_ICON = "icons/action/minimap-draw-terrain_25.png"
 
+local CONSOLE_ICON = "icons/menu-console.png"
+
 local function debug_message(text)
 	wesnoth.interface.add_chat_message("Naia [Debug]", text)
 end
@@ -445,5 +447,19 @@ wesnoth.wml_actions.set_menu_item {
 	},
 	T.command {
 		T.event_debug_utilities {}
+	}
+}
+
+wesnoth.wml_actions.set_menu_item {
+	id = "naia:90_9_console",
+	description= _ "debug^Naia: Lua Console",
+	image = CONSOLE_ICON,
+	T.show_if {
+		T.debug_utilities_available {}
+	},
+	T.command {
+		T.lua {
+			code = "gui.show_lua_console()"
+		}
 	}
 }
