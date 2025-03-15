@@ -408,7 +408,7 @@ end
 ---
 
 wesnoth.wml_actions.set_menu_item {
-	id = "naia:10_debug_unit",
+	id = "naia:90_1_debug_unit",
 	description = _ "debug^Naia: Unit Debug Utilities",
 	image = UNIT_ICON,
 	T.show_if {
@@ -423,7 +423,7 @@ wesnoth.wml_actions.set_menu_item {
 }
 
 wesnoth.wml_actions.set_menu_item {
-	id = "naia:20_debug_terrain",
+	id = "naia:90_2_debug_terrain",
 	description = _ "debug^Naia: Terrain Debug Utilities",
 	image = HEX_ICON,
 	T.show_if {
@@ -436,7 +436,7 @@ wesnoth.wml_actions.set_menu_item {
 }
 
 wesnoth.wml_actions.set_menu_item {
-	id = "naia:50_debug_events",
+	id = "naia:90_3_debug_events",
 	description = _ "debug^Naia: Debug Events",
 	image = DEBUG_ICON,
 	T.show_if {

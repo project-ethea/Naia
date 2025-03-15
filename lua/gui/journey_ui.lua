@@ -1499,7 +1499,7 @@ end
 --
 
 wesnoth.wml_actions.set_menu_item {
-	id = "naia:journeylog",
+	id = "naia:70_journeylog",
 	description = _ "Journal",
 	image = "icons/menu-journeylog.png",
 	T.default_hotkey {
