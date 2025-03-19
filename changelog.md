@@ -29,6 +29,9 @@ Version 20240314.9000+dev:
 * Units:
   * Switched all units, abilities, and weapon specials to the 1.16 special
     notes syntax.
+  * Character AMLAs other than Vitality are now always shown in the Advance
+    Unit dialog rather than automatically selected even if they are the last
+    available advancement.
   * Removed obsolete Fire Wraith backport.
   * Removed obsolete Giant Ant unit.
   * New stealth ability.
