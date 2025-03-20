@@ -42,6 +42,7 @@ Version 20240314.9000+dev:
     Elvish Pathfinder, Elvish Wayfarer).
     * Uses a custom AMLA system instead of regular unit line progression.
     * Intended to be used by IftU and AtS.
+  * New malice ability.
 
 
 Version 20211005:
