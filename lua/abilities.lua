@@ -75,6 +75,47 @@ function wesnoth.wml_actions.stealth_ability_ui(cfg)
 	end
 end
 
+--
+-- SUF helper for the stealth ability.
+--
+-- NOTE #1:
+--
+-- It does not seem possible at the moment to reliable determine the location
+-- that is being selected with the mouse to evaluate unit movements, e.g. by
+-- selecting the unit then hovering a different tile. Namely, what we get from
+-- wesnoth.interface.get_hovered_hex can be nil if the mouse is out of bounds,
+-- and the SUF lua_function can get called even when a different/no unit is
+-- selected. Our only option at the moment is to work with the unit's real
+-- position, which makes the ambush icon overlay shown when hovering on other
+-- tiles work only when the unit is already hidden at its present location.
+--
+-- NOTE #2:
+--
+-- This exists because I couldn't quite figure out how to use a formula in a
+-- SLF nested in a SUF to achieve the same:
+--
+--   terrain="$(if(length('$this_unit.variables.stealth_terrain') > 0, '$this_unit.variables.stealth_terrain', '{ABILITY_STEALTH:FOREST_TERRAINS}'))"
+--
+-- The code above *works*... as long as the unit doesn't move, where for some
+-- reason $this_unit becomes a null variable, which results in console log
+-- spam and the formula falling back to the forest terrain filters when the
+-- unit is in the middle of moving between two locations. Since the console
+-- spam is annoying AND the constant switch between filters may cause
+-- unforeseen issues, I opted to do things by hand in Lua instead.
+--
+function naia_stealth_unit_filter(u)
+	if not u then
+		wprintf(W_ERR, "naia_stealth_unit_filter(): bad unit")
+		return
+	end
+
+	local terrains = u.variables.stealth_terrain or
+		STEALTH_TERRAINS[1].filter or
+		wml.error("naia_stealth_unit_filter(): catastrophic failure pls report ~_~")
+
+	return wesnoth.map.matches(u.x, u.y, { terrain = terrains })
+end
+
 -------------------------
 -- ABILITY - TESTAMENT --
 -------------------------
