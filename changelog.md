@@ -43,6 +43,10 @@ Version 20240314.9000+dev:
     * Uses a custom AMLA system instead of regular unit line progression.
     * Intended to be used by IftU and AtS.
   * New malice ability.
+  * New unit line: Archaic Lich (advances to Undying Eradicator).
+    * Uses a custom AMLA system instead of regular unit line progression.
+    * Intended to be used by IftU and AtS.
+  * New unit type: Tenebrous Everbane.
 
 
 Version 20211005:
