@@ -496,8 +496,9 @@ function debug_ui.side_selector()
 	local function preshow(self)
 		for side, num in wesnoth.sides.iter() do
 			local row = self.side_list:add_item()
-			row.side_number.label = tostring(num)
-			row.id.label = side.save_id
+			local color_hex = wesnoth.colors[side.color].pango_color
+			row.side_number.marked_up_text = ("<span color='%s'>%d</span>"):format(color_hex, num)
+			row.id.marked_up_text = ("<span color='%s'>%s</span>"):format(color_hex, side.side_name)
 			row.team_name.marked_up_text = ("%s (<tt>%s</tt>)"):format(side.user_team_name, side.team_name)
 		end
 
