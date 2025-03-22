@@ -68,6 +68,22 @@ local UNIT_DEBUG_MENU = {
 		end
 	},
 	{
+		label = _ "debug^Restore Moves/Attacks",
+		_action = function(x, y, unit)
+			unit.moves = unit.max_moves
+			unit.attacks_left = unit.max_attacks
+			debug_message(("Unit '%s' moves/attacks reset to max"):format(unit.id))
+		end
+	},
+	{
+		label = _ "debug^Supercharge Moves/Attacks",
+		_action = function(x, y, unit)
+			unit.moves = 10
+			unit.attacks_left = 10
+			debug_message(("Unit '%s' moves/attacks supercharged"):format(unit.id))
+		end
+	},
+	{
 		label = _ "debug^Advance",
 		_action = function(x, y, unit)
 			local old_type = unit.type
