@@ -31,7 +31,8 @@ local debug_triggers = {}
 
 -- These are formally defined later
 local debug_ui = {
-	side_selector = function(message) end
+	side_selector = function(message) end,
+	location_selector = function(messge) end,
 }
 
 local UNIT_DEBUG_MENU = {
@@ -129,6 +130,16 @@ local UNIT_DEBUG_MENU = {
 				unit:extract()
 				unit:to_map()
 				debug_message(("Unit '%s' facing set to %s"):format(unit.id, facing))
+			end
+		end
+	},
+	{
+		label = _ "debug^Teleport",
+		_action = function(x, y, unit)
+			local location = debug_ui.location_selector( _ "debug^Specify a location to teleport to:", { x = x, y = y })
+			if location and not (location.x == x and location.y == y) then
+				unit:teleport(location.x, location.y, true, true, false)
+				debug_message(("Unit '%s' teleported to %d, %d"):format(unit.id, location.x, location.y))
 			end
 		end
 	}
@@ -372,6 +383,112 @@ local side_selector_dlg = {
 	}
 }
 
+local location_selector_dlg = {
+	click_dismiss = false,
+
+	maximum_width = 640,
+	maximum_height = 400,
+
+	T.helptip { id = "tooltip_large" },
+	T.tooltip { id = "tooltip_large" },
+
+	T.grid {
+		T.row {
+			grow_factor = 0,
+
+			T.column {
+				border = "all",
+				border_size = 5,
+				horizontal_alignment = "left",
+				T.label {
+					definition = "title",
+					label = _ "debug^Enter Location",
+					wrap = true
+				}
+			}
+		},
+		T.row {
+			T.column {
+				border = "all",
+				border_size = 5,
+				horizontal_grow = true,
+				T.label {
+					id = "text",
+					label = "PLACEHOLDER",
+					wrap = true
+				}
+			},
+		},
+		T.row {
+			T.column {
+				T.grid {
+					T.row {
+						T.column {
+							border = "all",
+							border_size = 5,
+							T.label {
+								label = "X:"
+							}
+						},
+						T.column {
+							border = "all",
+							border_size = 5,
+							horizontal_grow = false,
+							T.text_box {
+								id = "location_x"
+							}
+						},
+					},
+					T.row {
+						T.column {
+							border = "all",
+							border_size = 5,
+							T.label {
+								label = "Y:"
+							}
+						},
+						T.column {
+							border = "all",
+							border_size = 5,
+							horizontal_grow = false,
+							T.text_box {
+								id = "location_y"
+							}
+						}
+					}
+				}
+			}
+		},
+		T.row {
+			T.column {
+				horizontal_alignment = "right",
+				T.grid {
+					T.row {
+						T.column {
+							border = "all",
+							border_size = 5,
+							horizontal_alignment = "right",
+							T.button {
+								id = "ok",
+								label = wgettext("OK")
+							}
+						},
+						T.column {
+							border = "all",
+							border_size = 5,
+							horizontal_alignment = "right",
+							T.button {
+								id = "cancel",
+								label = wgettext("Cancel")
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 ---
 -- Side selection UI
 ---
@@ -403,6 +520,40 @@ function debug_ui.side_selector(message)
 		end
 		return { result = result }
 	end).result
+end
+
+---
+-- Location selection UI
+---
+
+function debug_ui.location_selector(message, initial_loc)
+	local loc = { x = -1, y = -1 }
+
+	local function preshow(self)
+		self.text.label = message
+		self.location_x.text = initial_loc.x
+		self.location_y.text = initial_loc.y
+	end
+
+	local function postshow(self)
+		loc.x = self.location_x.text
+		loc.y = self.location_y.text
+	end
+
+	loc = wesnoth.sync.evaluate_single(function()
+		local result = nil
+		if gui.show_dialog(location_selector_dlg, preshow, postshow) == -1 and wesnoth.current.map:on_board(loc.x, loc.y, false) then
+			return { x = loc.x, y = loc.y }
+		else
+			return { x = -1, y = -1 }
+		end
+	end)
+
+	if loc.x < 1 or loc.y < 1 then
+		return nil
+	else
+		return loc
+	end
 end
 
 ---
