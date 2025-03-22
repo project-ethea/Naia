@@ -96,7 +96,7 @@ local UNIT_DEBUG_MENU = {
 		label = _ "debug^Transfer to Side",
 		_action = function(x, y, unit)
 			local side = debug_ui.side_selector(tostring( _ "debug^Select a side for this unit:"):format(x, y))
-			if side then
+			if side > 1 then
 				unit.side = side
 				debug_message(("Unit '%s' transferred to side %d"):format(unit.id, side))
 			end
