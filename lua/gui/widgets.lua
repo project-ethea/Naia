@@ -1014,60 +1014,65 @@ local function mini_button_text(text, color)
 	}
 end
 
-G_widget("button", "naia_mini_close", {
-	min_width         = 30,
-	min_height        = 30,
-	default_width     = 30,
-	default_height    = 30,
-	max_width         = 30,
-	max_height        = 30,
-	text_extra_width  = 0,
-	text_extra_height = 0,
-	text_font_size    = 20,
+local function G_mini_button(id, label)
+	G_widget("button", id, {
+		min_width         = 30,
+		min_height        = 30,
+		default_width     = 30,
+		default_height    = 30,
+		max_width         = 30,
+		max_height        = 30,
+		text_extra_width  = 0,
+		text_extra_height = 0,
+		text_font_size    = 20,
 
-	T.state_enabled {
-		C_vcanvas(
-			C_button_frame({
-				background_image_path = "background",
-				border_color          = "162, 127, 68, 255",   -- GUI__BORDER_COLOR
-				border_color_dark     = "114, 79, 46, 255",    -- GUI__BORDER_COLOR_DARK
-				highlight_line_color  = "21, 79, 109, 255"
-			}),
-			mini_button_text("×", INTRO_TEXT_COLOR)
-		)
-	},
-	T.state_focused {
-		C_vcanvas(
-			C_button_frame({
-				background_image_path = "background-active",
-				border_color          = "162, 127, 68, 255",   -- GUI__BORDER_COLOR
-				border_color_dark     = "114, 79, 46, 255",    -- GUI__BORDER_COLOR_DARK
-				highlight_line_color  = "12, 108, 157, 255"
-			}),
-			mini_button_text("×", INTRO_TEXT_COLOR)
-		)
-	},
-	T.state_pressed {
-		C_vcanvas(
-			C_button_frame({
-				background_image_path = "background-pressed",
-				border_color          = "162, 127, 68, 255",   -- GUI__BORDER_COLOR
-				border_color_dark     = "114, 79, 46, 255",    -- GUI__BORDER_COLOR_DARK
-				highlight_line_color  = "1, 10, 16, 255"
-			}),
-			mini_button_text("×", INTRO_TEXT_COLOR)
-		)
-	},
-	T.state_disabled {
-		C_vcanvas(
-			C_button_frame({
-				background_image_path = "background",
-				border_color          = "128, 128, 128, 255",  -- GUI__FONT_COLOR_DISABLED__DEFAULT
-				border_color_dark     = "89, 89, 89, 255",
-				highlight_line_color  = "60, 60, 60, 255",
-				ipf                   = "~GS()"
-			}),
-			mini_button_text("×", "128, 128, 128")
-		)
-	}
-})
+		T.state_enabled {
+			C_vcanvas(
+				C_button_frame({
+					background_image_path = "background",
+					border_color          = "162, 127, 68, 255",   -- GUI__BORDER_COLOR
+					border_color_dark     = "114, 79, 46, 255",    -- GUI__BORDER_COLOR_DARK
+					highlight_line_color  = "21, 79, 109, 255"
+				}),
+				mini_button_text(label, INTRO_TEXT_COLOR)
+			)
+		},
+		T.state_focused {
+			C_vcanvas(
+				C_button_frame({
+					background_image_path = "background-active",
+					border_color          = "162, 127, 68, 255",   -- GUI__BORDER_COLOR
+					border_color_dark     = "114, 79, 46, 255",    -- GUI__BORDER_COLOR_DARK
+					highlight_line_color  = "12, 108, 157, 255"
+				}),
+				mini_button_text(label, INTRO_TEXT_COLOR)
+			)
+		},
+		T.state_pressed {
+			C_vcanvas(
+				C_button_frame({
+					background_image_path = "background-pressed",
+					border_color          = "162, 127, 68, 255",   -- GUI__BORDER_COLOR
+					border_color_dark     = "114, 79, 46, 255",    -- GUI__BORDER_COLOR_DARK
+					highlight_line_color  = "1, 10, 16, 255"
+				}),
+				mini_button_text(label, INTRO_TEXT_COLOR)
+			)
+		},
+		T.state_disabled {
+			C_vcanvas(
+				C_button_frame({
+					background_image_path = "background",
+					border_color          = "128, 128, 128, 255",  -- GUI__FONT_COLOR_DISABLED__DEFAULT
+					border_color_dark     = "89, 89, 89, 255",
+					highlight_line_color  = "60, 60, 60, 255",
+					ipf                   = "~GS()"
+				}),
+				mini_button_text(label, "128, 128, 128")
+			)
+		}
+	})
+end
+
+G_mini_button("naia_mini_close", "×")
+G_mini_button("naia_mini_ok",    "✓")
