@@ -448,6 +448,7 @@ local location_selector_dlg = tool_settings_dlg {
 				T.grid {
 					T.row {
 						T.column {
+							grow_factor = 0,
 							border = "all",
 							border_size = 5,
 							T.label {
@@ -455,16 +456,19 @@ local location_selector_dlg = tool_settings_dlg {
 							}
 						},
 						T.column {
+							grow_factor = 0,
 							border = "all",
 							border_size = 5,
 							horizontal_grow = false,
 							T.text_box {
-								id = "location_x"
+								id = "location_x",
+								max_input_length = 3
 							}
-						},
+						}
 					},
 					T.row {
 						T.column {
+							grow_factor = 0,
 							border = "all",
 							border_size = 5,
 							T.label {
@@ -472,11 +476,13 @@ local location_selector_dlg = tool_settings_dlg {
 							}
 						},
 						T.column {
+							grow_factor = 0,
 							border = "all",
 							border_size = 5,
 							horizontal_grow = false,
 							T.text_box {
-								id = "location_y"
+								id = "location_y",
+								max_input_length = 3
 							}
 						}
 					}
