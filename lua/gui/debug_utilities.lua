@@ -152,7 +152,7 @@ local UNIT_DEBUG_MENU = {
 	{
 		label = _ "debug^Teleport",
 		_action = function(x, y, unit)
-			local location = debug_ui.location_selector( _ "debug^Specify a location to teleport to:", { x = x, y = y })
+			local location = debug_ui.location_selector({ x = x, y = y })
 			if location and not (location.x == x and location.y == y) then
 				unit:teleport(location.x, location.y, true, true, false)
 				debug_message(("Unit '%s' teleported to %d, %d"):format(unit.id, location.x, location.y))
@@ -180,7 +180,7 @@ local TERRAIN_DEBUG_MENU = {
 	{
 		label = _ "debug^Give Village to Side",
 		_action = function(x, y)
-			local side = debug_ui.side_selector(tostring( _ "debug^Select a side to capture the village at %d, %d:"):format(x, y))
+			local side = debug_ui.side_selector()
 			if side then
 				wesnoth.current.map.set_owner(x, y, side)
 				debug_message(("Captured village at %d, %d by side %d"):format(x, y, side))
@@ -317,15 +317,24 @@ local side_selector_listdef = {
 	}
 }
 
-local side_selector_dlg = {
-	click_dismiss = false,
+local function tool_settings_dlg(cfg)
+	return wml.merge(cfg, {
+		definition = "menu",
 
-	maximum_width = 640,
-	maximum_height = 400,
+		automatic_placement = false,
+		x = "(min(max(0, mouse_x - window_width / 2), screen_width - window_width))",
+		y = "(min(max(0, mouse_y - 22), screen_height - window_height))",
+		width = "(if(window_width > 0, window_width, screen_width))",
+		height = "(if(window_height > 0, window_height, screen_height))",
+		maximum_width = 640,
+		maximum_height = 400,
 
-	T.helptip { id = "tooltip_large" },
-	T.tooltip { id = "tooltip_large" },
+		T.helptip { id = "tooltip" },
+		T.tooltip { id = "tooltip" }
+	}, "merge")
+end
 
+local side_selector_dlg = tool_settings_dlg {
 	T.linked_group { id = "side_number", fixed_width = true },
 	T.linked_group { id = "id", fixed_width = true },
 	T.linked_group { id = "team_name", fixed_width = true },
@@ -333,29 +342,46 @@ local side_selector_dlg = {
 	T.grid {
 		T.row {
 			grow_factor = 0,
-
 			T.column {
-				border = "all",
-				border_size = 5,
-				horizontal_alignment = "left",
-				T.label {
-					definition = "title",
-					label = _ "debug^Select Side",
-					wrap = true
+				horizontal_grow = true,
+				T.grid {
+					T.row {
+						T.column {
+							grow_factor = 1,
+							border = "top,left,right",
+							border_size = 5,
+							horizontal_alignment = "left",
+							T.label {
+								definition = "gold",
+								label = _ "debug^Select Side",
+								wrap = true
+							}
+						},
+						T.column {
+							grow_factor = 0,
+							border = "top,left",
+							border_size = 5,
+							horizontal_alignment = "right",
+							T.button {
+								id = "ok",
+								definition = "naia_mini_ok",
+								label = wgettext("Select")
+							}
+						},
+						T.column {
+							grow_factor = 0,
+							border = "top,left,right",
+							border_size = 5,
+							horizontal_alignment = "right",
+							T.button {
+								id = "cancel",
+								definition = "naia_mini_close",
+								label = wgettext("Cancel")
+							}
+						}
+					}
 				}
 			}
-		},
-		T.row {
-			T.column {
-				border = "all",
-				border_size = 5,
-				horizontal_grow = true,
-				T.label {
-					id = "text",
-					label = "PLACEHOLDER",
-					wrap = true
-				}
-			},
 		},
 		T.row {
 			T.column {
@@ -368,72 +394,54 @@ local side_selector_dlg = {
 					T.list_definition(side_selector_listdef)
 				}
 			}
-		},
+		}
+	}
+}
+
+local location_selector_dlg = tool_settings_dlg {
+	T.grid {
 		T.row {
+			grow_factor = 0,
 			T.column {
-				horizontal_alignment = "right",
+				horizontal_grow = true,
 				T.grid {
 					T.row {
 						T.column {
-							border = "all",
+							grow_factor = 1,
+							border = "top,left,right",
+							border_size = 5,
+							horizontal_alignment = "left",
+							T.label {
+								definition = "gold",
+								label = _ "debug^Enter Location",
+								wrap = true
+							}
+						},
+						T.column {
+							grow_factor = 0,
+							border = "top,left",
 							border_size = 5,
 							horizontal_alignment = "right",
 							T.button {
 								id = "ok",
-								label = wgettext("Select")
+								definition = "naia_mini_ok",
+								label = wgettext("OK")
 							}
 						},
 						T.column {
-							border = "all",
+							grow_factor = 0,
+							border = "top,left,right",
 							border_size = 5,
 							horizontal_alignment = "right",
 							T.button {
 								id = "cancel",
+								definition = "naia_mini_close",
 								label = wgettext("Cancel")
 							}
 						}
 					}
 				}
 			}
-		}
-	}
-}
-
-local location_selector_dlg = {
-	click_dismiss = false,
-
-	maximum_width = 640,
-	maximum_height = 400,
-
-	T.helptip { id = "tooltip_large" },
-	T.tooltip { id = "tooltip_large" },
-
-	T.grid {
-		T.row {
-			grow_factor = 0,
-
-			T.column {
-				border = "all",
-				border_size = 5,
-				horizontal_alignment = "left",
-				T.label {
-					definition = "title",
-					label = _ "debug^Enter Location",
-					wrap = true
-				}
-			}
-		},
-		T.row {
-			T.column {
-				border = "all",
-				border_size = 5,
-				horizontal_grow = true,
-				T.label {
-					id = "text",
-					label = "PLACEHOLDER",
-					wrap = true
-				}
-			},
 		},
 		T.row {
 			T.column {
@@ -474,33 +482,6 @@ local location_selector_dlg = {
 					}
 				}
 			}
-		},
-		T.row {
-			T.column {
-				horizontal_alignment = "right",
-				T.grid {
-					T.row {
-						T.column {
-							border = "all",
-							border_size = 5,
-							horizontal_alignment = "right",
-							T.button {
-								id = "ok",
-								label = wgettext("OK")
-							}
-						},
-						T.column {
-							border = "all",
-							border_size = 5,
-							horizontal_alignment = "right",
-							T.button {
-								id = "cancel",
-								label = wgettext("Cancel")
-							}
-						}
-					}
-				}
-			}
 		}
 	}
 }
@@ -509,12 +490,10 @@ local location_selector_dlg = {
 -- Side selection UI
 ---
 
-function debug_ui.side_selector(message)
+function debug_ui.side_selector()
 	local selection = 1
 
 	local function preshow(self)
-		self.text.label = message
-
 		for side, num in wesnoth.sides.iter() do
 			local row = self.side_list:add_item()
 			row.side_number.label = tostring(num)
@@ -542,11 +521,10 @@ end
 -- Location selection UI
 ---
 
-function debug_ui.location_selector(message, initial_loc)
+function debug_ui.location_selector(initial_loc)
 	local loc = { x = -1, y = -1 }
 
 	local function preshow(self)
-		self.text.label = message
 		self.location_x.text = initial_loc.x
 		self.location_y.text = initial_loc.y
 	end
@@ -557,7 +535,6 @@ function debug_ui.location_selector(message, initial_loc)
 	end
 
 	loc = wesnoth.sync.evaluate_single(function()
-		local result = nil
 		if gui.show_dialog(location_selector_dlg, preshow, postshow) == -1 and wesnoth.current.map:on_board(loc.x, loc.y, false) then
 			return { x = loc.x, y = loc.y }
 		else
