@@ -181,7 +181,7 @@ local TERRAIN_DEBUG_MENU = {
 		label = _ "debug^Give Village to Side",
 		_action = function(x, y)
 			local side = debug_ui.side_selector()
-			if side then
+			if side > 0 then
 				wesnoth.current.map.set_owner(x, y, side)
 				debug_message(("Captured village at %d, %d by side %d"):format(x, y, side))
 			end
