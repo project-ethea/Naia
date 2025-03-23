@@ -155,3 +155,33 @@ function journeylog.enumerate_scenarios(campaign_id)
 	return _enumerate_impl_common(scenario_table)
 end
 
+function journeylog.retrieve_scenario_info(scenario_id, campaign_id)
+	if scenario_id == nil then
+		scenario_id = wesnoth.scenario.id or
+			wml.error("bad gamestate, no scenario id")
+	end
+
+	if campaign_id == nil then
+		campaign_id = wesnoth.scenario.campaign.id or
+			wml.error("bad gamestate, no campaign id")
+	end
+
+	if not journeylog_campaign_info[campaign_id] then
+		jprintf(W_ERR, "attempted to retrieve information for unknown campaign %s", campaign_id)
+		return nil
+	end
+
+	local info = journeylog_campaign_info[campaign_id][scenario_id]
+
+	if not info then
+		jprintf(W_ERR, "attempted to retrieve information for unknown scenario %s", scenario_id)
+		return nil
+	end
+
+	-- NOTE: this may not remain a trivial piecewise copy forever
+	return {
+		mnemonic = info.mnemonic,
+		label    = info.label,
+		hidden   = info.hidden
+	}
+end
