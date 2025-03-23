@@ -969,6 +969,23 @@ local function clean_campaign_name(text)
 	return tostring(text):gsub("\n", " ")
 end
 
+local function is_empty_image(path)
+	-- NOTE: This will also match images that are in reality painted over
+	-- misc/blank-hex.png via ~BLIT(), but since there is pretty much no way
+	-- anyone would use that for a legitimate character portrait, we do not
+	-- need to support this particular case. For that matter, we don't need to
+	-- support ~O() being used to zero-out an image's alpha channel either
+	-- since no-one would be using this to blank out a portrait, surely.
+	if path == nil or
+	   path == "" or
+	   tostring(path):match("^misc/blank%-hex%.png")
+	then
+		return true
+	else
+		return false
+	end
+end
+
 local global_show_portraits = true
 
 function journeylog_ui()
@@ -1172,7 +1189,7 @@ function journeylog_ui()
 				end
 
 				if global_show_portraits and not msg.is_narrator then
-					if msg.image ~= nil then
+					if not is_empty_image(msg.image) then
 						msg_display.image.label = msg.image
 						msg_display.image.on_button_click = portrait_image_viewer(msg.image, msg.speaker)
 					else
