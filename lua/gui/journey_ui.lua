@@ -121,6 +121,8 @@ local journeylog_scenarios_listdef = {
 			T.grid {
 				T.row {
 					T.column {
+						vertical_alignment = "top",
+						grow_factor = 0,
 						border = "top,left,bottom",
 						border_size = 10,
 						T.image {
@@ -134,6 +136,18 @@ local journeylog_scenarios_listdef = {
 						border_size = 10,
 						T.label {
 							id = "scenario_name"
+						}
+					}
+					,
+					T.column {
+						horizontal_alignment = "right",
+						vertical_alignment = "top",
+						grow_factor = 0,
+						border = "all",
+						border_size = 10,
+						T.label {
+							id = "scenario_serial",
+							definition = "gold_small"
 						}
 					}
 				}
@@ -1395,16 +1409,25 @@ function journeylog_ui()
 					current_scenario = j
 				end
 
+				local runtime_info = journeylog.retrieve_scenario_info(scenario.id) or {}
+
 				local scenario_journey = {
 					id = scenario.id,
-					name = scenario.name,
+					-- Prefer the label from Naia runtime init as it may be more accurate
+					-- than older information engraved by journeylog into saved games.
+					name = runtime_info.label or scenario.name,
 					messages = {},
 					cache_built = false,
 				}
 
 				local scenario_list_item = self.scenario_list:add_item()
-				scenario_list_item.scenario_name.label = scenario.name
+
+				scenario_list_item.scenario_name.label = runtime_info.label or scenario.name
 				scenario_list_item.scenario_icon.label = JOURNEYLOG_UI_SCENARIO_ICON
+				if runtime_info.mnemonic then
+					scenario_list_item.scenario_serial.label = runtime_info.mnemonic
+				end
+
 				table.insert(scenario_listbox_rows, scenario_list_item)
 
 				-- We do not retrieve messages until a later time because that
