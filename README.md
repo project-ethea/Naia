@@ -25,9 +25,8 @@ campaign and this may not always be addressed immediately. In particular, it is
 not advisable to use a version of Naia other than the one shipped when playing
 release versions of the campaigns.
 
-Naia presently requires **Wesnoth 1.14**. Versions 1.14.2 and later are
-recommended, and it may also work with versions 1.13.12 through 1.13.14, albeit
-you will not receive any support for attempting to use those versions.
+This version of Naia requires **Wesnoth 1.16.x**. Versions 1.15.14 through
+1.15.18 may also work, but are not recommended.
 
 
 Reporting issues
