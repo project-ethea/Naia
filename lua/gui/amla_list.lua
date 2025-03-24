@@ -721,7 +721,9 @@ function naia_do_amla_menu(cfg)
 		end
 
 		local function clear_advancements_listbox()
-			self.adv_list:remove_items_at(1, 0)
+			if self.adv_list.item_count > 0 then
+				self.adv_list:remove_items_at(1, 0)
+			end
 		end
 
 		local function get_current_type()

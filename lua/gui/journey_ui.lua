@@ -1022,8 +1022,10 @@ function journeylog_ui()
 	local current_filter = {}
 
 	local function clear_journey_view(treeview)
-		journey_view_rows = {}
-		treeview:remove_items_at(1, 0)
+		if #journey_view_rows > 0 then
+			journey_view_rows = {}
+			treeview:remove_items_at(1, 0)
+		end
 	end
 
 	local function journey_view_add_node(treeview, node_type, journey_msg)
