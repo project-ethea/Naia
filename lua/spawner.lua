@@ -34,7 +34,7 @@ function wesnoth.wml_actions.run_spawn_controller(cfg)
 			animate = false
 		})
 
-		wesnoth.fire_event(respawn_event)
+		wesnoth.game_events.fire(respawn_event)
 	else
 		dbg(("<CTL> fire '%s' on turn %d"):format(respawn_event, respawn_turn))
 
