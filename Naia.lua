@@ -94,6 +94,17 @@ function wgettext(str, domain)
 end
 
 ---
+-- Returns the line count for the specified (potentially translatable) string.
+---
+function line_count(text)
+	local lines, sz = 1, tostring(text)
+	for lf in sz:gmatch("\x0a") do -- rip Mac OS 9 users lololol
+		lines = lines + 1
+	end
+	return lines
+end
+
+---
 -- Returns a value restricted to a range [minval, maxval].
 ---
 function in_range(value, minval, maxval)
