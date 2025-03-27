@@ -15,6 +15,9 @@ Version 20240314.9000+dev:
   * Updated `[bug]` UI.
   * Story text utilities now use resolution-independent text scaling to avoid
     impossibly tiny captions on high DPI/Retina devices.
+  * Fixed a major issue with the fallback unit selection system in `[message]`
+    (e.g. used to select a character to speak on behalf of undead units)
+    causing most uses of WML variables to break entirely within `[option]`.
   * Reworked `[color_adjust]` screen effects to use `[screen_fade]` internally
     instead.
   * Added debug UI utilities to the context menu in maintainer mode when debug

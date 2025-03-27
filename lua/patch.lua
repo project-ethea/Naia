@@ -127,6 +127,8 @@ function wesnoth.wml_actions.message(cfg)
 		return
 	end
 
+	cfg = wml.shallow_literal(cfg)
+
 	if cfg.speaker == "narrator" then
 		wprintf(W_WARN, "[message] has fallback information but speaker=narrator, fix this")
 		_WA_message(cfg)
@@ -134,8 +136,6 @@ function wesnoth.wml_actions.message(cfg)
 	end
 
 	wprintf(W_DBG, "[message] fallback check mode activated")
-
-	cfg = wml.literal(cfg)
 
 	local minisuf = {
 		x = cfg.x,
