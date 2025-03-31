@@ -114,7 +114,7 @@ local function gameplay_notification_impl(cfg)
 	end
 
 	local function preshow(self)
-		self.message.marked_up_text = message
+		self.message.marked_up_text = transform_markup(message)
 
 		if image then
 			self.image.label = image
