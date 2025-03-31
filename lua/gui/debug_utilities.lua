@@ -531,14 +531,23 @@ end
 function debug_ui.location_selector(initial_loc)
 	local loc = { x = -1, y = -1 }
 
+	local function num_or_invalid(value)
+		local res = tonumber(value)
+		if res == nil then
+			return -1
+		else
+			return res
+		end
+	end
+
 	local function preshow(self)
 		self.location_x.text = initial_loc.x
 		self.location_y.text = initial_loc.y
 	end
 
 	local function postshow(self)
-		loc.x = self.location_x.text
-		loc.y = self.location_y.text
+		loc.x = num_or_invalid(self.location_x.text)
+		loc.y = num_or_invalid(self.location_y.text)
 	end
 
 	loc = wesnoth.sync.evaluate_single(function()
