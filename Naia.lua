@@ -410,6 +410,7 @@ local NAIA_PACKAGES = {
 	'package',
 	'common',
 	'abilities',
+	'achievements',
 	'boss',
 	'conditional',
 	'hmu',
