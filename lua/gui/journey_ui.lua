@@ -117,7 +117,6 @@ local journeylog_scenarios_listdef = {
 		horizontal_grow = true,
 		T.toggle_panel {
 			definition = "fancy",
-			linked_group = "scenario_name_group",
 			T.grid {
 				T.row {
 					T.column {
@@ -135,19 +134,21 @@ local journeylog_scenarios_listdef = {
 						border = "all",
 						border_size = 10,
 						T.label {
-							id = "scenario_name"
+							id = "scenario_name",
+							linked_group = "scenario_name_group"
 						}
 					}
 					,
 					T.column {
-						horizontal_alignment = "right",
 						vertical_alignment = "top",
 						grow_factor = 0,
 						border = "all",
 						border_size = 10,
 						T.label {
 							id = "scenario_serial",
-							definition = "gold_small"
+							definition = "gold_small",
+							text_alignment = "left",
+							linked_group = "scenario_serial_group"
 						}
 					}
 				}
@@ -440,8 +441,6 @@ local journeylog_archive_listdef = {
 		horizontal_grow = true,
 		T.toggle_panel {
 			definition = "fancy",
-			-- NOTE: piggybacking on the scenario list metrics on purpose!
-			linked_group = "scenario_name_group",
 			T.grid {
 				T.row {
 					T.column {
@@ -758,6 +757,11 @@ local journeylog_dlg = {
 	},
 
 	T.linked_group {
+		id = "scenario_serial_group",
+		fixed_width = true
+	},
+
+	T.linked_group {
 		id = "portrait_img_group",
 		fixed_width = true
 	},
@@ -878,7 +882,7 @@ local journeylog_dlg = {
 								id = "campaigns_menu",
 								label = _ "<unknown campaign>",
 								tooltip = _ "Select the campaign to display",
-								linked_group = "scenario_name_group"
+								linked_group = "left_side_pane"
 							}
 						},
 						T.column {
