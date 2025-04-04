@@ -26,6 +26,8 @@ Version 20240314.9000+dev:
   * New Journey Log system.
   * New gameplay mechanics info UI.
   * New achievements notification UI.
+  * Reworked objectives UI macros for consistency and increased readability
+    across all campaigns.
 
 * Terrains:
   * Added Dark Hive Facility, Dark Hive Vent, Dark Hive Heatsink.
