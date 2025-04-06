@@ -60,6 +60,7 @@ local chara_all_attributes = array_join(chara_extend_attributes, chara_override_
 -- World lore entry attributes that should be overridden by additional_info.
 local lore_override_attributes = {
 	"title",
+	"source",
 }
 
 -- World lore entry attributes that should be extended by additional_info.

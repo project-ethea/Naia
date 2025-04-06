@@ -618,10 +618,15 @@ local journeylog_archive_treedef = {
 			},
 			T.row {
 				T.column {
-					T.spacer {
-						height = JOURNEYLOG_UI_ENTRY_TOP_MARGIN
+					grow_factor = 1,
+					border = "top,bottom",
+					border_size = 5,
+					horizontal_grow = true,
+					vertical_alignment = "top",
+					T.grid {
+						T.row(chara_info_panel_field("source", _ "record_source^From")),
 					}
-				}
+				},
 			},
 			T.row {
 				T.column {
@@ -1365,6 +1370,23 @@ function journeylog_ui()
 
 		page.archive_entry_title.marked_up_text = ("<big>%s</big>"):format(entry.title)
 		page.archive_entry_body.marked_up_text = transform_markup(entry.text) or JOURNEYLOG_UI_BIO_PLACEHOLDER
+
+		local source = entry.source
+		if source then
+			if type(source) == "string" then
+				-- If not userdata, then this might (or might not) be the id
+				-- of an existing scenario. In that case, retrieve the scenario
+				-- name and use that instead.
+				local info = journeylog.retrieve_scenario_info(source, nil, false)
+				if info ~= nil then
+					source = ("<i>%s</i> (%s)"):format(info.label, info.mnemonic)
+				end
+			end
+			page.source.marked_up_text = source
+		else
+			page.source.visible = false
+			page.source_heading.visible = false
+		end
 	end
 
 	local function show_archive_item(self, index, force)
