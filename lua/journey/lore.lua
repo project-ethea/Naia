@@ -7,6 +7,9 @@
 -- See COPYING for usage terms.
 --
 
+-- #textdomain wesnoth-Naia
+local _ = wesnoth.textdomain "wesnoth-Naia"
+
 -- CURRENT TODO:
 --
 -- * public API for character and world entries that can be used by the
@@ -34,6 +37,8 @@ local lore_cache = {
 	profiles = {},
 	world = {},
 }
+
+local fragment_placeholder = ("<i>%s</i>"):format( _ "(records not found yet)")
 
 -- Character attributes that should be overridden by additional_info.
 local chara_override_attributes = {
@@ -124,6 +129,20 @@ local function merge_lore_additional_info(dest, additional_info)
 	return merge_additional_info_p(dest, additional_info, lore_override_attributes, lore_extend_attributes)
 end
 
+local function retrieve_lore_fragment_text_priv(entry_id, fragment_id)
+	if entry_id == nil or fragment_id == nil or not world_info[entry_id] then
+		return nil
+	end
+
+	for _, fragment in ipairs(world_info[entry_id].fragments) do
+		if fragment.id == fragment_id then
+			return fragment.text
+		end
+	end
+
+	return nil
+end
+
 --
 -- Processes character profile information from WML.
 --
@@ -199,7 +218,18 @@ function journeylog.register_world_lore_entries(cfg)
 
 		jprintf(W_INFO, "registering world lore entry: %s", entry.id)
 
-		local additional_info = {}
+		local fragments, additional_info = {}, {}
+
+		for frag in wml.child_range(entry, "fragment") do
+			if frag.id == nil then
+				jprintf(W_WARN, "page fragment id missing, will never be shown")
+			end
+
+			table.insert(fragments, {
+				id = frag.id,
+				text = frag.text,
+			})
+		end
 
 		for extra in wml.child_range(entry, "additional_info") do
 			if extra.requires_milestone == nil then
@@ -214,8 +244,9 @@ function journeylog.register_world_lore_entries(cfg)
 		end
 
 		world_info[entry.id] = table_merge(clone_lore_attributes(entry), {
-			id = entry.id,
+			id              = entry.id,
 			additional_info = additional_info,
+			fragments       = fragments,
 		})
 	end
 
@@ -283,6 +314,29 @@ function journeylog.rebuild_lore(target)
 
 				cached_entry.id = id
 
+				-- Process fragments; missing fragments are replacedd with a
+				-- hardcoded (albeit translatable) placeholder.
+				if #entry.fragments then
+					local parts = {}
+					local lead = tostring(cached_entry.text or "")
+					local last_placeholder = 0
+
+					if #lead > 0 then
+						table.insert(parts, lead)
+					end
+
+					for _, frag in ipairs(entry.fragments) do
+						if frag.id ~= nil and journeylog.has_lore_fragment(id, frag.id) then
+							table.insert(parts, tostring(frag.text))
+						elseif last_placeholder == 0 or last_placeholder ~= #parts then
+							table.insert(parts, fragment_placeholder)
+							last_placeholder = #parts
+						end
+					end
+
+					cached_entry.text = stringx.join(parts, "\n\n")
+				end
+
 				-- Process additional information; everything replaces existing
 				-- information except for the description, which gets extended
 				-- with additional text instead.
@@ -344,4 +398,70 @@ end
 --
 function journeylog.retrieve_world_lore()
 	return lore_cache.world
+end
+
+--
+-- Stores a journeylog lore entry text into a WML variable.
+--
+-- NOTE: This currently does not use the progression/unlock mechanism, which
+-- means that any milestone-dependent info is never retrieved (FIXME).
+--
+-- [store_lore]
+--     # WML variable name used to store data. If an entry only has plain
+--     # text, then the text will be stored straight into a scalar with this
+--     # name. If the entry contains [fragment]s, then the lead text will be
+--     # stored into <variable>.text, and the individual fragments' own text
+--     # will be in <variable>.fragment[n].text.
+--     variable="lore"
+--
+--     # Id of the lore entry.
+--     entry="entry id"
+--
+--     # Fragment id. If specified, then the contents of one single fragment
+--     # will be stored into the <variable> scalar.
+--     fragment="fragment id"
+--
+--     # Specify whether to retrieve world lore (default) or character lore.
+--     collection="world"
+-- [/store_world_lore]
+--
+function wesnoth.wml_actions.store_world_lore(cfg)
+	local variable = cfg.variable or "lore"
+	local collection = cfg.collection or "world"
+	local fragment = cfg.fragment
+	local entry = cfg.entry or
+		wml.error("[store_world_lore] entry= required")
+
+	if collection ~= "world" and collection ~= "character" then
+		wml.error("[store_world_lore] collection= must be either 'world' or 'character'")
+	end
+
+	local text = ""
+
+	if fragment ~= nil and fragment ~= "" then
+		text = retrieve_lore_fragment_text_priv(entry, fragment)
+
+		if not text then
+			wml.error(("[store_world_lore] entry/fragment pair %s.%s not found or empty"):format(entry, fragment))
+		end
+
+		wml.variables[variable] = text
+	else
+		local entry = world_info[entry]
+
+		if not entry then
+			wml.error(("[store_world_lore] entry %s not found or empty"):format(entry))
+		end
+
+		if #entry.fragments == 0 then
+			wml.variables[variable] = entry.text
+		else
+			wml.variables[variable] = { text = entry.text }
+			for i, fragment in ipairs(entry.fragments) do
+				local path = ("%s.fragment[%d]"):format(variable, i - 1)
+				wml.variables[path .. ".id"]   = fragment.id
+				wml.variables[path .. ".text"] = fragment.text
+			end
+		end
+	end
 end

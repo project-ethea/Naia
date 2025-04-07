@@ -8,13 +8,14 @@
 --
 
 local journeylog_milestones = {}
+local journeylog_fragments = {}
 
 -- #textdomain wesnoth-Naia
 local _ = wesnoth.textdomain "wesnoth-Naia"
 
 local JOURNEYLOG_UI_HOTKEY = "j"
 
-local function milestone_ui_impl()
+local function milestone_ui_impl(banner_text)
 	local banner = ("<span color='#fd8'>★</span> %s"):format(
 		tostring( _ "New knowledge unlocked — %s to browse journal"):format(
 			"<span color='#fd8' face='monospace' weight='bold'>" ..
@@ -49,6 +50,18 @@ function journeylog.has_milestone(milestone_ids)
 	return true
 end
 
+function journeylog.has_lore_fragment(entry_id, fragment_id)
+	if entry_id == nil or entry_id == "" or fragment_id == nil or fragment_id == "" then
+		return false
+	end
+
+	if not journeylog_fragments[entry_id] then
+		return false
+	end
+
+	return not not journeylog_fragments[entry_id][fragment_id]
+end
+
 function journeylog.unlock_milestone(milestone_ids, show_notification)
 	for _, id in ipairs(stringx.split(milestone_ids)) do
 		journeylog_milestones[id] = true
@@ -57,8 +70,33 @@ function journeylog.unlock_milestone(milestone_ids, show_notification)
 	journeylog.rebuild_lore()
 
 	if show_notification then
-		milestone_ui_impl()
+		milestone_ui_impl( _ "New knowledge unlocked — %s to browse journal")
 	end
+end
+
+function journeylog.record_lore_fragment(entry_id, fragment_ids, show_notification)
+	if not journeylog_fragments[entry_id] then
+		journeylog_fragments[entry_id] = {}
+	end
+
+	for _, fragment_id in ipairs(stringx.split(fragment_ids)) do
+		journeylog_fragments[entry_id][fragment_id] = true
+		jprintf(W_INFO, "fragment id unlocked: %s.%s; will rebuild lore", entry_id, fragment_id)
+	end
+
+	journeylog.rebuild_lore()
+
+	if show_notification then
+		milestone_ui_impl( _ "Findings recorded — %s to browse journal")
+	end
+end
+
+function wesnoth.wml_actions.record_lore_fragment(cfg)
+	local notification = cfg.notification
+	if notification == nil then
+		notification = true
+	end
+	journeylog.record_lore_fragment(cfg.entry, cfg.fragment, notification)
 end
 
 --[[
