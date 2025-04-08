@@ -311,12 +311,13 @@ function journeylog.rebuild_lore(target)
 
 			if journeylog.has_milestone(entry.requires_milestone) then
 				local cached_entry = clone_lore_attributes(entry, false)
+				local should_include = true
 
 				cached_entry.id = id
 
 				-- Process fragments; missing fragments are replacedd with a
 				-- hardcoded (albeit translatable) placeholder.
-				if #entry.fragments then
+				if #entry.fragments > 0 then
 					local parts = {}
 					local lead = tostring(cached_entry.text or "")
 					local last_placeholder = 0
@@ -325,9 +326,12 @@ function journeylog.rebuild_lore(target)
 						table.insert(parts, lead)
 					end
 
+					should_include = false
+
 					for _, frag in ipairs(entry.fragments) do
 						if frag.id ~= nil and journeylog.has_lore_fragment(id, frag.id) then
 							table.insert(parts, tostring(frag.text))
+							should_include = true
 						elseif last_placeholder == 0 or last_placeholder ~= #parts then
 							table.insert(parts, fragment_placeholder)
 							last_placeholder = #parts
@@ -348,7 +352,9 @@ function journeylog.rebuild_lore(target)
 					end
 				end
 
-				table.insert(world_cache, cached_entry)
+				if should_include then
+					table.insert(world_cache, cached_entry)
+				end
 			end
 		end
 	end
