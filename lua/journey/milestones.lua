@@ -13,6 +13,7 @@ local journeylog_fragments = {}
 -- #textdomain wesnoth-Naia
 local _ = wesnoth.textdomain "wesnoth-Naia"
 
+local JOURNEYLOG_WML_STORE = "__naia_journeylog_progression"
 local JOURNEYLOG_UI_HOTKEY = "j"
 
 local function milestone_ui_impl(banner_text)
@@ -35,6 +36,77 @@ local function milestone_ui_impl(banner_text)
 		fade_time = 1500
 	})
 end
+
+local function wmlpath(path)
+	return ("%s.%s"):format(JOURNEYLOG_WML_STORE, path)
+end
+
+local function deserialize_journeylog_prog_state()
+	wprintf(W_INFO, "reading journeylog state from WML")
+
+	journeylog_milestones = {}
+	journeylog_fragments = {}
+
+	local milestones_wml = wml.variables[wmlpath("milestones")]
+
+	for _, milestone in ipairs(stringx.split(milestones_wml or "")) do
+		journeylog_milestones[milestone] = true
+	end
+
+	local lore_cfg = wml.variables[wmlpath("lore_fragments")]
+
+	for entry_id, fragments_wml in pairs(lore_cfg or {}) do
+		journeylog_fragments[entry_id] = {}
+		for _, fragment in ipairs(stringx.split(fragments_wml or "")) do
+			journeylog_fragments[entry_id][fragment] = true
+		end
+	end
+end
+
+local function serialize_journeylog_prog_state()
+	wprintf(W_INFO, "saving journeylog state to WML")
+
+	local milestones = {}
+
+	for milestone, state in pairs(journeylog_milestones) do
+		if state then
+			table.insert(milestones, milestone)
+		end
+	end
+	wml.variables[wmlpath("milestones")] = stringx.join(milestones)
+
+	for entry_id, fragment_set in pairs(journeylog_fragments) do
+		local lore_fragments = {}
+		for fragment_id, state in pairs(fragment_set) do
+			if state then
+				table.insert(lore_fragments, fragment_id)
+			end
+		end
+		wml.variables[wmlpath(("lore_fragments.%s"):format(entry_id))] = stringx.join(lore_fragments)
+	end
+end
+
+--[[
+local function wml_add_milestone_fast(milestone_id)
+	local newval = wml.variables[wmlpath("milestones")]
+	if newval ~= nil and newval ~= "" then
+		newval = newval .. "," .. milestone_id
+	else
+		newval = milestone_id
+	end
+	wml.variables[wmlpath("milestones")] = newval
+end
+
+local function wml_add_fragment_fast(entry_id, fragment_id)
+	local newval = wml.variables[wmlpath(("lore_fragments.%s"):format(entry_id))]
+	if newval ~= nil and newval ~= "" then
+		newval = newval .. "," .. fragment_id
+	else
+		newval = fragment_id
+	end
+	wml.variables[wmlpath(("lore_fragments.%s"):format(entry_id))] = newval
+end
+]]--
 
 function journeylog.has_milestone(milestone_ids)
 	if milestone_ids == nil or milestone_ids == "" then
@@ -68,6 +140,7 @@ function journeylog.unlock_milestone(milestone_ids, show_notification)
 	end
 	jprintf(W_INFO, "milestone unlocked: %s; will rebuild lore", milestone_ids)
 	journeylog.rebuild_lore()
+	serialize_journeylog_prog_state()
 
 	if show_notification then
 		milestone_ui_impl( _ "New knowledge unlocked — %s to browse journal")
@@ -85,6 +158,7 @@ function journeylog.record_lore_fragment(entry_id, fragment_ids, show_notificati
 	end
 
 	journeylog.rebuild_lore()
+	serialize_journeylog_prog_state()
 
 	if show_notification then
 		milestone_ui_impl( _ "Findings recorded — %s to browse journal")
@@ -104,3 +178,6 @@ function naia_milestones_ui_test()
 	milestone_ui_impl()
 end
 ]]--
+
+-- Read state from saved games on Lua init
+deserialize_journeylog_prog_state()
