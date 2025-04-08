@@ -1387,6 +1387,12 @@ function journeylog_ui()
 			page.source.visible = false
 			page.source_heading.visible = false
 		end
+
+		-- HACK: work around layout bug in Wesnoth 1.18 that causes the entry
+		-- display to often have unexpectedly short widgets when repopulated
+		-- at first, resulting in most text being vertically cut off.
+		self.archive_entry.visible = "hidden"
+		self.archive_entry.visible = true
 	end
 
 	local function show_archive_item(self, index, force)
