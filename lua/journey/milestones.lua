@@ -165,6 +165,14 @@ function journeylog.record_lore_fragment(entry_id, fragment_ids, show_notificati
 	end
 end
 
+function wesnoth.wml_actions.unlock_milestone(cfg)
+	local notification = cfg.notification
+	if notification == nil then
+		notification = true
+	end
+	journeylog.unlock_milestone(cfg.milestone, notification)
+end
+
 function wesnoth.wml_actions.record_lore_fragment(cfg)
 	local notification = cfg.notification
 	if notification == nil then
