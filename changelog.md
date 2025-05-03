@@ -8,6 +8,9 @@ Version 20240314.9000+dev:
     later.
   * Removed all compatibility code for Wesnoth 1.15.13 and earlier.
 
+* Lua and WML library:
+  * Add `[variable_is_multiple]` WML conditional tag.
+
 * Terrains:
   * Removed obsolete Earthy Rockbound Cave terrain.
   * Incorporated Event Flag overlays from AtS.

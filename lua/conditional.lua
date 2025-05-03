@@ -47,6 +47,12 @@ function wesnoth.wml_conditionals.variable_is_even(cfg)
 	return tonumber(wml.variables[var_id]) % 2 == 0
 end
 
+function wesnoth.wml_conditionals.variable_is_multiple(cfg)
+	local var_id = cfg.name or wml.error("[variable_is_multiple] Missing required name= attribute")
+	local value = cfg.value or wml.error("[variable_is_multiple] Missing required value= attribute")
+	return tonumber(wml.variables[var_id]) % value == 0
+end
+
 --
 -- Returns whether the first unit matched by a SUF is presently on a location
 -- it would be able to move into under normal circumstances. If no unit can be
