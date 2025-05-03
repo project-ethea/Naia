@@ -14,6 +14,7 @@ Version 20240314.9000+dev:
 * Terrains:
   * Removed obsolete Earthy Rockbound Cave terrain.
   * Incorporated Event Flag overlays from AtS.
+  * Updated Wasteland terrain graphics.
 
 * User interface:
   * Updated `[bug]` UI.
