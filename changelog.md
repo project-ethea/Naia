@@ -45,6 +45,14 @@ Version 20240314.9000+dev:
     available advancement.
   * Removed obsolete Fire Wraith backport.
   * Removed obsolete Giant Ant unit.
+  * Faeries' movement cost and defense on deep water and unwalkable terrains
+    now match the Wesnoth 1.18 stats for Elvish Shyde and Sylph.
+  * Elynia's movement cost on deep water water and unwalkable terrains is now
+    slightly worse than new cost for faeries, while her defense is the same as
+    theirs. This is meant to reflect the fact that she's not good at floating
+    too far off the ground without compromising the new strategical
+    expectations of her broader unit class in Wesnoth 1.18. Thanks once again,
+    Wesnoth devs /s.
   * New stealth ability.
   * New tactician ability.
   * Removed ambush ability from Elvish Prowler.
