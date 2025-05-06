@@ -158,6 +158,12 @@ local UNIT_DEBUG_MENU = {
 				debug_message(("Unit '%s' teleported to %d, %d"):format(unit.id, location.x, location.y))
 			end
 		end
+	},
+	{
+		label = _ "debug^Rebuild (Dangerous)",
+		_action = function(x, y, unit)
+			unit:transform(unit.type)
+		end
 	}
 }
 
