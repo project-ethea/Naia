@@ -124,6 +124,19 @@ function unsynced_random(a, b)
 	return math.random(a, b)
 end
 
+--
+-- Provides a string representation of a map location object.
+--
+function loc2str(loc)
+	if loc.x ~= nil and loc.y ~= nil then
+		return string.format("(%d,%d)", loc.x, loc.y)
+	end
+	if loc[1] ~= nil and loc[2] ~= nil then
+		return string.format("(%d,%d)", loc[1], loc[2])
+	end
+	return "<invalid>"
+end
+
 ---
 -- Converts a string to a table of bytes.
 --
