@@ -66,6 +66,8 @@ Version 20240314.9000+dev:
     * Uses a custom AMLA system instead of regular unit line progression.
     * Intended to be used by IftU and AtS.
   * New unit type: Tenebrous Everbane.
+  * Fixed sylvan spark and similar abilities not taking mushroom terrains into
+    account properly.
 
 
 Version 20211005:
