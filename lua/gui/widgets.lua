@@ -879,6 +879,35 @@ G_widget("vertical_scrollbar", "naia_journeylog_viewer_vscroll", {
 	}
 })
 
+local JOURNEYLOG_VIEWER_GRID = T.grid {
+	T.row {
+		grow_factor = 1,
+		T.column {
+			grow_factor = 1,
+			horizontal_grow = true,
+			vertical_grow = true,
+			T.grid {
+				id = "_content_grid"
+			}
+		},
+		T.column {
+			grow_factor = 0,
+			vertical_grow = true,
+			G_vscrollbar("naia_journeylog_viewer_vscroll", "left", 3)
+		}
+	},
+	T.row {
+		grow_factor = 0,
+		T.column {
+			horizontal_grow = true,
+			G_hscrollbar("naia_journeylog_viewer_hscroll", "top", 3)
+		},
+		T.column {
+			T.spacer {}
+		}
+	}
+}
+
 G_widget("tree_view", "naia_journeylog_viewer", {
 	min_width         = 0,
 	min_height        = 0,
@@ -893,34 +922,14 @@ G_widget("tree_view", "naia_journeylog_viewer", {
 	T.state_enabled { T.draw {} },
 	T.state_disabled { T.draw {} },
 
-	T.grid {
-		T.row {
-			grow_factor = 1,
-			T.column {
-				grow_factor = 1,
-				horizontal_grow = true,
-				vertical_grow = true,
-				T.grid {
-					id = "_content_grid"
-				}
-			},
-			T.column {
-				grow_factor = 0,
-				vertical_grow = true,
-				G_vscrollbar("naia_journeylog_viewer_vscroll", "left", 3)
-			}
-		},
-		T.row {
-			grow_factor = 0,
-			T.column {
-				horizontal_grow = true,
-				G_hscrollbar("naia_journeylog_viewer_hscroll", "top", 3)
-			},
-			T.column {
-				T.spacer {}
-			}
-		}
-	}
+	JOURNEYLOG_VIEWER_GRID,
+})
+
+G_widget("scrollbar_panel", "naia_journeylog_scrollbar_panel", {
+	T.background { T.draw {} },
+	T.foreground { T.draw {} },
+
+	JOURNEYLOG_VIEWER_GRID,
 })
 
 local function journeylog_dialog_line_canvas(font_size, text_color)

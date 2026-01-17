@@ -447,6 +447,7 @@ local NAIA_PACKAGES = {
 	'gui/gameplay_notification',
 	'gui/horizontal_choice',
 	'gui/journey_ui',
+	'gui/journey_ui_extra',
 	'gui/item_prompt',
 	'gui/transient_message',
 	'gui/widgets',

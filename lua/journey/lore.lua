@@ -406,6 +406,47 @@ function journeylog.retrieve_world_lore()
 	return lore_cache.world
 end
 
+local function retrieve_lore_for_wml_internal(collection, fragment, entry)
+	if collection ~= "world" and collection ~= "character" then
+		return nil
+	end
+
+	local data = {
+		text          = "",
+		title         = "",
+		fragments     = {},
+	}
+
+	if fragment ~= nil and fragment ~= "" then
+		data.text = retrieve_lore_fragment_text_priv(entry, fragment)
+
+		if not data.text then
+			wml.error(("[xxxxx_world_lore] entry/fragment pair %s.%s not found or empty"):format(entry, fragment))
+		end
+	else
+		local entry = world_info[entry]
+
+		if not entry then
+			wml.error(("[xxxxx_world_lore] entry %s not found or empty"):format(entry))
+		end
+
+		data.text = entry.text
+
+		if #entry.fragments > 0 then
+			for _, fragment in ipairs(entry.fragments) do
+				table.insert(data.fragments, {
+					id   = fragment.id,
+					text = fragment.text,
+				})
+			end
+		end
+	end
+
+	data.title = world_info[entry].title
+
+	return data
+end
+
 --
 -- Stores a journeylog lore entry text into a WML variable.
 --
@@ -442,32 +483,64 @@ function wesnoth.wml_actions.store_world_lore(cfg)
 		wml.error("[store_world_lore] collection= must be either 'world' or 'character'")
 	end
 
-	local text = ""
+	local data = retrieve_lore_for_wml_internal(collection, fragment, entry)
 
-	if fragment ~= nil and fragment ~= "" then
-		text = retrieve_lore_fragment_text_priv(entry, fragment)
-
-		if not text then
-			wml.error(("[store_world_lore] entry/fragment pair %s.%s not found or empty"):format(entry, fragment))
-		end
-
-		wml.variables[variable] = text
+	if #data.fragments == 0 then
+		-- Scalar (FIXME we may want to change this in order to be able to
+		-- retrieve titles)
+		wml.variables[variable] = data.text
 	else
-		local entry = world_info[entry]
-
-		if not entry then
-			wml.error(("[store_world_lore] entry %s not found or empty"):format(entry))
-		end
-
-		if #entry.fragments == 0 then
-			wml.variables[variable] = entry.text
-		else
-			wml.variables[variable] = { text = entry.text }
-			for i, fragment in ipairs(entry.fragments) do
-				local path = ("%s.fragment[%d]"):format(variable, i - 1)
-				wml.variables[path .. ".id"]   = fragment.id
-				wml.variables[path .. ".text"] = fragment.text
-			end
+		-- Full table with fragments
+		wml.variables[variable] = { text = data.text }
+		for i, fragment in ipairs(data.fragments) do
+			local path = ("%s.fragment[%d]"):format(variable, i - 1)
+			wml.variables[path .. ".id"]   = fragment.id
+			wml.variables[path .. ".text"] = fragment.text
 		end
 	end
+end
+
+--
+-- Displays a single lore entry.
+--
+-- NOTE: This currently does not use the progression/unlock mechanism, which
+-- means that any milestone-dependent info is never retrieved (FIXME).
+--
+-- Usage:
+--
+-- [show_world_lore]
+--     entry="entry id"
+--
+--     # Fragment id. If specified, then the contents of one single fragment
+--     # will be shown.
+--     fragment="fragment id"
+--
+--     # Specify whether to retrieve world lore (default) or character lore.
+--     collection="world"
+-- [/show_world_lore]
+--
+function wesnoth.wml_actions.show_world_lore(cfg)
+	-- FIXME: This entire function depends on UI functionality even though
+	-- this isn't a UI module. Oops.
+	local collection = cfg.collection or "world"
+	local fragment = cfg.fragment
+	local entry = cfg.entry or
+		wml.error("[store_world_lore] entry= required")
+	local image = cfg.image
+
+	if collection ~= "world" and collection ~= "character" then
+		wml.error("[store_world_lore] collection= must be either 'world' or 'character'")
+	end
+
+	local data = retrieve_lore_for_wml_internal(collection, fragment, entry)
+	local text = data.text
+
+	-- Join fragments
+	if #data.fragments > 0 then
+		for _, fragment in ipairs(data.fragments) do
+			text = text .. "\n\n" .. fragment.text
+		end
+	end
+
+	_journeylog_mini_ui(data.title, text, image)
 end
