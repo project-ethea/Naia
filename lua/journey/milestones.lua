@@ -166,6 +166,7 @@ function journeylog.record_lore_fragment(entry_id, fragment_ids, show_notificati
 end
 
 function wesnoth.wml_actions.unlock_milestone(cfg)
+	local milestone = cfg.milestone or wml.error("[unlock_milestone] No milestone= specified")
 	local notification = cfg.notification
 	if notification == nil then
 		notification = true
