@@ -37,6 +37,17 @@ local debug_ui = {
 
 local UNIT_DEBUG_MENU = {
 	{
+		label = _ "debug^Toggle Invulnerability (0% CTH)",
+		_action = function(x, y, unit)
+			if not unit.status.invulnerable then
+				unit.status.invulnerable = true
+			else
+				unit.status.invulnerable = nil
+			end
+			debug_message(("Unit '%s' toggled invulnerability"):format(unit.id))
+		end
+	},
+	{
 		label = _ "debug^Restore HP",
 		_action = function(x, y, unit)
 			unit.hitpoints = unit.max_hitpoints
