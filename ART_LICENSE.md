@@ -61,6 +61,17 @@ This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 Inte
  * images/terrain/tile-icons/great-tree-snowy.png
 
 
+Sceptre of Fire Art (CC BY-SA 4.0)
+----------------------------------
+
+Copyright (C) 2019 - 2026 by doofus-01
+
+This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License. To view a copy of this license, visit <https://creativecommons.org/licenses/by-sa/4.0/> or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+
+ * images/scenery/mine-cart-n.png
+ * images/scenery/mine-cart-ne.png
+
+
 WTactics/Arcmage Art (CC BY-SA 4.0)
 -----------------------------------
 
