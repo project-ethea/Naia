@@ -10,6 +10,8 @@ Version 20240314.9000+dev:
 
 * Lua and WML library:
   * Add `[variable_is_multiple]` WML conditional tag.
+  * `[setup_doors]` now always excludes terrain overlays used for open doors
+    (ending in `o`) .
 
 * Terrains:
   * Removed obsolete Earthy Rockbound Cave terrain.

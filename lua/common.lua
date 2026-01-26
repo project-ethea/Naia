@@ -223,12 +223,15 @@ function wesnoth.wml_actions.setup_doors(cfg)
 	local locs = wesnoth.map.find(cfg)
 
 	for k, loc in ipairs(locs) do
-		if not wesnoth.units.get(loc.x, loc.y) then
+		-- Is this an open door?
+		local is_closed = not loc.overlay_terrain:match("o$")
+		local is_vacant = not wesnoth.units.get(loc.x, loc.y)
+		if is_closed and is_vacant then
 			wesnoth.units.to_map({
 				type = "Door",
 				side = owner_side,
 				id = ("__door_X%dY%d"):format(loc.x, loc.y),
-			}, loc[1], loc[2])
+			}, loc.x, loc.y)
 		end
 	end
 end
