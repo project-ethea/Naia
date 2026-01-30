@@ -35,8 +35,9 @@ WML_PREPROCESS   := $(WESNOTH) -p
 
 dist_version ?= $(shell cat $(DIST_VERSION_FILE))
 
-targetdir := $(realpath .)
-pbltrans := $(wildcard $(targetdir)/translations/*.pbltrans)
+targetdir   := $(realpath .)
+ppoutputdir := $(realpath .)/.preprocessor.out
+pbltrans    := $(wildcard $(targetdir)/translations/*.pbltrans)
 
 all: defscope lint
 
@@ -69,9 +70,9 @@ test:
 	@echo "  Config sets:  $(PACKS)"
 
 	@for p in $(PACKS) __WMLUNITS__; do for d in $(DIFFICULTIES); do \
-		echo "    TEST    $$p -> $$d"; \
-		$(WML_PREPROCESS) "$(targetdir)" .preprocessor.out --preprocess-defines __TEST_SUITE__,$(EXTRASYMS),$(CAMPAIGNSYM),$$d,$$p 2>&1 | tail -n +5 ; \
-		test "$(AUTO_DELTEMP)" -ne 0 && rm -rf .preprocessor.out; true; \
+		echo "    TEST    $$p [$$d]"; \
+		$(WML_PREPROCESS) "$(targetdir)" "$(ppoutputdir)" --preprocess-defines __TEST_SUITE__,$(EXTRASYMS),$(CAMPAIGNSYM),$$d,$$p 2>&1 | tail -n +5 ; \
+		test "$(AUTO_DELTEMP)" -ne 0 && rm -rf "$(ppoutputdir)"; true; \
 	done; done
 
 stats:
@@ -82,10 +83,10 @@ stats:
 	@echo "  Configs sets: $(PACKS)"
 
 	@for p in $(PACKS) __WMLUNITS__; do for d in $(DIFFICULTIES); do \
-		echo "    WML     $$p -> $$d"; \
-		$(WML_PREPROCESS) "$(targetdir)"" .preprocessor.out --preprocess-defines __TEST_SUITE__,$(EXTRASYMS),$(CAMPAIGNSYM),$$d,$$p 2>&1 2> /dev/null; \
-		wc -lcm .preprocessor.out/_main.cfg | awk '{printf "            %u lines, %u characters (%1.0f KiB)\n", $$1, $$2, $$3 / 1024}'; \
-		test "$(AUTO_DELTEMP)" -ne 0 && rm -rf .preprocessor.out; true; \
+		echo "    WML     $$p [$$d]"; \
+		$(WML_PREPROCESS) "$(targetdir)" "$(ppoutputdir)" --preprocess-defines __TEST_SUITE__,$(EXTRASYMS),$(CAMPAIGNSYM),$$d,$$p 2>&1 2> /dev/null; \
+		wc -lc .preprocessor.out/_main.cfg | awk '{printf "            %u lines (%1.0f KiB)\n", $$1, $$2 / 1024}'; \
+		test "$(AUTO_DELTEMP)" -ne 0 && rm -rf $(ppoutputdir); true; \
 	done; done
 
 #
@@ -140,5 +141,5 @@ clean-wmltools:
 	    -name '*.map.cfg' -o \
 	    -name '*.pbl' \
 	\) -type f -print0 | xargs -0 rm -f
-	rm -rf .preprocessor.out .wmlunits.rt .wmlunits.out
+	rm -rf "$(ppoutputdir)" .wmlunits.rt .wmlunits.out
 	test -L Naia && rm -f Naia
