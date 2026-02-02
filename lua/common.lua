@@ -380,6 +380,9 @@ function wesnoth.wml_actions.animate_attack(cfg)
 	local animate = cfg.animate
 	local fire_event = cfg.fire_event
 	local amount = tonumber(cfg.amount)
+	if cfg.amount == "miss" then
+		amount = -1
+	end
 	local kill = cfg.kill
 	-- NOTE: excluded from this implementation
 	-- local experience = cfg.experience
@@ -416,15 +419,21 @@ function wesnoth.wml_actions.animate_attack(cfg)
 
 	-- Calculate damage first to determine if the defender dies or not
 
-	local damage = calculate_damage(
-		amount, (cfg.alignment or "neutral"),
-		wesnoth.schedule.get_illumination({ defender.x, defender.y }).lawful_bonus,
-		100 - defender:resistance_against(cfg.damage_type or "dummy")
-	)
+	local damage = 0
+
+	if amount > 0 then
+		damage = calculate_damage(
+			amount, (cfg.alignment or "neutral"),
+			wesnoth.schedule.get_illumination({ defender.x, defender.y }).lawful_bonus,
+			100 - defender:resistance_against(cfg.damage_type or "dummy")
+		)
+	end
 
 	local hit_animation_type = true
 
-	if defender.hitpoints <= damage then
+	if amount < 0 then
+		hit_animation_type = "miss"
+	elseif defender.hitpoints <= damage then
 		if kill == false then
 			damage = defender.hitpoints - 1
 		else
