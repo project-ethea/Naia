@@ -988,8 +988,8 @@ local journeylog_dlg = {
 										border = "all",
 										border_size = 5,
 										T.toggle_button {
-											id = "show_portraits",
-											label = _ "Portraits",
+											id = "compact_view",
+											label = _ "Compact view",
 										}
 									},
 									T.column {
@@ -1095,9 +1095,19 @@ local function is_empty_image(path)
 	end
 end
 
-local global_show_portraits = true
+local global_compact_view = false
 
 function journeylog_ui()
+	-- Retrieve compact mode flag from persistent store
+	wesnoth.wml_actions.global_table {
+		T.read {
+			key = "_journeylog_ui_compact"
+		}
+	}
+	global_compact_view = wml.variables._journeylog_ui_compact or global_compact_view
+	-- Delete internal WML variable
+	wml.variables._journeylog_ui_compact = nil
+
 	local journal = {}
 	local archive = {
 		profiles = journeylog.retrieve_character_profiles(),
@@ -1283,7 +1293,7 @@ function journeylog_ui()
 			else
 				local msg_display
 
-				if global_show_portraits and not msg.is_narrator then
+				if not global_compact_view and not msg.is_narrator then
 					if msg.choice == nil then
 						msg_display = journey_view_add_node(treeview, "plain_message", msg)
 					else
@@ -1299,7 +1309,7 @@ function journeylog_ui()
 					end
 				end
 
-				if global_show_portraits and not msg.is_narrator then
+				if not global_compact_view and not msg.is_narrator then
 					if not is_empty_image(msg.image) then
 						msg_display.image.label = msg.image
 						msg_display.image.on_button_click = portrait_image_viewer(msg.image, msg.speaker)
@@ -1329,8 +1339,8 @@ function journeylog_ui()
 		end
 	end
 
-	local function set_journey_portraits_shown(self, value)
-		global_show_portraits = value
+	local function set_journey_compact_view(self, value)
+		global_compact_view = value
 		show_journey(self, current_campaign, current_scenario, true)
 	end
 
@@ -1586,11 +1596,11 @@ function journeylog_ui()
 
 		if tab_num == 1 then
 			self.scenario_list:focus()
-			self.show_portraits.visible = true
+			self.compact_view.visible = true
 			self.search_box.visible = true
 		elseif tab_num == 2 then
 			self.archive_nav_tree:focus()
-			self.show_portraits.visible = false
+			self.compact_view.visible = false
 			self.search_box.visible = false
 		end
 	end
@@ -1672,7 +1682,7 @@ function journeylog_ui()
 			end
 		end
 
-		self.show_portraits.selected = global_show_portraits
+		self.compact_view.selected = global_compact_view
 
 		self.scenario_list.selected_index = current_scenario
 		update_scenario_icon(self)
@@ -1686,8 +1696,8 @@ function journeylog_ui()
 			set_journey_filter(self, self.search_box.text)
 		end
 
-		self.show_portraits.on_modified = function()
-			set_journey_portraits_shown(self, self.show_portraits.selected)
+		self.compact_view.on_modified = function()
+			set_journey_compact_view(self, self.compact_view.selected)
 		end
 
 		self.archive_nav_tree.on_modified = function()
@@ -1712,6 +1722,16 @@ function journeylog_ui()
 	end
 
 	gui.show_dialog(journeylog_dlg, preshow)
+
+	-- Save compact mode flag to persistent store
+	wml.variables._journeylog_ui_compact = global_compact_view
+	wesnoth.wml_actions.global_table {
+		T.write {
+			key = "_journeylog_ui_compact"
+		}
+	}
+	-- Delete internal WML variable
+	wml.variables._journeylog_ui_compact = nil
 end
 
 --
