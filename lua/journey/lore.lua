@@ -29,6 +29,13 @@ local chara_profiles = {}
 -- for UI display purposes.
 local chara_index = {}
 
+-- Raw collection of story recap text.
+local recap_data = {}
+
+-- Index of recap entry ids in order to preserve the original definition order
+-- for UI display purposes.
+local recap_index = {}
+
 -- Public UI-ready cache containing the built profiles and encyclopedia entries
 -- in order to avoid unnecessary data grinding whenever the lore UI is
 -- displayed. This version has been built after processing entry unlock
@@ -36,6 +43,7 @@ local chara_index = {}
 local lore_cache = {
 	profiles = {},
 	world = {},
+	recaps = {},
 }
 
 local fragment_placeholder = ("<i>%s</i>"):format( _ "(records not found yet)")
@@ -257,6 +265,57 @@ function journeylog.register_world_lore_entries(cfg)
 end
 
 --
+-- Processes story recap entries from WML.
+--
+-- The specified WML argument must contain an array of [story_recap] tags to
+-- process.
+--
+function journeylog.register_recap_entries(cfg)
+	jprintf(W_INFO, "registering story recap entries")
+	windent()
+
+	if not cfg then
+		wml.error("journeylog.register_recap_entries(): WML must not be nil")
+	end
+
+	for entry in wml.child_range(cfg, "story_recap") do
+		if entry.id == nil then
+			wml.error("journeylog.register_recap_entries(): Missing [story_recap] id")
+		end
+
+		if recap_data[entry.id] ~= nil then
+			jprintf(W_WARN, "overwriting recap: %s")
+		end
+
+		jprintf(W_INFO, "registering recap: %s", entry.id)
+
+		local sections = {}
+
+		for sec in wml.child_range(entry, "section") do
+			table.insert(sections, {
+				title = sec.title,
+				text = sec.text,
+			})
+		end
+
+		if recap_data[entry.id] == nil then
+			table.insert(recap_index, entry.id)
+		end
+
+		recap_data[entry.id] = {
+			title = entry.title,
+			text = entry.text,
+			sections = sections,
+		}
+	end
+
+	wunindent()
+	jprintf(W_INFO, "finished registering story recap entries")
+
+	journeylog.rebuild_lore("recap")
+end
+
+--
 -- Refreshes the internal lore library cache.
 --
 function journeylog.rebuild_lore(target)
@@ -265,6 +324,7 @@ function journeylog.rebuild_lore(target)
 
 	local profile_cache = {}
 	local world_cache = {}
+	local recap_cache = {}
 
 	if not target or target == "chara" then
 		for _, id in ipairs(chara_index) do
@@ -359,6 +419,37 @@ function journeylog.rebuild_lore(target)
 		end
 	end
 
+	if not target or target == "recap" then
+		-- NOTE: currently, story recaps do not support any state, so we just
+		-- cram them all into the cache unmodified
+		for _, id in ipairs(recap_index) do
+			local entry = recap_data[id]
+
+			if entry == nil then
+				wml.error("journeylog.rebuild_lore(): recap index corrupted")
+				return
+			end
+
+			jprintf(W_INFO, "rebuilding recap entry %s", id)
+
+			local sections = {}
+
+			for i, section in ipairs(entry.sections) do
+				table.insert(sections, {
+					title = section.title,
+					text = section.text,
+				})
+			end
+
+			table.insert(recap_cache, {
+				id = id,
+				title = entry.title,
+				text = entry.text,
+				sections = sections,
+			})
+		end
+	end
+
 	wunindent()
 	jprintf(W_INFO, "lore rebuild finished")
 
@@ -370,6 +461,10 @@ function journeylog.rebuild_lore(target)
 
 	if not target or target == "world" then
 		lore_cache.world = world_cache
+	end
+
+	if not target or target == "recap" then
+		lore_cache.recaps = recap_cache
 	end
 end
 
@@ -404,6 +499,28 @@ end
 --
 function journeylog.retrieve_world_lore()
 	return lore_cache.world
+end
+
+--
+-- Retrieves story recap entries for UI display.
+--
+-- Recap entries are structured thus:
+--
+--   id                      The entry's internal id.
+--   title                   Title for the entry.
+--   text                    Text (or prologue if there are separate sections)
+--                           for the entry.
+--   sections                Sub-sections grouped under the same entry, in
+--                           their intended display order.
+--
+-- Subsections of a recap are represented as tables containing the following
+-- attributes:
+--
+--   title                   Section title.
+--   text                    Section body.
+--
+function journeylog.retrieve_story_recaps()
+	return lore_cache.recaps
 end
 
 local function retrieve_lore_for_wml_internal(collection, fragment, entry)
