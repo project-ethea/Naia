@@ -343,7 +343,7 @@ function wesnoth.wml_actions.harm_multiple_units(cfg)
 		do_error("Missing required amount= attribute")
 	end
 
-	local this_unit = utils.start_var_scope("this_unit")
+	local this_unit <close> = utils.scoped_var("this_unit")
 
 	local targets = wesnoth.units.find_on_map(filter)
 	if not targets then
@@ -403,9 +403,6 @@ function wesnoth.wml_actions.harm_multiple_units(cfg)
 	end
 
 	wesnoth.wml_actions.redraw {}
-
-	wml.variables.this_unit = nil
-	utils.end_var_scope("this_unit", this_unit)
 
 	wunindent()
 	do_wprintf(W_DBG, "LEAVE: core block")

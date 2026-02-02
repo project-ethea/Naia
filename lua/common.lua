@@ -372,7 +372,7 @@ function wesnoth.wml_actions.animate_attack(cfg)
 	local _ = wesnoth.textdomain "wesnoth"
 	-- #textdomain wesnoth
 
-	local this_unit = utils.start_var_scope("this_unit")
+	local this_unit <close> = utils.scoped_var("this_unit")
 
 	wml.variables.this_unit = nil -- clearing this_unit
 	wml.variables.this_unit = defender.__cfg -- cfg field needed
@@ -502,9 +502,6 @@ function wesnoth.wml_actions.animate_attack(cfg)
 	end
 
 	wesnoth.wml_actions.redraw {}
-
-	wml.variables.this_unit = nil -- clearing this_unit
-	utils.end_var_scope("this_unit", this_unit)
 end
 
 ---
