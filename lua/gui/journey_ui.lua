@@ -54,9 +54,6 @@ local BIO_STATUS_LABELS = {
 	missing     = _ "chara_status^Missing",
 }
 
-local ARCHIVE_MODE_CHARACTERS = 1
-local ARCHIVE_MODE_WORLD      = 2
-
 local journeylog_section_listdef = {
 	T.row {
 		T.column {
@@ -458,6 +455,71 @@ local journeylog_archive_listdef = {
 	}}
 }
 
+local journeylog_nav_treedef = {
+	id = "archive_nav_tree",
+	linked_group = "left_side_pane",
+	horizontal_scrollbar_mode = "never",
+	vertical_scrollbar_mode = "auto",
+	indentation_step_size = 0,
+
+	T.node {
+		id = "header",
+		unfolded = true,
+		T.node_definition {
+			T.row {
+				T.column {
+					horizontal_grow = true,
+					grow_factor = 1,
+					border = "top,left,right",
+					border_size = 10,
+					T.label {
+						id = "tree_view_node_label",
+						definition = "gold",
+						text_alignment = "center"
+					}
+				},
+			},
+			T.row {
+				T.column {
+					T.spacer {
+						height = 5
+					}
+				}
+			}
+		}
+	},
+
+	T.node {
+		id = "entry",
+		unfolded = true,
+		T.node_definition {
+			T.row {
+				T.column {
+					horizontal_grow = true,
+					grow_factor = 1,
+					T.toggle_panel {
+						id = "tree_view_node_label",
+						definition = "fancy",
+						T.grid {
+							T.row {
+								T.column {
+									horizontal_grow = true,
+									grow_factor = 1,
+									border = "all",
+									border_size = 10,
+									T.label {
+										id = "archive_item_label"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 local function chara_info_panel_field(id, label)
 	if id == nil or label == nil then
 		return {
@@ -691,31 +753,13 @@ local journeylog_archive_grid = {
 			vertical_alignment = "top",
 			T.grid {
 				T.row {
-					T.column {
-						vertical_alignment = "top",
-						border = "all",
-						border_size = 5,
-						T.menu_button {
-							id = "archive_mode",
-							linked_group = "left_side_pane",
-							tooltip = _ "Select the type of items to display",
-							T.option { label = _ "People"    },
-							T.option { label = _ "The World" },
-						}
-					}
-				},
-				T.row {
 					grow_factor = 1,
 					T.column {
 						horizontal_alignment = "left",
 						vertical_alignment = "top",
 						border = "all",
 						border_size = 5,
-						T.listbox {
-							id = "archive_obj_list",
-							linked_group = "left_side_pane",
-							T.list_definition(journeylog_archive_listdef)
-						}
+						T.tree_view(journeylog_nav_treedef)
 					}
 				}
 			}
@@ -1016,10 +1060,10 @@ function journeylog_ui()
 	local archive = {
 		profiles = journeylog.retrieve_character_profiles(),
 		world = journeylog.retrieve_world_lore(),
+		recaps = journeylog.retrieve_story_recaps(),
 	}
 
-	local archive_mode = ARCHIVE_MODE_CHARACTERS
-
+	local chara_group_start, world_group_start, recap_group_start = 0, 0, 0
 	local current_campaign, current_scenario, current_page = 0, 0, 0
 	-- These are collections of current container item refs for easier
 	-- mass-manipulation (e.g. for filtering).
@@ -1282,21 +1326,6 @@ function journeylog_ui()
 		return BIO_STATUS_LABELS[status] or JOURNEYLOG_UI_STATUS_PLACEHOLDER
 	end
 
-	local function populate_lore_entry_list(self)
-		self.archive_obj_list:remove_items_at(1, 0)
-		if archive_mode == ARCHIVE_MODE_CHARACTERS then
-			for i, profile in ipairs(archive.profiles) do
-				local archive_item = self.archive_obj_list:add_item()
-				archive_item.archive_item_label.label = profile.name
-			end
-		elseif archive_mode == ARCHIVE_MODE_WORLD then
-			for i, entry in ipairs(archive.world) do
-				local archive_item = self.archive_obj_list:add_item()
-				archive_item.archive_item_label.label = entry.title
-			end
-		end
-	end
-
 	local function show_chara_bio(self, index)
 		if not index or index > #archive.profiles then
 			self.archive_entry.visible = false
@@ -1395,18 +1424,125 @@ function journeylog_ui()
 		self.archive_entry.visible = true
 	end
 
-	local function show_archive_item(self, index, force)
-		if not force and index == current_page then
+	local function show_recap_entry(self, index)
+		if not index or index > #archive.recaps then
+			self.archive_entry.visible = false
 			return
 		end
 
-		if archive_mode == ARCHIVE_MODE_CHARACTERS then
-			show_chara_bio(self, index)
-		elseif archive_mode == ARCHIVE_MODE_WORLD then
-			show_world_lore_entry(self, index)
+		local entry = archive.recaps[index]
+
+		if not entry then
+			jprintf(W_ERR, "could not load story recap entry (corrupt lore cache?)")
+			return
 		end
 
-		current_page = index
+		self.archive_entry:remove_items_at(1, 0)
+
+		local prologue = self.archive_entry:add_item_of_type("lore_entry")
+
+		prologue.archive_entry_title.marked_up_text = ("<big>%s</big>"):format(entry.title)
+		prologue.archive_entry_body.marked_up_text = transform_markup(entry.text) or JOURNEYLOG_UI_BIO_PLACEHOLDER
+
+		prologue.source.visible = false
+		prologue.source_heading.visible = false
+
+		-- NOTE: There is a stupid bug in Wesnoth 1.18 that causes labels with a large
+		-- height to get visually squashed as the user scrolls their container down. In
+		-- order to avoid the occurrence of this, we actually create separate tree nodes
+		-- (thus separate labels) holding the contents of the individual sections. We
+		-- probably need to document this limitation somewhere more visible, since it
+		-- follows that WML authors also have to take special care not to let a single
+		-- prologue or section take up too many lines!
+
+		for _, section_data in ipairs(entry.sections) do
+			-- FIXME need a new tree node type for this
+			local section = self.archive_entry:add_item_of_type("lore_entry")
+
+			section.archive_entry_title.marked_up_text = ("<big>%s</big>"):format(section_data.title)
+			section.archive_entry_body.marked_up_text = transform_markup(section_data.text) or JOURNEYLOG_UI_BIO_PLACEHOLDER
+
+			section.source.visible = false
+			section.source_heading.visible = false
+		end
+
+		-- HACK: work around layout bug in Wesnoth 1.18 that causes the entry
+		-- display to often have unexpectedly short widgets when repopulated
+		-- at first, resulting in most text being vertically cut off.
+		self.archive_entry.visible = "hidden"
+		self.archive_entry.visible = true
+	end
+
+	local function make_nav_header(self, label)
+		local header = self.archive_nav_tree:add_item_of_type("header")
+		header.tree_view_node_label.label = ("⎯ %s ⎯"):format(label)
+	end
+
+	local function populate_lore_entry_list(self)
+		self.archive_nav_tree:remove_items_at(1, 0)
+
+		local j = 2 -- skip header
+
+		if #archive.profiles > 0 then
+			wprintf(W_ERR, "profiles %d", #archive.profiles)
+			make_nav_header(self, _ "archive_section^People")
+			chara_group_start = j
+			for i, profile in ipairs(archive.profiles) do
+				local archive_item = self.archive_nav_tree:add_item_of_type("entry")
+				archive_item.archive_item_label.label = profile.name
+				j = j + 1
+			end
+		end
+
+		if #archive.world > 0 then
+			wprintf(W_ERR, "world %d", #archive.world)
+			j = j + 1 -- skip header
+			make_nav_header(self, _ "archive_section^World")
+			world_group_start = j
+			for i, entry in ipairs(archive.world) do
+				local archive_item = self.archive_nav_tree:add_item_of_type("entry")
+				archive_item.archive_item_label.label = entry.title
+				j = j + 1
+			end
+		end
+
+		if #archive.recaps > 0 then
+			wprintf(W_ERR, "recaps %d", #archive.recaps)
+			j = j + 1 -- skip header
+			make_nav_header(self, _ "archive_section^Recaps")
+			recap_group_start = j
+			for i, entry in ipairs(archive.recaps) do
+				local archive_item = self.archive_nav_tree:add_item_of_type("entry")
+				archive_item.archive_item_label.label = entry.title
+				j = j + 1
+			end
+		end
+	end
+
+	local function show_archive_item(self, path, force)
+		if path == nil then
+			path = { 2 }
+			force = true
+		end
+
+		if not force and path[1] == current_page then
+			return
+		end
+
+		local index = path[1]
+
+		if recap_group_start > 0 and index >= recap_group_start then
+			index = 1 + index - recap_group_start
+			show_recap_entry(self, index)
+		elseif world_group_start > 0 and index >= world_group_start then
+			index = 1 + index - world_group_start
+			show_world_lore_entry(self, index)
+		elseif chara_group_start > 0 and index >= chara_group_start then
+			index = 1 + index - chara_group_start
+			show_chara_bio(self, index)
+		end
+
+		current_page = path[1]
 	end
 
 	local function show_tab(self, tab_num)
@@ -1418,7 +1554,7 @@ function journeylog_ui()
 			self.show_portraits.visible = true
 			self.search_box.visible = true
 		elseif tab_num == 2 then
-			self.archive_obj_list:focus()
+			self.archive_nav_tree:focus()
 			self.show_portraits.visible = false
 			self.search_box.visible = false
 		end
@@ -1476,11 +1612,6 @@ function journeylog_ui()
 			table.insert(journal, campaign_journey)
 		end
 
-		for i, profile in ipairs(journeylog.retrieve_character_profiles()) do
-			local archive_item = self.archive_obj_list:add_item()
-			archive_item.archive_item_label.label = profile.name
-		end
-
 		-- TODO: The campaigns menu causes the script to crash and also does
 		-- not yet repopulate the scenario list.
 		--self.campaigns_menu.enabled = #journeylog > 1
@@ -1524,18 +1655,12 @@ function journeylog_ui()
 			set_journey_portraits_shown(self, self.show_portraits.selected)
 		end
 
-		self.archive_obj_list.on_modified = function()
-			show_archive_item(self, self.archive_obj_list.selected_index)
+		self.archive_nav_tree.on_modified = function()
+			show_archive_item(self, self.archive_nav_tree.selected_item_path)
 		end
 
 		self.log_section_selector.on_modified = function()
 			show_tab(self, self.log_section_selector.selected_index)
-		end
-
-		self.archive_mode.on_modified = function()
-			archive_mode = self.archive_mode.selected_index
-			populate_lore_entry_list(self)
-			show_archive_item(self, 1, true)
 		end
 
 		if not JOURNEYLOG_ALLOW_BROKEN_GARBAGE then
@@ -1545,7 +1670,7 @@ function journeylog_ui()
 		-- Set the initial selection.
 		show_journey(self, current_campaign, current_scenario, true)
 		populate_lore_entry_list(self)
-		show_archive_item(self, 1, true)
+		show_archive_item(self)
 		show_tab(self, 1)
 
 		self.title.visible = false
