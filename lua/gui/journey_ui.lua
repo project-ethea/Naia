@@ -20,6 +20,7 @@ local JOURNEYLOG_UI_ENTRY_TOP_MARGIN       = 10
 
 local JOURNEYLOG_UI_SCENARIO_ICON          = "help/closed_section.png"
 local JOURNEYLOG_UI_SCENARIO_ICON_SELECTED = "help/open_section.png"
+local JOURNEYLOG_UI_LORE_ICON              = "help/topic.png"
 
 local JOURNEYLOG_UI_MAJOR_DIVIDER          = "misc/loadscreen_decor.png~BLEND(162, 127, 68, 1.0)"
 local JOURNEYLOG_UI_MINOR_DIVIDER          = "misc/ui-gradient.png~BLEND(162, 127, 68, 1.0)"
@@ -433,6 +434,7 @@ local journeylog_messages_treedef = {
 
 local journeylog_nav_treedef = {
 	id = "archive_nav_tree",
+	definition = "naia_journeylog_viewer",
 	linked_group = "left_side_pane",
 	horizontal_scrollbar_mode = "never",
 	vertical_scrollbar_mode = "auto",
@@ -457,8 +459,10 @@ local journeylog_nav_treedef = {
 			},
 			T.row {
 				T.column {
-					T.spacer {
-						height = 5
+					grow_factor = 0,
+					horizontal_alignment = "center",
+					T.image {
+						label = JOURNEYLOG_UI_MINOR_DIVIDER
 					}
 				}
 			}
@@ -478,6 +482,16 @@ local journeylog_nav_treedef = {
 						definition = "fancy",
 						T.grid {
 							T.row {
+								T.column {
+									vertical_alignment = "top",
+									grow_factor = 0,
+									border = "top,left,bottom",
+									border_size = 10,
+									T.image {
+										id = "archive_item_icon",
+										label = JOURNEYLOG_UI_LORE_ICON,
+									}
+								},
 								T.column {
 									horizontal_grow = true,
 									grow_factor = 1,
@@ -680,6 +694,57 @@ local journeylog_archive_treedef = {
 				}
 			}
 		}
+	},
+
+	T.node {
+		id = "recap_subsection",
+		T.node_definition {
+			T.row {
+				T.column {
+					grow_factor = 0,
+					horizontal_alignment = "center",
+					border = "top",
+					border_size = 15,
+					T.image {
+						label = JOURNEYLOG_UI_MINOR_DIVIDER
+					}
+				}
+			},
+			T.row {
+				T.column {
+					horizontal_grow = true,
+					border = "all",
+					border_size = 5,
+					T.label {
+						id = "archive_entry_title",
+						definition = "gold_large",
+						label = "ENTRY_TITLE",
+						wrap = true
+					}
+				}
+			},
+			T.row {
+				T.column {
+					horizontal_grow = true,
+					T.spacer {
+						height = 10
+					}
+				}
+			},
+			T.row {
+				T.column {
+					horizontal_grow = true,
+					border = "all",
+					border_size = 5,
+					T.label {
+						id = "archive_entry_body",
+						definition = "naia_journeylog_page",
+						label = "ENTRY_TEXT",
+						wrap = true
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -694,6 +759,7 @@ local journeylog_dialoglog_grid = {
 			border_size = 5,
 			T.listbox {
 				id = "scenario_list",
+				definition = "naia_journeylog_listbox",
 				linked_group = "left_side_pane",
 				T.list_definition(journeylog_scenarios_listdef)
 			}
@@ -1432,14 +1498,10 @@ function journeylog_ui()
 		-- prologue or section take up too many lines!
 
 		for _, section_data in ipairs(entry.sections) do
-			-- FIXME need a new tree node type for this
-			local section = self.archive_entry:add_item_of_type("lore_entry")
+			local section = self.archive_entry:add_item_of_type("recap_subsection")
 
-			section.archive_entry_title.marked_up_text = ("<big>%s</big>"):format(section_data.title)
+			section.archive_entry_title.marked_up_text = ("%s"):format(section_data.title)
 			section.archive_entry_body.marked_up_text = transform_markup(section_data.text) or JOURNEYLOG_UI_BIO_PLACEHOLDER
-
-			section.source.visible = false
-			section.source_heading.visible = false
 		end
 
 		-- HACK: work around layout bug in Wesnoth 1.18 that causes the entry
@@ -1451,7 +1513,7 @@ function journeylog_ui()
 
 	local function make_nav_header(self, label)
 		local header = self.archive_nav_tree:add_item_of_type("header")
-		header.tree_view_node_label.label = ("⎯ %s ⎯"):format(label)
+		header.tree_view_node_label.label = label
 	end
 
 	local function populate_lore_entry_list(self)
