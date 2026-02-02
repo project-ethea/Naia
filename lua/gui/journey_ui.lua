@@ -1460,7 +1460,6 @@ function journeylog_ui()
 		local j = 2 -- skip header
 
 		if #archive.profiles > 0 then
-			wprintf(W_ERR, "profiles %d", #archive.profiles)
 			make_nav_header(self, _ "archive_section^People")
 			chara_group_start = j
 			for i, profile in ipairs(archive.profiles) do
@@ -1471,7 +1470,6 @@ function journeylog_ui()
 		end
 
 		if #archive.world > 0 then
-			wprintf(W_ERR, "world %d", #archive.world)
 			j = j + 1 -- skip header
 			make_nav_header(self, _ "archive_section^World")
 			world_group_start = j
@@ -1483,7 +1481,6 @@ function journeylog_ui()
 		end
 
 		if #archive.recaps > 0 then
-			wprintf(W_ERR, "recaps %d", #archive.recaps)
 			j = j + 1 -- skip header
 			make_nav_header(self, _ "archive_section^Recaps")
 			recap_group_start = j
