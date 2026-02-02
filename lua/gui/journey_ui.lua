@@ -431,30 +431,6 @@ local journeylog_messages_treedef = {
 	}
 }
 
-local journeylog_archive_listdef = {
-	-- TITLE
-	T.row { T.column {
-		vertical_grow = true,
-		horizontal_grow = true,
-		T.toggle_panel {
-			definition = "fancy",
-			T.grid {
-				T.row {
-					T.column {
-						horizontal_grow = true,
-						grow_factor = 1,
-						border = "all",
-						border_size = 10,
-						T.label {
-							id = "archive_item_label"
-						}
-					}
-				}
-			}
-		}
-	}}
-}
-
 local journeylog_nav_treedef = {
 	id = "archive_nav_tree",
 	linked_group = "left_side_pane",
