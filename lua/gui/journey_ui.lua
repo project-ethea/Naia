@@ -733,6 +733,54 @@ local journeylog_archive_treedef = {
 			},
 			T.row {
 				T.column {
+					grow_factor = 1,
+					horizontal_grow = true,
+					T.panel {
+						id = "character_quote",
+						T.grid {
+							T.row {
+								T.column {
+									grow_factor = 1,
+									horizontal_grow = true,
+									border = "top,left,right",
+									border_size = 10,
+									T.label {
+										id = "quote_text",
+										definition = "naia_journeylog_page",
+										label = "ENTRY_QUOTE",
+										wrap = true,
+									}
+								}
+							},
+							T.row {
+								T.column {
+									grow_factor = 1,
+									horizontal_grow = true,
+									border = "bottom,left,right",
+									border_size = 10,
+									T.label {
+										id = "quote_author",
+										definition = "naia_journeylog_page",
+										label = "QUOTE_AUTHOR",
+										text_alignment = "right",
+										wrap = true,
+									}
+								}
+							},
+							T.row {
+								T.column {
+									horizontal_grow = true,
+									T.spacer {
+										height = 10
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			T.row {
+				T.column {
 					horizontal_grow = true,
 					border = "all",
 					border_size = 5,
@@ -1507,11 +1555,27 @@ function journeylog_ui()
 		-- follows that WML authors also have to take special care not to let a single
 		-- prologue or section take up too many lines!
 
-		for _, section_data in ipairs(entry.sections) do
+		for i, section_data in ipairs(entry.sections) do
 			local section = self.archive_entry:add_item_of_type("recap_subsection")
 
 			section.archive_entry_title.marked_up_text = ("%s"):format(section_data.title)
 			section.archive_entry_body.marked_up_text = transform_markup(section_data.text) or JOURNEYLOG_UI_BIO_PLACEHOLDER
+
+			if section_data.quote ~= nil then
+				local quote_color = '#baac7d'
+				section.quote_text.marked_up_text = (
+					_ "character_quote_text_format^<span style='italic' color='%s'>“%s”</span>"
+				):format(quote_color, section_data.quote)
+				if section_data.quote_author ~= nil then
+					section.quote_author.marked_up_text = (
+						_ "character_quote_author_format^<span size='smaller' color='%s'>⎯ %s</span>"
+					):format(quote_color, section_data.quote_author)
+				else
+					section.quote_author.visible = false
+				end
+			else
+				section.character_quote.visible = false
+			end
 		end
 
 		-- HACK: work around layout bug in Wesnoth 1.18 that causes the entry
