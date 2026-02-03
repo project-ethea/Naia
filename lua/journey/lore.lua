@@ -295,6 +295,8 @@ function journeylog.register_recap_entries(cfg)
 			table.insert(sections, {
 				title = sec.title,
 				text = sec.text,
+				quote = sec.quote,
+				quote_author = sec.quote_author,
 			})
 		end
 
@@ -438,6 +440,8 @@ function journeylog.rebuild_lore(target)
 				table.insert(sections, {
 					title = section.title,
 					text = section.text,
+					quote = section.quote,
+					quote_author = section.quote_author,
 				})
 			end
 
@@ -517,6 +521,8 @@ end
 -- attributes:
 --
 --   title                   Section title.
+--   quote                   Preceding quote at the beginning.
+--   quote_author            Attribution for the preceding quote.
 --   text                    Section body.
 --
 function journeylog.retrieve_story_recaps()
