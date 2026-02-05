@@ -17,6 +17,8 @@ Version 20240314.9000+dev:
   * Removed obsolete Earthy Rockbound Cave terrain.
   * Incorporated Event Flag overlays from AtS.
   * Updated Wasteland terrain graphics.
+  * Made it so single-tile gaps in the mainline Mine Rail terrain are filled
+    when the gap terrain is a gate or impassable overlay.
 
 * User interface:
   * Updated `[bug]` UI.
