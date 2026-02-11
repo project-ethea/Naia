@@ -7,6 +7,19 @@
 -- See COPYING for usage terms.
 --
 
+local function default(value, default_value)
+	if value == nil or value == "" then
+		return default_value
+	else
+		return value
+	end
+end
+
+local function on_board(x, y)
+	return x > 0 and x <= wesnoth.current.map.playable_width and
+		   y > 0 and y <= wesnoth.current.map.playable_height
+end
+
 ---
 -- [npc_bird_behavior]
 --     types=... # list of unit types that will be considered for movement
@@ -22,18 +35,6 @@ function wesnoth.wml_actions.npc_bird_behavior(cfg)
 
 	local function do_error(msg)
 		wml.error("[npc_bird_behavior]: " .. msg)
-	end
-
-	local function on_board(x, y)
-		return (x > 0 and x <= map_w) and (y > 0 and y <= map_h)
-	end
-
-	local function default(value, default_value)
-		if value == nil or value == "" then
-			return default_value
-		else
-			return value
-		end
 	end
 
 	local types = cfg.types or do_error("no unit types specified")
@@ -147,4 +148,120 @@ function wesnoth.wml_actions.npc_bird_behavior(cfg)
 		end
 	end
 
+end
+
+--
+-- Implements roaming flying/floating units behavior
+--
+-- [roaming_shaxthal_behavior]
+--     # (str) Comma-separated list of unit types that will be considered for
+--     # movement
+--     types=
+--     # (int) Side whose units will be considered; defaults to the currently
+--     # playing side
+--     side=
+--     # (loc) Top left corner of the movement area
+--     x1,y1=
+--     # (loc) Bottom right corner of the movement area
+--     x2,y2=
+--     # Area where units will not move into
+--     [avoid]
+--         # SLF
+--     [/avoid]
+-- [/roaming_shaxthal_behavior]
+--
+function wesnoth.wml_actions.roaming_shaxthal_behavior(cfg)
+	local map_w = wesnoth.current.map.playable_width
+	local map_h = wesnoth.current.map.playable_height
+
+	local function error(fmt, ...)
+		wml.error("[roaming_shaxthal_behavior]: " .. tostring(fmt):format(...))
+	end
+
+	local types = cfg.types or error("no unit types specified")
+	local side_num = default(cfg.side, wesnoth.current.side)
+
+	local x1, y1 = default(cfg.x1, 1),     default(cfg.y1, 1)
+	local x2, y2 = default(cfg.x2, map_w), default(cfg.y2, map_h)
+
+	local exclusion = wml.get_child(cfg, "avoid")
+
+	local function excluded(loc)
+		if not exclusion then
+			return false
+		end
+		return wesnoth.current.map.matches(loc, exclusion)
+	end
+
+	if not on_board(x1, y1) then
+		do_error("location 1 (%d, %d) not on map", x1, y1)
+	end
+	if not on_board(x2, y2) then
+		do_error("location 2 (%d, %d) not on map", x2, y2)
+	end
+	if excluded({ x1, y1 }) then
+		do_error("location 1 (%d, %d) excluded by [avoid]", x1, y1)
+	end
+	if excluded({ x2, y2 }) then
+		do_error("location 2 (%d, %d) excluded by [avoid]", x2, y2)
+	end
+
+	local function in_npc_region(loc)
+		return loc.x >= x1 and loc.x <= x2 and
+			   loc.y >= y1 and loc.y <= y2
+	end
+
+	-- Store required units
+
+	local units = wesnoth.units.find_on_map {
+		type = types,
+		side = side_num,
+		x = ("%d-%d"):format(x1, x2),
+		y = ("%d-%d"):format(y1, y2),
+	}
+
+	for i, unit in ipairs(units) do
+		if unit.moves <= 0 then
+			goto skip
+		end
+
+		local move_steps = unit.moves
+		local dest = { x = unit.x, y = unit.y }
+		local path = { x = unit.x, y = unit.y, direction = mathx.random_choice("n,s,ne,nw,se,sw") }
+
+		for _ = 0, move_steps, 1 do
+			local target = wesnoth.map.get_direction({ unit.x, unit.y }, path.direction)
+			if not target or not in_npc_region(target) or excluded(target) then
+				break
+			end
+
+			path.x = ("%s,%d"):format(path.x, target.x)
+			path.y = ("%s,%d"):format(path.y, target.y)
+			dest.x = target.x
+			dest.y = target.y
+			unit.moves = unit.moves - 1
+		end
+
+		unit:extract()
+
+		wesnoth.wml_actions.move_unit_fake {
+			type       = unit.type,
+			gender     = unit.gender,
+			variation  = unit.variation,
+			image_mods = unit.image_mods,
+			side       = unit.side,
+			x          = path.x,
+			y          = path.y,
+		}
+
+		unit.x, unit.y = wesnoth.paths.find_vacant_hex(dest.x, dest.y)
+		unit.facing = path.direction
+
+		unit:to_map()
+
+		wesnoth.wml_actions.redraw {}
+
+		wesnoth.game_events.fire("moveto")
+		::skip::
+	end
 end
