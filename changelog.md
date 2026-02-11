@@ -37,6 +37,7 @@ Version 20240314.9000+dev:
   * New achievements notification UI.
   * Reworked objectives UI macros for consistency and increased readability
     across all campaigns.
+  * Fixed extra healing sound when units get healed by glyphs.
 
 * Terrains:
   * Added Dark Hive Facility, Dark Hive Vent, Dark Hive Heatsink.
