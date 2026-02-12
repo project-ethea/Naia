@@ -996,6 +996,13 @@ function wesnoth.wml_actions.clear_map_labels(cfg)
 end
 
 ---
+-- Deselects any selected units.
+---
+function wesnoth.wml_actions.unselect_unit()
+	wesnoth.units.select()
+end
+
+---
 -- Resets any screen color adjustments in place.
 --
 -- This is really just [screen_fade] + [color_adjust] with all parameters set
