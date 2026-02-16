@@ -237,6 +237,31 @@ function wesnoth.wml_actions.setup_doors(cfg)
 end
 
 ---
+-- Opens door tiles. Takes a SLF and nothing else.
+--
+-- Note that it only matches actual gate tiles (^P*, ^Zz*). The terrain= key
+-- in the SLF is ignored as a result.
+---
+function wesnoth.wml_actions.open_doors(cfg)
+	cfg = wml.parsed(cfg)
+	cfg["terrain"] = "*^P*,*^Zz*"
+	local locs = wesnoth.map.find(cfg)
+
+	for k, loc in ipairs(locs) do
+		if loc.overlay_terrain:match("o$") then
+			-- It's open, ignore
+			goto continue
+		end
+
+		local newtile = wesnoth.current.map[{loc.x, loc.y}] .. "o"
+		wesnoth.current.map[{loc.x, loc.y}] = wesnoth.map.replace_overlay(newtile)
+
+		::continue::
+	end
+
+end
+
+---
 -- Stores a list of unit ids matching a certain filter.
 --
 -- To store ids from recall lists, x and y must be either absent

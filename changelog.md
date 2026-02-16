@@ -13,6 +13,7 @@ Version 20240314.9000+dev:
   * `[setup_doors]` now always excludes terrain overlays used for open doors
     (ending in `o`) .
   * Add `[unselect_unit]` WML action.
+  * Add `[open_doors]` WML action to switch gate terrain to its open version.
 
 * Terrains:
   * Removed obsolete Earthy Rockbound Cave terrain.
