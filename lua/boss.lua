@@ -11,19 +11,19 @@
 local _ = wesnoth.textdomain "wesnoth-Naia"
 
 local BOSS_TITLE_COLOR = { 255, 147, 40 }
-local BOSS_TITLE_SIZE = 26
+local BOSS_TITLE_SIZE = 22
 local BOSS_TITLE_OFFSET = 10
 
 local BOSS_SUBTITLE_COLOR = { 215, 215, 215 }
 local BOSS_SUBTITLE_SIZE = 14
-local BOSS_SUBTITLE_OFFSET = BOSS_TITLE_OFFSET + 35
+local BOSS_SUBTITLE_OFFSET = BOSS_TITLE_OFFSET + 30
 
-local BOSS_BAR_FILL_COLOR = '#eee'
+local BOSS_BAR_FILL_COLOR = '#ffb367'
 local BOSS_BAR_BG_COLOR = '#0a2233'
 local BOSS_BAR_FADE_TIME = 1000
 local BOSS_BAR_FADE_DELAY = 1500
 local BOSS_BAR_SIZE = 10
-local BOSS_BAR_OFFSET = BOSS_SUBTITLE_OFFSET + 25
+local BOSS_BAR_OFFSET = BOSS_SUBTITLE_OFFSET + 22
 
 local BOSS_ALERT_SIZE = 32
 local BOSS_ALERT_OFFSET = -200
@@ -171,10 +171,10 @@ local ui = {
 	bar      = nil,
 }
 
--- U+2586 LOWER THREE QUARTERS BLOCK
-local FULL_BLOCK = '▆'
+-- U+2588 FULL BLOCK
+local FULL_BLOCK = '█'
 local EMPTY_BLOCK = FULL_BLOCK
-local BAR_LENGTH = 80
+local BAR_LENGTH = 60
 
 local function bar_factory(current, max)
 	local bar = ""
@@ -182,12 +182,12 @@ local function bar_factory(current, max)
 	local rem = BAR_LENGTH - cnt
 
 	if cnt > 0 then
-		bar = bar .. ("<span color='%s'>%s</span>"):format(
+		bar = bar .. ("<span color='%s' rise='2pt'>%s</span>"):format(
 			BOSS_BAR_FILL_COLOR,
 			string.rep(FULL_BLOCK, cnt))
 	end
 	if rem > 0 then
-		bar = bar .. ("<span color='%s'>%s</span>"):format(
+		bar = bar .. ("<span color='%s' rise='2pt'>%s</span>"):format(
 			BOSS_BAR_BG_COLOR,
 			string.rep(EMPTY_BLOCK, rem))
 	end
@@ -208,9 +208,10 @@ function ui.update()
 
 	wprintf(W_INFO, "refreshing boss fight UI")
 
-	local name, sub = boss_state.title, boss_state.subtitle
+	local name, sub = boss_state.title, ("– %s –"):format(boss_state.subtitle)
 	local hp, max_hp = unit.hitpoints, unit.max_hitpoints
-	local bar = bar_factory(hp, max_hp)
+	local padding = string.rep(" ", #(("%d / %d"):format(hp, max_hp)))
+	local bar = ("<b><span size='125%%'>%s</span>  %s  <span size='125%%' color='#d7d7d7'>%d / %d</span></b>"):format(padding, bar_factory(hp, max_hp), hp, max_hp)
 
 	if not ui.title then
 		ui.title = BossUiElement:new(name, BOSS_TITLE_OFFSET, {
