@@ -135,8 +135,14 @@ function journeylog.has_lore_fragment(entry_id, fragment_id)
 end
 
 function journeylog.unlock_milestone(milestone_ids, show_notification)
-	for _, id in ipairs(stringx.split(milestone_ids)) do
-		journeylog_milestones[id] = true
+	if type(milestone_ids) == "table" then
+		for _, id in ipairs(milestone_ids) do
+			journeylog_milestones[id]= true
+		end
+	else
+		for _, id in ipairs(stringx.split(milestone_ids)) do
+			journeylog_milestones[id] = true
+		end
 	end
 	jprintf(W_INFO, "milestone unlocked: %s; will rebuild lore", milestone_ids)
 	journeylog.rebuild_lore()
