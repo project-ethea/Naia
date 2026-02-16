@@ -56,7 +56,7 @@ setmetatable(boss_state, {
 		if k == "unit" then
 			local boss_id = wml.variables[("%s.id"):format(BOSS_UI_TABLE)]
 
-			if boss_id == "none" then
+			if boss_id == nil or boss_id == "none" then
 				return nil
 			end
 
@@ -337,6 +337,13 @@ function wesnoth.wml_actions.boss_ui(cfg)
 end
 
 --
+-- Force an immediate update of the boss UI.
+--
+function wesnoth.wml_actions.update_boss_ui()
+	ui.update()
+end
+
+--
 -- Displays the boss warning text.
 --
 function wesnoth.wml_actions.boss_popup()
@@ -355,6 +362,7 @@ end
 -- cycles whenever it's supposed to be active.
 
 local HOOK_EVENTS = "preload,turn refresh,unit placed,last breath,die"
+local CLEANUP_EVENTS = "victory,defeat"
 
 if WESNOTH_VERSION > V"1.19.2" then
 	HOOK_EVENTS = HOOK_EVENTS .. ",unit hits"
@@ -363,3 +371,7 @@ else
 end
 
 on_event(HOOK_EVENTS, ui.update)
+
+on_event(CLEANUP_EVENTS, function()
+	wml.variables[BOSS_UI_TABLE] = nil
+end)
