@@ -2,7 +2,7 @@
 -- Persistent WML variables library
 --
 -- codename Naia - Project Ethea phase 1 campaigns shared library
--- Copyright (C) 2012 - 2025 by Iris Morelle <iris@irydacea.me>
+-- Copyright (C) 2012 - 2026 by Iris Morelle <iris@irydacea.me>
 --
 -- See COPYING for usage terms.
 --

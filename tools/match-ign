@@ -3,7 +3,7 @@
 # Matches .ign patterns from stdin on the current directory. Intended for
 # internal use by mkdist (patterns are read from stdin).
 #
-# Copyright (C) 2011 - 2025 by Iris Morelle <iris@irydacea.me>
+# Copyright (C) 2011 - 2026 by Iris Morelle <iris@irydacea.me>
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above

@@ -2,7 +2,7 @@
 -- Campaign intro dialog
 --
 -- codename Naia - Project Ethea phase 1 campaigns shared library
--- Copyright (C) 2024 - 2025 by Iris Morelle <iris@irydacea.me>
+-- Copyright (C) 2024 - 2026 by Iris Morelle <iris@irydacea.me>
 --
 -- See COPYING for usage terms.
 --

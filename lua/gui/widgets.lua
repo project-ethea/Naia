@@ -2,7 +2,7 @@
 -- GUI2 widget definitions used by Naia GUI elements
 --
 -- codename Naia - Project Ethea phase 1 campaigns shared library
--- Copyright (C) 2020 - 2025 by Iris Morelle <iris@irydacea.me>
+-- Copyright (C) 2020 - 2026 by Iris Morelle <iris@irydacea.me>
 --
 -- See COPYING for usage terms.
 --
