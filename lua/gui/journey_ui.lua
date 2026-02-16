@@ -1129,6 +1129,16 @@ local function portrait_image_viewer(image, caption)
 	end
 end
 
+-- Helper to clear treeviews
+-- Wesnoth 1.18 and 1.20 require different, mutually incompatible approaches
+local function clear_treeview(target)
+	if WESNOTH_VERSION <= V"1.19.0" then
+		target:remove_items_at(1, 0)
+	else
+		target:clear_items()
+	end
+end
+
 local function jprintf(lvl, msg, ...)
 	wprintf(lvl, "JourneyLogUI: " .. msg, ...)
 end
@@ -1188,7 +1198,7 @@ function journeylog_ui()
 	local function clear_journey_view(treeview)
 		if #journey_view_rows > 0 then
 			journey_view_rows = {}
-			treeview:remove_items_at(1, 0)
+			clear_treeview(treeview)
 		end
 	end
 
@@ -1450,7 +1460,7 @@ function journeylog_ui()
 			return
 		end
 
-		self.archive_entry:remove_items_at(1, 0)
+		clear_treeview(self.archive_entry)
 
 		local page = self.archive_entry:add_item_of_type("chara_profile")
 
@@ -1504,7 +1514,7 @@ function journeylog_ui()
 			return
 		end
 
-		self.archive_entry:remove_items_at(1, 0)
+		clear_treeview(self.archive_entry)
 
 		local page = self.archive_entry:add_item_of_type("lore_entry")
 
@@ -1548,7 +1558,7 @@ function journeylog_ui()
 			return
 		end
 
-		self.archive_entry:remove_items_at(1, 0)
+		clear_treeview(self.archive_entry)
 
 		local prologue = self.archive_entry:add_item_of_type("lore_entry")
 
@@ -1602,7 +1612,7 @@ function journeylog_ui()
 	end
 
 	local function populate_lore_entry_list(self)
-		self.archive_nav_tree:remove_items_at(1, 0)
+		clear_treeview(self.archive_nav_tree)
 
 		local j = 2 -- skip header
 
