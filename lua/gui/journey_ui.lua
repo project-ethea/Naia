@@ -452,7 +452,7 @@ local journeylog_nav_treedef = {
 					border_size = 10,
 					T.label {
 						id = "tree_view_node_label",
-						definition = "gold",
+						definition = "gold_small",
 						text_alignment = "center"
 					}
 				},
@@ -524,13 +524,15 @@ local function chara_info_panel_field(id, label)
 			border = "all",
 			border_size = 5,
 			horizontal_grow = true,
+			vertical_alignment = "top",
 			T.label {
 				id = id .. "_heading",
-				definition = "gold_small",
+				definition = "naia_journeylog_bio_label",
 				-- TODO: crashes the game in 1.18 if the item is hidden
 				--linked_group = "bio_info_group",
 				label = tostring(label) .. ":",
-				text_alignment = "right"
+				text_alignment = "right",
+				wrap = true
 			}
 		},
 		T.column {
@@ -538,11 +540,13 @@ local function chara_info_panel_field(id, label)
 			border = "all",
 			border_size = 5,
 			horizontal_grow = true,
+			vertical_alignment = "top",
 			T.label {
 				id = id,
-				definition = "default_small",
+				definition = "naia_journeylog_bio_text",
 				label = "BIO_PLACEHOLDER",
-				text_alignment = "left"
+				text_alignment = "left",
+				wrap = true
 			}
 		}
 	}
@@ -740,10 +744,17 @@ local journeylog_archive_treedef = {
 						T.grid {
 							T.row {
 								T.column {
+									T.spacer {
+										height = 10
+									}
+								}
+							},
+							T.row {
+								T.column {
 									grow_factor = 1,
 									horizontal_grow = true,
-									border = "top,left,right",
-									border_size = 10,
+									border = "left,right",
+									border_size = 5,
 									T.label {
 										id = "quote_text",
 										definition = "naia_journeylog_page",
@@ -756,8 +767,8 @@ local journeylog_archive_treedef = {
 								T.column {
 									grow_factor = 1,
 									horizontal_grow = true,
-									border = "bottom,left,right",
-									border_size = 10,
+									border = "left,right",
+									border_size = 5,
 									T.label {
 										id = "quote_author",
 										definition = "naia_journeylog_page",
