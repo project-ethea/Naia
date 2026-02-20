@@ -37,34 +37,19 @@ local function milestone_ui_impl(banner_text)
 	})
 end
 
-local function wmlpath(path)
-	return ("%s.%s"):format(JOURNEYLOG_WML_STORE, path)
+local function wmlpath(path, root)
+	if root == nil then
+		root = JOURNEYLOG_WML_STORE
+	end
+	return ("%s.%s"):format(root, path)
 end
 
-local function deserialize_journeylog_prog_state()
-	wprintf(W_INFO, "reading journeylog state from WML")
-
-	journeylog_milestones = {}
-	journeylog_fragments = {}
-
-	local milestones_wml = wml.variables[wmlpath("milestones")]
-
-	for _, milestone in ipairs(stringx.split(milestones_wml or "")) do
-		journeylog_milestones[milestone] = true
+local function serialize_journeylog_prog_state(variable)
+	if variable == nil then
+		wprintf(W_INFO, "saving journeylog state to WML")
+	else
+		wprintf(W_INFO, "saving journeylog state to WML (custom: %s)", variable)
 	end
-
-	local lore_cfg = wml.variables[wmlpath("lore_fragments")]
-
-	for entry_id, fragments_wml in pairs(lore_cfg or {}) do
-		journeylog_fragments[entry_id] = {}
-		for _, fragment in ipairs(stringx.split(fragments_wml or "")) do
-			journeylog_fragments[entry_id][fragment] = true
-		end
-	end
-end
-
-local function serialize_journeylog_prog_state()
-	wprintf(W_INFO, "saving journeylog state to WML")
 
 	local milestones = {}
 
@@ -73,7 +58,7 @@ local function serialize_journeylog_prog_state()
 			table.insert(milestones, milestone)
 		end
 	end
-	wml.variables[wmlpath("milestones")] = stringx.join(milestones)
+	wml.variables[wmlpath("milestones", variable)] = stringx.join(milestones)
 
 	for entry_id, fragment_set in pairs(journeylog_fragments) do
 		local lore_fragments = {}
@@ -82,8 +67,48 @@ local function serialize_journeylog_prog_state()
 				table.insert(lore_fragments, fragment_id)
 			end
 		end
-		wml.variables[wmlpath(("lore_fragments.%s"):format(entry_id))] = stringx.join(lore_fragments)
+		wml.variables[wmlpath(("lore_fragments.%s"):format(entry_id), variable)] = stringx.join(lore_fragments)
 	end
+end
+
+local function deserialize_journeylog_prog_state(variable, merge_only)
+	if variable == nil then
+		wprintf(W_INFO, "reading journeylog state from WML")
+	else
+		wprintf(W_INFO, "reading journeylog state from WML (custom: %s)", variable)
+	end
+
+	if not merge_only then
+		journeylog_milestones = {}
+		journeylog_fragments = {}
+	end
+
+	if wml.variables[wmlpath("milestones", variable)] == nil then
+		-- Empty source, nothing to do here
+		return
+	end
+
+	local milestones_wml = wml.variables[wmlpath("milestones", variable)]
+
+	for _, milestone in ipairs(stringx.split(milestones_wml or "")) do
+		journeylog_milestones[milestone] = true
+	end
+
+	local lore_cfg = wml.variables[wmlpath("lore_fragments", variable)]
+
+	for entry_id, fragments_wml in pairs(lore_cfg or {}) do
+		if not merge_only or journeylog_fragments[entry_id] == nil then
+			journeylog_fragments[entry_id] = {}
+		end
+		for _, fragment in ipairs(stringx.split(fragments_wml or "")) do
+			journeylog_fragments[entry_id][fragment] = true
+		end
+	end
+
+	-- Properly commit changes and ensure they'll be visible in the UI
+	-- immediately.
+	journeylog.rebuild_lore()
+	serialize_journeylog_prog_state()
 end
 
 --[[
@@ -186,6 +211,36 @@ function wesnoth.wml_actions.record_lore_fragment(cfg)
 		notification = true
 	end
 	journeylog.record_lore_fragment(cfg.entry, cfg.fragment, notification)
+end
+
+--
+-- Saves JourneyLog progression info to a custom WML variable, specified by
+-- the variable= attribute (default is "journeylog").
+--
+-- The contents of the variable in general are not for the caller to inspect,
+-- as their structure and format may change between versions without prior
+-- warning.
+--
+function wesnoth.wml_actions.save_journeylog_state(cfg)
+	local variable = cfg.variable or "journeylog"
+	serialize_journeylog_prog_state(variable)
+end
+
+--
+-- Restores JourneyLog progression info from a custom WML variable, specified
+-- by the variable= attribute (default is "journeylog").
+--
+-- Executing this action merges the current progression data with the one
+-- stored in the WML variable, rather than replacing it entirely. There should
+-- be no need to replace data fully at this time.
+--
+-- The variable should have been created using [save_journeylog_state]. The
+-- contents should not be tampered with, as their structure and format may
+-- change between versions without prior warning.
+--
+function wesnoth.wml_actions.merge_journeylog_state(cfg)
+	local variable = cfg.variable or "journeylog"
+	deserialize_journeylog_prog_state(variable, true)
 end
 
 --[[
