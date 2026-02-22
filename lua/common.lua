@@ -201,6 +201,73 @@ function wesnoth.wml_actions.set_facing(cfg)
 end
 
 ---
+-- Iterates over a comma-separated list of items.
+--
+-- The syntax is the same as [foreach], except that list= is used instead of
+-- array=, and there is no readonly= option (modifying the list in the middle
+-- of the loop IS possible but causes no change in behavior).
+--
+-- [list_foreach]
+--     list=(variable name)
+--     variable=this_item
+--     index_var=i
+--     [do]
+--         ... actions ...
+--     [/do]
+-- [/list_foreach]
+---
+function wesnoth.wml_actions.list_foreach(cfg)
+	if wml.child_count(cfg, "do") == 0 then
+		wml.error("[list_foreach] does not contain any [do] tags")
+	end
+
+	local item_name = cfg.variable or "this_item"
+	local i_name    = cfg.index_var or "i"
+
+	local list_name = cfg.list or wml.error("[list_foreach] missing required list= attribute")
+	if wml.variables[list_name] == nil then
+		-- Consider a missing variable an empty list as per WML convention
+		return
+	end
+
+	-- Make sure the list variable is a scalar
+	local legal_types <const> = { number = 1, string = 1, boolean = 1 }
+	if legal_types[type(wml.variables[list_name])] == nil then
+		wml.error("[list_foreach] List variable must be a scalar")
+	end
+
+	local list = stringx.split(wml.variables[list_name])
+
+	if #list == 0 then
+		return
+	end
+
+	do
+		local this_item <close> = utils.scoped_var(item_name)
+		local i <close>         = utils.scoped_var(i_name)
+
+		for index, value in ipairs(list) do
+			wml.variables[item_name] = value
+			wml.variables[i_name]    = index - 1
+			-- Perform actions
+			for do_child in wml.child_range(cfg, "do") do
+				local action = utils.handle_event_commands(do_child, "loop")
+				if action == "break" then
+					utils.set_exiting("none")
+					goto exit
+				elseif action == "continue" then
+					utils.set_exiting("none")
+					break
+				elseif action ~= "none" then
+					goto exit
+				end
+			end
+		end
+	end
+	::exit::
+end
+
+---
 -- Spawns mechanical "Door" units on gate terrain hexes.
 --
 -- [setup_doors]
