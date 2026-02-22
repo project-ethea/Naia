@@ -22,6 +22,12 @@ function wesnoth.wml_conditionals.position_equals(cfg)
 	return variable.x == x and variable.y == y
 end
 
+function wesnoth.wml_conditionals.variable_exists(cfg)
+	local var_id = cfg.name or wml.error("[variable_exists] Missing required name= attribute")
+
+	return wml.variables[var_id] ~= nil
+end
+
 function wesnoth.wml_conditionals.variable_in(cfg)
 	local var_id = cfg.name or wml.error("[variable_in] Missing required name= attribute")
 	local values = cfg.values or wml.error("[variable_in] Missing required values= attribute")

@@ -14,6 +14,7 @@ Version 20240314.9000+dev:
     (ending in `o`) .
   * Add `[unselect_unit]` WML action.
   * Add `[open_doors]` WML action to switch gate terrain to its open version.
+  * Add `[variable_exists]` WML conditional tag.
 
 * Terrains:
   * Removed obsolete Earthy Rockbound Cave terrain.
