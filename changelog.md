@@ -10,7 +10,7 @@ Version 20260222.9000+dev:
 
 * Graphics:
   * New or updated unit graphics: Shaxthal Drone, Shaxthal Assault Drone,
-    Shaxthal Sentry Drone.
+    Shaxthal Sentry Drone, Fire Wisp (verbatim port from 1.19.20).
 
 * Lua and WML library:
   * Add `[variable_is_multiple]` WML conditional tag.
@@ -56,6 +56,11 @@ Version 20260222.9000+dev:
   * Character AMLAs other than Vitality are now always shown in the Advance
     Unit dialog rather than automatically selected even if they are the last
     available advancement.
+  * Updated Fire Wisp to use stats from its mainline version in 1.19.20:
+    * HP increased from 11 to 13.
+    * XP decreased from 40 to 18.
+    * Cost decreased from 12 to 5.
+    * Melee damage decreased from 4-3 to 3-2.
   * Removed obsolete Fire Wraith backport.
   * Removed obsolete Giant Ant unit.
   * Faeries' movement cost and defense on deep water and unwalkable terrains

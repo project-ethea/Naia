@@ -45,6 +45,32 @@ This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 Inte
  * images/units/faeries/sprite.png
 
 
+The Battle for Wesnoth Art (CC BY-SA 4.0)
+-----------------------------------------
+
+Copyright (C) 2003 - 2026 by The Battle for Wesnoth Project
+
+This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License. To view a copy of this license, visit <https://creativecommons.org/licenses/by-sa/4.0/> or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+
+### Art by Francisco Muñoz (fmunoz)
+
+ * images/units/monsters/firewisp.png
+ * images/units/monsters/firewisp-2.png
+ * images/units/monsters/firewisp-3.png
+ * images/units/monsters/firewisp-attack.png
+ * images/units/monsters/firewisp-death1.png
+ * images/units/monsters/firewisp-death2.png
+ * images/units/monsters/firewisp-death3.png
+ * images/units/monsters/firewisp-death4.png
+ * images/units/monsters/firewisp-death5.png
+ * images/units/monsters/firewisp-defend.png
+ * images/units/monsters/firewisp-ranged1.png
+ * images/units/monsters/firewisp-ranged2.png
+ * images/units/monsters/firewisp-ranged-n2.png
+ * images/units/monsters/firewisp-ranged-n1.png
+ * images/units/monsters/firewisp-recruit.png
+
+
 Archaic Era/Archaic Resources Art (CC BY-SA 4.0)
 ------------------------------------------------
 
