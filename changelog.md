@@ -8,6 +8,10 @@ Version 20260222.9000+dev:
     later.
   * Removed all compatibility code for Wesnoth 1.15.13 and earlier.
 
+* Graphics:
+  * New or updated unit graphics: Shaxthal Drone, Shaxthal Assault Drone,
+    Shaxthal Sentry Drone.
+
 * Lua and WML library:
   * Add `[variable_is_multiple]` WML conditional tag.
   * `[setup_doors]` now always excludes terrain overlays used for open doors
