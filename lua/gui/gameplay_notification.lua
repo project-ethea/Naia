@@ -12,6 +12,56 @@ local T = wml.tag
 -- #textdomain wesnoth-Naia
 local _ = wesnoth.textdomain "wesnoth-Naia"
 
+local main_grid = {
+	T.row {
+		T.column {
+			border = "all",
+			border_size = 10,
+			horizontal_alignment = "center",
+			vertical_alignment = "top",
+			T.image {
+				id = "image"
+			}
+		},
+	},
+
+	T.row {
+		T.column {
+			border= "all",
+			border_size = 5,
+			vertical_alignment = "top",
+			horizontal_alignment = "center",
+			T.label {
+				id = "title",
+				definition = "title"
+			}
+		}
+	},
+	T.row {
+		T.column {
+			horizontal_alignment = "center",
+			border = "all",
+			border_size = 10,
+			T.image {
+				label = "misc/loadscreen_decor.png~BLEND(162, 127, 68, 1.0)"
+			}
+		}
+	},
+	T.row {
+		T.column {
+			border = "all",
+			border_size = 5,
+			vertical_alignment = "top",
+			horizontal_alignment = "center",
+			T.label {
+				id = "message",
+				text_alignment = "center",
+				wrap = true
+			}
+		}
+	}
+}
+
 local gameplay_info_dlg = {
 	maximum_width = 800,
 	maximum_height = 900,
@@ -25,47 +75,11 @@ local gameplay_info_dlg = {
 	T.grid {
 		T.row {
 			T.column {
-				border = "all",
-				border_size = 10,
-				horizontal_alignment = "center",
-				vertical_alignment = "top",
-				T.image {
-					id = "image"
-				}
-			},
-		},
-
-		T.row {
-			T.column {
-				border= "all",
-				border_size = 5,
-				vertical_alignment = "top",
-				horizontal_alignment = "center",
-				T.label {
-					id = "title",
-					definition = "title"
-				}
-			}
-		},
-		T.row {
-			T.column {
-				horizontal_alignment = "center",
-				border = "all",
-				border_size = 10,
-				T.image {
-					label = "misc/loadscreen_decor.png~BLEND(162, 127, 68, 1.0)"
-				}
-			}
-		},
-		T.row {
-			T.column {
-				border = "all",
-				border_size = 5,
-				vertical_alignment = "top",
-				horizontal_alignment = "center",
-				T.scroll_label {
-					id = "message",
-					text_alignment = "center"
+				horizontal_grow = true,
+				vertical_grow = true,
+				T.scrollbar_panel {
+					definition = "naia_journeylog_scrollbar_panel",
+					T.definition(main_grid)
 				}
 			}
 		},
