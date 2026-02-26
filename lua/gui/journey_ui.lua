@@ -1164,6 +1164,7 @@ local function is_empty_image(path)
 	end
 end
 
+local initial_tab = 1
 local global_compact_view = false
 
 function journeylog_ui()
@@ -1688,6 +1689,8 @@ function journeylog_ui()
 			self.compact_view.visible = false
 			self.search_box.visible = false
 		end
+
+		initial_tab = tab_num
 	end
 
 	local function preshow(self)
@@ -1801,7 +1804,9 @@ function journeylog_ui()
 		show_journey(self, current_campaign, current_scenario, true)
 		populate_lore_entry_list(self)
 		show_archive_item(self)
-		show_tab(self, 1)
+
+		show_tab(self, initial_tab)
+		self.log_section_selector.selected_index = initial_tab
 
 		self.title.visible = false
 	end
