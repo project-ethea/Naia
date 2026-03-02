@@ -11,6 +11,7 @@ Version 20260222.9000+dev:
 * Graphics:
   * New or updated unit graphics: Shaxthal Drone, Shaxthal Assault Drone,
     Shaxthal Sentry Drone, Fire Wisp (verbatim port from 1.19.20).
+  * Added fire effect from Animated Weather and Scenery.
 
 * Lua and WML library:
   * Add `[variable_is_multiple]` WML conditional tag.
