@@ -164,12 +164,14 @@ function journeylog.unlock_milestone(milestone_ids, show_notification)
 		for _, id in ipairs(milestone_ids) do
 			journeylog_milestones[id]= true
 		end
+		jprintf(W_INFO, "milestone unlocked: { %s }; will rebuild lore", stringx.join(milestone_ids, ", "))
 	else
 		for _, id in ipairs(stringx.split(milestone_ids)) do
 			journeylog_milestones[id] = true
 		end
+		jprintf(W_INFO, "milestone unlocked: %s; will rebuild lore", milestone_ids)
 	end
-	jprintf(W_INFO, "milestone unlocked: %s; will rebuild lore", milestone_ids)
+
 	journeylog.rebuild_lore()
 	serialize_journeylog_prog_state()
 
