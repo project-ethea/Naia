@@ -24,6 +24,7 @@ Version 20260222.9000+dev:
 
 * Terrains:
   * Removed obsolete Earthy Rockbound Cave terrain.
+  * Removed obsolete Snowy Great Tree and Dead Great Oak Tree terrains.
   * Incorporated Event Flag overlays from AtS.
   * Updated Wasteland terrain graphics.
   * Made it so single-tile gaps in the mainline Mine Rail terrain are filled
