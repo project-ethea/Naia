@@ -438,6 +438,7 @@ local NAIA_PACKAGES = {
 	'spawner',
 	'theme',
 	'units',
+	'visualfx',
 	'wlp',
 	'gui/utils',
 	'gui/amla_list',
