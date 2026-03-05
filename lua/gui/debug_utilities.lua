@@ -219,6 +219,9 @@ end
 
 function wesnoth.wml_conditionals.debug_location_on_map()
 	local x, y = wesnoth.interface.get_hovered_hex()
+	if not x or not y then
+		return false
+	end
 	return wesnoth.current.map:on_board(x, y, false)
 end
 
