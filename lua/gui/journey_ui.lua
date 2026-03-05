@@ -889,6 +889,39 @@ local journeylog_archive_grid = {
 	}
 }
 
+local journeylog_nightmare_grid = {
+	T.row {
+		grow_factor = 1,
+		T.column {
+			grow_factor = 1,
+			horizontal_grow = true,
+			vertical_grow = true,
+			border = "all",
+			border_size = 5,
+
+			T.panel {
+				definition = "naia_journeylog_panel",
+				T.grid {
+					T.row {
+						grow_factor = 1,
+						T.column {
+							vertical_alignment = "center",
+							border = "all",
+							border_size = 5,
+							T.label {
+								id = "nightmare_text",
+								definition = "naia_journeylog_page",
+								wrap = true,
+								text_alignment = "center",
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 local journeylog_dlg = {
 	definition = "naia_journeylog",
 
@@ -1011,7 +1044,8 @@ local journeylog_dlg = {
 				T.stacked_widget {
 					id = "tabs_container",
 					T.layer(journeylog_dialoglog_grid),
-					T.layer(journeylog_archive_grid)
+					T.layer(journeylog_archive_grid),
+					T.layer(journeylog_nightmare_grid),
 				}
 			}
 		},
@@ -1166,6 +1200,67 @@ end
 
 local initial_tab = 1
 local global_compact_view = false
+
+-- BEGIN: FUNCTIONALITY SPECIFIC TO AFTER THE STORM EPISODE 3 SCENARIO 9
+
+local journeylog_ui_dream_message     = "default"
+local journeylog_ui_dream_color       = "default"
+local journeylog_ui_dream_size        = "default"
+
+function journeylog_ui_in_dream_sequence()
+	if wesnoth.scenario.type == "scenario" and
+	   wesnoth.scenario.campaign.id == "After_the_Storm_III" and
+	   wesnoth.scenario.id == "09_Dark_Depths" and
+	   wml.variables.finale_b_part == 3
+	then
+		return true
+	end
+
+	return false
+end
+
+function wesnoth.wml_actions._journeylog_ui_ats_e3s9(cfg)
+	journeylog_ui_dream_message = cfg.message or "default"
+	-- Crossing our fingers the next two are valid pango values or "default"
+	journeylog_ui_dream_color = cfg.color or "default"
+	journeylog_ui_dream_size = cfg.size or "default"
+
+	-- Install preload handler to ensure our configuration is restored when
+	-- reloading saved games (could've used variables but this is sneakier)
+
+	wesnoth.wml_actions.remove_event {
+		id = "ats_e3s9_journeylog_game_load_hook"
+	}
+	wesnoth.wml_actions.event {
+		id = "ats_e3s9_journeylog_game_load_hook",
+		name = "preload",
+		first_time_only = false,
+		T._journeylog_ui_ats_e3s9 {
+			message = journeylog_ui_dream_message,
+			color   = journeylog_ui_dream_color,
+			size    = journeylog_ui_dream_size,
+		}
+	}
+end
+
+local function journeylog_ui_dream_hook(self)
+	local msg = journeylog_ui_dream_message
+
+	if msg == "default" then
+		msg = _ "― This functionality is currently unavailable ―"
+	end
+	if journeylog_ui_dream_color ~= "default" then
+		msg = ("<span color='%s'>%s</span>"):format(journeylog_ui_dream_color, msg)
+	end
+	if journeylog_ui_dream_size ~= "default" then
+		msg = ("<span size='%s'>%s</span>"):format(journeylog_ui_dream_size, msg)
+	end
+
+	self.nightmare_text.marked_up_text = msg
+	--self.nightmare_text.marked_up_text = ("<span color='#a00' size='300%%'>%s</span>"):format( journeylog_ui_dream_message)
+end
+
+-- END: FUNCTIONALITY SPECIFIC TO AFTER THE STORM EPISODE 3 SCENARIO 9
 
 function journeylog_ui()
 	-- Retrieve compact mode flag from persistent store
@@ -1677,6 +1772,15 @@ function journeylog_ui()
 	end
 
 	local function show_tab(self, tab_num)
+		if journeylog_ui_in_dream_sequence() then
+			journeylog_ui_dream_hook(self)
+			self.tabs_container.selected_index = 3
+			self.compact_view.enabled = false
+			self.search_box.enabled = false
+			self.log_section_selector.visible = "invisible"
+			return
+		end
+
 		self.tabs_container.selected_index = tab_num
 		self.title.label = UI_TAB_LABELS[tab_num] or "OUT_OF_RANGE"
 
