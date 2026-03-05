@@ -110,6 +110,17 @@ This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 Inte
  * images/portraits/mal-hekuba.webp
 
 
+Frogatto & Friends Sound Effects  (CC BY-NC-SA 4.0)
+---------------------------------------------------
+
+Copyright (C) 2013 - 2026 by the Frogatto & Friends Development Team
+<https://www.frogatto.com>
+
+This work is licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/.
+
+ * sounds/touchplate.ogg
+
+
 Non-Copyrighted Assets (CC0)
 ----------------------------
 
