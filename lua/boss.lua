@@ -307,6 +307,15 @@ end
 -- * Naia constantly polls the boss HP during attack events to ensure the bar
 --   is updated as soon as possible.
 --
+-- Polling HP during event handling has the unfortunate limitation that we
+-- cannot find out about HP changes at the exact time the unit's own HP bar is
+-- updated on screen. I toyed around with piggybacking on theme UI elements
+-- (specifically, unit_hp) to poll more often, but not only does it cause the
+-- boss bar to blink a lot (unit_hp is called many times per second!) it also
+-- requires us to ensure we are not running in a preload event OR ELSE (read:
+-- segmentation fault). Overall, it's just safer and more practical to deal
+-- with the limitations of the straightforward WML event approach.
+--
 function wesnoth.wml_actions.boss_ui(cfg)
 	local unit_id = cfg.id
 
