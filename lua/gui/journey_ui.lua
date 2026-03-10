@@ -1950,8 +1950,18 @@ wesnoth.wml_actions.set_menu_item {
 	id = "naia:70_journeylog",
 	description = _ "Journal",
 	image = "icons/menu-journeylog.png",
+	synced = false,
 	T.default_hotkey {
 		key = "j",
+	},
+	T.show_if {
+		-- synced=false has the side effect that we can invoke the command
+		-- at LITERALLY ANT TIME, including during event handling. Not sure if
+		-- it's intentional, but we can deal with it by manually checking if
+		-- the user has control of the UI
+		T["lua"] {
+			code = "return wesnoth.current.user_can_invoke_commands"
+		}
 	},
 	T.command {
 		T.journeylog {}
