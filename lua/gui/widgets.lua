@@ -1062,6 +1062,12 @@ end
 
 G_widget(
 	"label",
+	"naia_journeylog_achievement_title",
+	journeylog_dialog_line_widget_def(17, JOURNEYLOG_MESSAGE_WIDTH, JOURNEYLOG_SPEAKER_COLOR)
+)
+
+G_widget(
+	"label",
 	"naia_journeylog_dialog_line",
 	journeylog_dialog_line_widget_def(17, JOURNEYLOG_MESSAGE_WIDTH, JOURNEYLOG_DIALOG_COLOR)
 )

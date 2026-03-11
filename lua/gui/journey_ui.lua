@@ -31,6 +31,10 @@ local JOURNEYLOG_UI_STATUS_PLACEHOLDER     = _ "chara_status^Living"
 local JOURNEYLOG_UI_GROUPS_PLACEHOLDER     = _ "affiliation^None"
 local JOURNEYLOG_UI_TITLES_PLACEHOLDER     = _ "additional_titles^None"
 
+local ACH_ALL        = 1
+local ACH_COMPLETE   = 2
+local ACH_INCOMPLETE = 3
+
 local EVENT_LABELS = {
 	start       = _ "event^Preparing for combat",
 	time_over   = _ "event^Combat over",
@@ -48,6 +52,7 @@ local EVENT_LABELS = {
 local UI_TAB_LABELS = {
 	_ "Journal",
 	_ "Knowledge",
+	_ "Achievements",
 }
 
 local BIO_STATUS_LABELS = {
@@ -103,6 +108,14 @@ local journeylog_section_listdata = {
 			T.widget {
 				id = "tab_label",
 				label = UI_TAB_LABELS[2]
+			}
+		}
+	},
+	T.row {
+		T.column {
+			T.widget {
+				id = "tab_label",
+				label = UI_TAB_LABELS[3]
 			}
 		}
 	}
@@ -889,6 +902,233 @@ local journeylog_archive_grid = {
 	}
 }
 
+local function journeylog_achievements_node_factory(extra_row)
+	if extra_row then
+		extra_row = T.row {
+			T.column(extra_row)
+		}
+	end
+
+	return { T.row {
+		T.column {
+			grow_factor = 0,
+			vertical_alignment = "top",
+			border = "all",
+			border_size = 5,
+			T.image {
+				id = "icon",
+				linked_group = "achievement_icons"
+			}
+		},
+		T.column {
+			grow_factor = 1,
+			horizontal_grow = true,
+			vertical_alignment = "top",
+			border = "top,bottom",
+			border_size = 5,
+			T.grid {
+				linked_group = "achievement_entries",
+				T.row {
+					T.column {
+						horizontal_grow = true,
+						border = "all",
+						border_size = 5,
+						T.label {
+							id = "name",
+							definition = "naia_journeylog_achievement_title",
+							label = "achievement name",
+							wrap = true
+						}
+					}
+				},
+				T.row {
+					T.column {
+						horizontal_grow = true,
+						border = "all",
+						border_size = 5,
+						T.label {
+							id = "description",
+							definition = "naia_journeylog_dialog_line",
+							label = "achievement description",
+							wrap = true
+						}
+					}
+				},
+				extra_row
+			}
+		}
+	}}
+end
+
+local journeylog_achievements_treedef = {
+	id = "achievement_list",
+	definition = "naia_journeylog_viewer",
+	linked_group = "right_side_pane",
+	horizontal_scrollbar_mode = "never",
+	vertical_scrollbar_mode = "always",
+	indentation_step_size = 0,
+
+	T.node {
+		id = "achievement_simple",
+		T.node_definition(journeylog_achievements_node_factory())
+	},
+
+	T.node {
+		id = "achievement_counter",
+		T.node_definition(journeylog_achievements_node_factory {
+			horizontal_alignment = "left",
+			T.grid {
+				T.row {
+					T.column {
+						grow_factor = 1,
+						border = "all",
+						border_size = 5,
+						T.progress_bar {
+							id = "progress_bar",
+							definition = "default_thin_achievements",
+							linked_group = "achievement_progress_bar"
+						}
+					},
+					T.column {
+						grow_factor = 0,
+						border = "all",
+						border_size = 5,
+						T.label {
+							id = "progress_text",
+							label = "progress",
+							linked_group = "achievement_progress_text"
+						}
+					}
+				}
+			}
+		})
+	}
+}
+
+local journeylog_achievements_filter_listdef = {
+	T.row { T.column {
+		vertical_grow = true,
+		horizontal_grow = true,
+		T.toggle_panel {
+			definition = "fancy",
+			T.grid {
+				T.row {
+					T.column {
+						horizontal_grow = true,
+						grow_factor = 1,
+						border = "all",
+						border_size = 10,
+						T.label {
+							id = "label"
+						}
+					}
+				}
+			}
+		}
+	}}
+}
+
+local journeylog_achievements_grid = {
+	T.row {
+		grow_factor = 1,
+		T.column {
+			grow_factor = 1,
+			vertical_alignment = "top",
+			border = "all",
+			border_size = 5,
+			T.grid {
+				T.row {
+					grow_factor = 1,
+					T.column {
+						horizontal_grow = true,
+						grow_factor = 1,
+						border = "top,left,right",
+						border_size = 10,
+						T.label {
+							definition = "gold_small",
+							label = _ "achievements^Filter",
+							text_alignment = "center"
+						}
+					},
+				},
+				T.row {
+					grow_factor = 0,
+					T.column {
+						grow_factor = 0,
+						horizontal_alignment = "center",
+						T.image {
+							label = JOURNEYLOG_UI_MINOR_DIVIDER
+						}
+					}
+				},
+				T.row {
+					grow_factor = 1,
+					T.column {
+						horizontal_alignment = "left",
+						vertical_alignment = "top",
+						border = "all",
+						border_size = 5,
+						T.listbox {
+							id = "achievements_filter",
+							definition = "naia_journeylog_listbox",
+							linked_group = "left_side_pane",
+							T.list_definition(journeylog_achievements_filter_listdef),
+							T.list_data {
+								T.row {
+									T.column {
+										T.widget {
+											id = "label",
+											label = _ "achievements^All"
+										}
+									}
+								},
+								T.row {
+									T.column {
+										T.widget {
+											id = "label",
+											label = _ "achievements^Complete"
+										}
+									}
+								},
+								T.row {
+									T.column {
+										T.widget {
+											id = "label",
+											label = _ "achievements^Incomplete"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		T.column {
+			grow_factor = 1,
+			horizontal_grow = false,
+			vertical_grow = true,
+			border = "all",
+			border_size = 5,
+
+			T.panel {
+				definition = "naia_journeylog_panel",
+				T.grid {
+					T.row {
+						grow_factor = 1,
+						T.column {
+							vertical_grow = true,
+							border = "all",
+							border_size = 5,
+							T.tree_view(journeylog_achievements_treedef)
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 local journeylog_nightmare_grid = {
 	T.row {
 		grow_factor = 1,
@@ -957,6 +1197,27 @@ local journeylog_dlg = {
 	T.linked_group {
 		id = "bio_info_group",
 		fixed_width = true
+	},
+
+	T.linked_group {
+		id = "achievement_icons",
+		fixed_width = true,
+		fixed_height = true,
+	},
+
+	T.linked_group {
+		id = "achievement_entries",
+		fixed_width = true,
+	},
+
+	T.linked_group {
+		id = "achievement_progress_bar",
+		fixed_width = true,
+	},
+
+	T.linked_group {
+		id = "achievement_progress_text",
+		fixed_width = true,
 	},
 
 	T.linked_group {
@@ -1045,6 +1306,7 @@ local journeylog_dlg = {
 					id = "tabs_container",
 					T.layer(journeylog_dialoglog_grid),
 					T.layer(journeylog_archive_grid),
+					T.layer(journeylog_achievements_grid),
 					T.layer(journeylog_nightmare_grid),
 				}
 			}
@@ -1263,6 +1525,13 @@ end
 -- END: FUNCTIONALITY SPECIFIC TO AFTER THE STORM EPISODE 3 SCENARIO 9
 
 function journeylog_ui()
+	if not journeylog.have_achievements() and #journeylog_section_listdata == 3 then
+		-- Remove Achievements tab permanently. This can be reverted by
+		-- reloading, should a campaign suddenly gain achievements data in the
+		-- middle of someone's playthrough for some odd reason.
+		journeylog_section_listdata[3] = nil
+	end
+
 	-- Retrieve compact mode flag from persistent store
 	wesnoth.wml_actions.global_table {
 		T.read {
@@ -1771,10 +2040,75 @@ function journeylog_ui()
 		current_page = path[1]
 	end
 
+	local function populate_achievement_list(self)
+		if not journeylog.have_achievements() then
+			return
+		end
+
+		clear_treeview(self.achievement_list)
+
+		local achs = journeylog.enumerate_achievements()
+		local filter = self.achievements_filter.selected_index
+
+		for i, ach in ipairs(achs) do
+			-- Apply filter first since we can't collapse nodes in 1.18
+			if filter == ACH_COMPLETE and not ach.completed or
+			   filter == ACH_INCOMPLETE and ach.completed
+			then
+				goto continue
+			end
+
+			-- Skip incomplete hidden achievements unless in debug mode
+			if not ach.completed and ach.hidden and not wesnoth.game_config.debug then
+				goto continue
+			end
+
+			local node_type = "achievement_simple"
+			if ach.max_progress ~= 0 then
+				node_type = "achievement_counter"
+			end
+
+			local node = self.achievement_list:add_item_of_type(node_type)
+
+			local name = ach.name
+			local desc = ach.description
+			local icon = ach.icon
+
+			if not ach.completed then
+				name = ("<span alpha='66%%'>%s</span>"):format(name)
+				desc = ("<span color='#777'>%s</span>"):format(desc)
+				icon = ("%s~O(0.66)"):format(icon)
+
+				if ach.hidden then
+					name = ("<i>%s</i>"):format(name)
+					desc = ("<i>%s</i>"):format(desc)
+				end
+			end
+
+			node.name.marked_up_text        = name
+			node.description.marked_up_text = desc
+			node.icon.label                 = icon
+
+			if ach.max_progress ~= 0 then
+				local progress = ach.current_progress
+				if progress == -1 then
+					progress = ach.max_progress
+				end
+				node.progress_bar.percentage = mathx.round(100 * progress / ach.max_progress)
+				node.progress_text.label = ("%d/%d"):format(progress, ach.max_progress)
+				if not ach.completed then
+					node.progress_text.marked_up_text = ("<span color='#777'>%d/%d</span>"):format(progress, ach.max_progress)
+				end
+			end
+
+			::continue::
+		end
+	end
+
 	local function show_tab(self, tab_num)
 		if journeylog_ui_in_dream_sequence() then
 			journeylog_ui_dream_hook(self)
-			self.tabs_container.selected_index = 3
+			self.tabs_container.selected_index = 4
 			self.compact_view.enabled = false
 			self.search_box.enabled = false
 			self.log_section_selector.visible = "invisible"
@@ -1790,6 +2124,10 @@ function journeylog_ui()
 			self.search_box.visible = true
 		elseif tab_num == 2 then
 			self.archive_nav_tree:focus()
+			self.compact_view.visible = false
+			self.search_box.visible = false
+		elseif tab_num == 3 then
+			self.achievement_list:focus()
 			self.compact_view.visible = false
 			self.search_box.visible = false
 		end
@@ -1900,6 +2238,10 @@ function journeylog_ui()
 			show_tab(self, self.log_section_selector.selected_index)
 		end
 
+		self.achievements_filter.on_modified = function()
+			populate_achievement_list(self)
+		end
+
 		if not JOURNEYLOG_ALLOW_BROKEN_GARBAGE then
 			self.campaigns_menu.visible = false
 		end
@@ -1908,6 +2250,7 @@ function journeylog_ui()
 		show_journey(self, current_campaign, current_scenario, true)
 		populate_lore_entry_list(self)
 		show_archive_item(self)
+		populate_achievement_list(self)
 
 		show_tab(self, initial_tab)
 		self.log_section_selector.selected_index = initial_tab
