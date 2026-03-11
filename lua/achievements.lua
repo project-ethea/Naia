@@ -51,7 +51,7 @@ local function achievement_api_patch_impl(realfunc, ...)
 	-- Lua interpreter dies before we have a chance to restore this though
 	gui.show_popup = achievement_gui2call_impl
 	-- Only .progress has an actual return value
-	local res = _WA_setach(...)
+	local res = realfunc(...)
 	gui.show_popup = _WA_gui2call
 	return res
 end
@@ -64,7 +64,7 @@ function wesnoth.achievements.set_sub_achievement(...)
 	return achievement_api_patch_impl(_WA_setsubach, ...)
 end
 
-function wesnoth.achievements.set_sub_achievement(...)
+function wesnoth.achievements.progress(...)
 	return achievement_api_patch_impl(_WA_progach, ...)
 end
 
