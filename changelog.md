@@ -21,6 +21,8 @@ Version 20260309.9000+dev:
   * Add `[open_doors]` WML action to switch gate terrain to its open version.
   * Add `[variable_exists]` WML conditional tag.
   * Add `[list_foreach]` WML action tag.
+  * Progressive achievements are tracked locally instead of globally until
+    completed.
 
 * Terrains:
   * Removed obsolete Earthy Rockbound Cave terrain.
