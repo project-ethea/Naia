@@ -296,11 +296,11 @@ local function enumerate_achievement_impl(group_id, achievement_id)
 
 	local name = maybe_complete("name") or "<unknown>"
 	local description = maybe_complete("description") or "<unknown>"
-	local icon = maybe_complete("icon") or "misc/blank-hex.png"
+	local icon = maybe_complete("icon") or "misc/blank-hex.png~SCALE(60,60)"
 
 	if icon == "~GS()" then
 		-- Wesnoth likes this for some reason, yuck.
-		icon = "misc/blank-hex.png"
+		icon = "misc/blank-hex.png~SCALE(60,60)"
 	end
 
 	return {

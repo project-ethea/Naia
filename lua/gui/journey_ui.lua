@@ -914,7 +914,7 @@ local function journeylog_achievements_node_factory(extra_row)
 			grow_factor = 0,
 			vertical_alignment = "top",
 			border = "all",
-			border_size = 5,
+			border_size = 10,
 			T.image {
 				id = "icon",
 				linked_group = "achievement_icons"
