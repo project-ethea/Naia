@@ -431,6 +431,7 @@ local NAIA_PACKAGES = {
 	'journey/log',
 	'journey/lore',
 	'journey/milestones',
+	'journey/achievements',
 	'npc',
 	'optimizations',
 	'patch',
