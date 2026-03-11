@@ -509,7 +509,3 @@ Version 20180611:
   * Improved experimental version and bugcheck dialogs, including a link to the
     campaign's forum thread or tracker URL as applicable.
   * Bugcheck dialogs use monospace text for the details section.
-
-
-; kate: indent-mode normal; encoding utf-8; space-indent on; word-wrap on;
-; kate: indent-width 2;
