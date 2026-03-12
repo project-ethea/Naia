@@ -128,6 +128,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     result = True
     for path in args.paths:
-        result = result and macro_scope_check(Path(path))
+        if not macro_scope_check(Path(path)):
+            result = False
     if not result:
         sys.exit(1)
