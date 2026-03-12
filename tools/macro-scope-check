@@ -38,6 +38,7 @@ from typing import Optional
 RE = {
     'define': re.compile(r'^[^#]*#define\s+([^\s]+)'),
     'undef':  re.compile(r'^[^#]*#undef\s+([^\s]+)'),
+    'ignore': re.compile(r'^[^#]*#[\s]*defscope:[\s]*ignore[\s]+([^\s]+)$')
 }
 
 
@@ -66,13 +67,20 @@ def die(msg: str, filename: Optional[str], lineno: Optional[int]):
 def _macro_scope_check_file(path: Path) -> bool:
     lno = 0
     defines = {}
+    ignore = set()
     try:
         with open(path, 'r', encoding='utf-8') as file:
             for line in file:
                 lno += 1
+                match = RE['ignore'].match(line)
+                if match:
+                    ignore.add(match[1])
+                    #warn(f'ignoring {match[1]}',
+                    #     filename=path.name, lineno=lno)
+                    continue
                 match = RE['define'].match(line)
                 if match:
-                    if match[1] in defines:
+                    if match[1] in defines and not match[1] in ignore:
                         warn(f'{path}:{lno}: {match[1]} redefined - '
                              f'previously defined on line {defines[match[1]]}',
                              filename=path.name, lineno=lno)
@@ -81,7 +89,7 @@ def _macro_scope_check_file(path: Path) -> bool:
                     continue
                 match = RE['undef'].match(line)
                 if match:
-                    if match[1] in defines:
+                    if match[1] in defines or match[1] in ignore:
                         del defines[match[1]]
                     else:
                         warn(f'undefining {match[1]} not previously defined',
@@ -92,6 +100,8 @@ def _macro_scope_check_file(path: Path) -> bool:
         return False
     # Report leaked defines at EOF
     for define in defines:
+        if define in ignore:
+            continue
         print(f'{path}:{lno}: {define} not undefined before end of file - '
               f'previously defined on line {defines[define]}')
         return False
