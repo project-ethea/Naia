@@ -596,6 +596,7 @@ G_widget("window", "naia_journeylog", {
 				horizontal_grow = false, -- !!!
 				vertical_grow = true,
 				T.scrollbar_panel {
+					definition = "naia_journeylog_scrollbar_panel",
 					vertical_scrollbar_mode = "initial_auto",
 					horizontal_scrollbar_mode = "initial_auto",
 					T.definition {
