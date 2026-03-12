@@ -36,6 +36,9 @@ local INTRO_CHECKBOX_FILES = {
 local JOURNEYLOG_BIO_PORTRAIT_SIZE = 200
 local JOURNEYLOG_BIO_SMALL_PORTRAIT_SIZE = 128
 
+local JOURNEYLOG_FRAME_PADDING = 3
+local JOURNEYLOG_FRAME_DECO = "dialogs/multi_create/corner.png~O(0.50)"
+
 local JOURNEYLOG_PANEL_PADDING = 3
 local JOURNEYLOG_PANEL_BORDER_COLOR = "114, 79, 46, 127" -- GUI__BORDER_COLOR_DARK
 
@@ -583,6 +586,34 @@ G_widget("window", "naia_journeylog", {
 				h = "(height * 0.66)",
 				name = "misc/journeylog-bg.png",
 				resize_mode = "stretch"
+			},
+			T.image {
+				x = JOURNEYLOG_FRAME_PADDING,
+				y = JOURNEYLOG_FRAME_PADDING,
+				w = "(image_width)",
+				h = "(image_height)",
+				name = JOURNEYLOG_FRAME_DECO .. "~ROTATE(90)"
+			},
+			T.image {
+				x = ("(width - image_width - %d)"):format(JOURNEYLOG_FRAME_PADDING),
+				y = ("(height - image_height - %d)"):format(JOURNEYLOG_FRAME_PADDING),
+				w = "(image_width)",
+				h = "(image_height)",
+				name = JOURNEYLOG_FRAME_DECO .. "~ROTATE(-90)"
+			},
+			T.image {
+				x = ("(width - image_width - %d)"):format(JOURNEYLOG_FRAME_PADDING),
+				y = JOURNEYLOG_FRAME_PADDING,
+				w = "(image_width)",
+				h = "(image_height)",
+				name = JOURNEYLOG_FRAME_DECO .. "~ROTATE(180)"
+			},
+			T.image {
+				x = JOURNEYLOG_FRAME_PADDING,
+				y = ("(height - image_height - %d)"):format(JOURNEYLOG_FRAME_PADDING),
+				w = "(image_width)",
+				h = "(image_height)",
+				name = JOURNEYLOG_FRAME_DECO
 			}
 		}
 	},
