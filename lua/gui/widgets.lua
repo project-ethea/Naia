@@ -1140,6 +1140,44 @@ G_widget(
 	journeylog_dialog_line_widget_def(15, 320, JOURNEYLOG_DIALOG_COLOR)
 )
 
+G_widget("progress_bar", "naia_journeylog_achievements_overall_progress", {
+	min_width      = 14,
+	min_height     = 10,
+	default_width  = 14,
+	default_height = 10,
+	max_width      = 0,
+	max_height     = 0,
+
+	T.state_enabled {
+		T.draw {
+			T.rectangle {
+				x = 0,
+				y = 0,
+				w = "(width)",
+				h = "(height)",
+				border_thickness = 1,
+				-- GUI__BORDER_COLOR_DARK
+				border_color = "114, 79, 46, 255"
+			},
+			T.rectangle {
+				x = 1,
+				y = 1,
+				w = "(width - 2)",
+				h = "(height - 2)",
+				-- GUI__BACKGROUND_COLOR_ENABLED
+				fill_color = "0, 0, 0, 89"
+			},
+			T.rectangle {
+				x = 2,
+				y = 2,
+				w = "(((width - 4) * percentage) / 100)",
+				h = "(height - 4)",
+				fill_color = "0, 55, 82, 255"
+			}
+		}
+	}
+})
+
 local function mini_button_text(text, color)
 	return T.text {
 		x               = 0,

@@ -1107,6 +1107,57 @@ local journeylog_achievements_grid = {
 							}
 						}
 					}
+				},
+				T.row {
+					grow_factor = 1,
+					T.column {
+						horizontal_grow = true,
+						grow_factor = 1,
+						border = "top,left,right",
+						border_size = 10,
+						T.label {
+							definition = "gold_small",
+							label = _ "achievements^Progress",
+							text_alignment = "center"
+						}
+					},
+				},
+				T.row {
+					grow_factor = 0,
+					T.column {
+						grow_factor = 0,
+						horizontal_alignment = "center",
+						T.image {
+							label = JOURNEYLOG_UI_MINOR_DIVIDER
+						}
+					}
+				},
+				T.row {
+					grow_factor = 1,
+					T.column {
+						horizontal_grow = true,
+						grow_factor = 1,
+						border = "top,left,right",
+						border_size = 10,
+						T.progress_bar {
+							id = "achievements_overall_bar",
+							definition = "naia_journeylog_achievements_overall_progress"
+						}
+					}
+				},
+				T.row {
+					grow_factor = 1,
+					T.column {
+						horizontal_grow = true,
+						grow_factor = 1,
+						border = "all",
+						border_size = 10,
+						T.label {
+							id = "achievements_overall_text",
+							label = "9999/9999",
+							text_alignment = "right"
+						}
+					}
 				}
 			}
 		},
@@ -2056,17 +2107,28 @@ function journeylog_ui()
 		current_page = path[1]
 	end
 
+	local achs = {}
+	local achs_completed_pc = -1
+
+	if journeylog.have_achievements() then
+		achs = journeylog.enumerate_achievements()
+	end
+
 	local function populate_achievement_list(self)
-		if not journeylog.have_achievements() then
+		if #achs == 0 then
 			return
 		end
 
 		clear_treeview(self.achievement_list)
 
-		local achs = journeylog.enumerate_achievements()
 		local filter = self.achievements_filter.selected_index
+		local completed_count = 0
 
 		for i, ach in ipairs(achs) do
+			if ach.completed then
+				completed_count = completed_count + 1
+			end
+
 			-- Apply filter first since we can't collapse nodes in 1.18
 			if filter == ACH_COMPLETE and not ach.completed or
 			   filter == ACH_INCOMPLETE and ach.completed
@@ -2118,6 +2180,14 @@ function journeylog_ui()
 			end
 
 			::continue::
+		end
+
+		if achs_completed_pc == -1 then
+			-- Set up overall progress bar. We only need to do this once ever.
+			achs_completed_pc = 100 * completed_count / #achs
+
+			self.achievements_overall_bar.percentage = mathx.round(achs_completed_pc)
+			self.achievements_overall_text.label = ("%d/%d"):format(completed_count, #achs)
 		end
 	end
 
