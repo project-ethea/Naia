@@ -529,7 +529,7 @@ function journeylog.retrieve_story_recaps()
 	return lore_cache.recaps
 end
 
-local function retrieve_lore_for_wml_internal(collection, fragment, entry)
+local function retrieve_lore_for_wml_internal(collection, fragment, entry_id)
 	if collection ~= "world" and collection ~= "character" then
 		return nil
 	end
@@ -541,16 +541,16 @@ local function retrieve_lore_for_wml_internal(collection, fragment, entry)
 	}
 
 	if fragment ~= nil and fragment ~= "" then
-		data.text = retrieve_lore_fragment_text_priv(entry, fragment)
+		data.text = retrieve_lore_fragment_text_priv(entry_id, fragment)
 
 		if not data.text then
 			wml.error(("[xxxxx_world_lore] entry/fragment pair %s.%s not found or empty"):format(entry, fragment))
 		end
 	else
-		local entry = world_info[entry]
+		local entry = world_info[entry_id]
 
 		if not entry then
-			wml.error(("[xxxxx_world_lore] entry %s not found or empty"):format(entry))
+			wml.error(("[xxxxx_world_lore] entry %s not found or empty"):format(entry_id))
 		end
 
 		data.text = entry.text
@@ -565,7 +565,7 @@ local function retrieve_lore_for_wml_internal(collection, fragment, entry)
 		end
 	end
 
-	data.title = world_info[entry].title
+	data.title = world_info[entry_id].title
 
 	return data
 end
