@@ -1343,6 +1343,16 @@ local journeylog_dlg = {
 										border = "all",
 										border_size = 5,
 										T.toggle_button {
+											id = "hidden_achievements",
+											label = _ "Hidden achievements",
+										}
+									},
+									T.column {
+										grow_factor = 0,
+										horizontal_alignment = "right",
+										border = "all",
+										border_size = 5,
+										T.toggle_button {
 											id = "compact_view",
 											label = _ "Compact view",
 										}
@@ -2059,7 +2069,7 @@ function journeylog_ui()
 			end
 
 			-- Skip incomplete hidden achievements unless in debug mode
-			if not ach.completed and ach.hidden and not wesnoth.game_config.debug then
+			if not ach.completed and ach.hidden and not self.hidden_achievements.selected then
 				goto continue
 			end
 
@@ -2120,14 +2130,17 @@ function journeylog_ui()
 
 		if tab_num == 1 then
 			self.scenario_list:focus()
+			self.hidden_achievements.visible = false
 			self.compact_view.visible = true
 			self.search_box.visible = true
 		elseif tab_num == 2 then
 			self.archive_nav_tree:focus()
+			self.hidden_achievements.visible = false
 			self.compact_view.visible = false
 			self.search_box.visible = false
 		elseif tab_num == 3 then
 			self.achievement_list:focus()
+			self.hidden_achievements.visible = naia_is_in_maintainer_mode() and wesnoth.game_config.debug
 			self.compact_view.visible = false
 			self.search_box.visible = false
 		end
@@ -2239,6 +2252,10 @@ function journeylog_ui()
 		end
 
 		self.achievements_filter.on_modified = function()
+			populate_achievement_list(self)
+		end
+
+		self.hidden_achievements.on_modified = function()
 			populate_achievement_list(self)
 		end
 
