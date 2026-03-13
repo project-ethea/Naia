@@ -1073,7 +1073,7 @@ local journeylog_achievements_grid = {
 				T.row {
 					grow_factor = 1,
 					T.column {
-						horizontal_alignment = "left",
+						horizontal_grow = true,
 						vertical_alignment = "top",
 						T.listbox {
 							id = "achievements_filter",
