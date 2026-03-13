@@ -98,14 +98,15 @@ def _macro_scope_check_file(path: Path) -> bool:
     except FileNotFoundError as err:
         warn(f'Could not open {path} for reading')
         return False
+    result = True
     # Report leaked defines at EOF
     for define in defines:
         if define in ignore:
             continue
         print(f'{path}:{lno}: {define} not undefined before end of file - '
               f'previously defined on line {defines[define]}')
-        return False
-    return True
+        result = False
+    return result
 
 
 def macro_scope_check(path: Path) -> bool:
