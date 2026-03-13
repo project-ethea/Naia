@@ -1014,6 +1014,14 @@ local journeylog_achievements_filter_listdef = {
 			T.grid {
 				T.row {
 					T.column {
+						-- This is here to make the achievement filter menu entries
+						-- exactly as tall as the knowledge archive entries.
+						-- Topic icon is 24px tall, top/bottom margin are 10px each.
+						T.spacer {
+							height = 24 + 2 * 10
+						}
+					},
+					T.column {
 						horizontal_grow = true,
 						grow_factor = 1,
 						border = "all",
@@ -1037,6 +1045,7 @@ local journeylog_achievements_grid = {
 			border = "all",
 			border_size = 5,
 			T.grid {
+				linked_group = "left_side_pane",
 				T.row {
 					grow_factor = 1,
 					T.column {
@@ -1066,12 +1075,9 @@ local journeylog_achievements_grid = {
 					T.column {
 						horizontal_alignment = "left",
 						vertical_alignment = "top",
-						border = "all",
-						border_size = 5,
 						T.listbox {
 							id = "achievements_filter",
 							definition = "naia_journeylog_listbox",
-							linked_group = "left_side_pane",
 							T.list_definition(journeylog_achievements_filter_listdef),
 							T.list_data {
 								T.row {
