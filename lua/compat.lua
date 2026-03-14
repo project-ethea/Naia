@@ -73,15 +73,25 @@ local function do_experimental_port_notice(host_ver)
 	do_compat_fail(msg, true, true, "omgbugseverywhere")
 end
 
-local function do_addon_compat_fail(titles)
+local function do_addon_compat_fail(titles, is_mod)
 	local msg, caption
 
-	if #titles == 1 then
-		caption = _ "Incompatible Add-on"
-		msg = _ "The following add-on is incompatible with %s and must be removed before continuing:"
+	if not is_mod then
+		if #titles == 1 then
+			caption = _ "Incompatible Add-on"
+			msg = _ "The following add-on is incompatible with %s and must be removed before continuing:"
+		else
+			caption = _ "Incompatible Add-ons"
+			msg = _ "The following add-ons are incompatible with %s and must be removed before continuing:"
+		end
 	else
-		caption = _ "Incompatible Add-ons"
-		msg = _ "The following add-ons are incompatible with %s and must be removed before continuing:"
+		if #titles == 1 then
+			caption = _ "Incompatible Modification"
+			msg = _ "The following modifications is incompatible with %s and must be disabled before continuing:"
+		else
+			caption = _ "Incompatible Modifications"
+			msg = _ "The following modifications are incompatible with %s and must be removed before continuing:"
+		end
 	end
 
 	msg = tostring(msg):format(naia_get_package_i18n_name()) .. "\n\n"
@@ -110,6 +120,10 @@ local naia_addons_bl = {
 	[ "Damage_Distribution_Mod" ]				= "Randomized Damage Mod",
 	[ "Move_Units_Between_Campaigns" ]			= "Move Units Between Campaigns",
 	[ "No_Randomness_Mod" ]						= "No Randomness Mod",
+
+local naia_mods_bl = {
+	-- No_Randomness_Mod
+	[ "Rav_no_randomness_mod" ] = "No Randomness Mod"
 }
 
 function check_host_compatibility(host_min, host_max, host_blacklist, is_experimental_port)
@@ -140,13 +154,25 @@ function check_host_compatibility(host_min, host_max, host_blacklist, is_experim
 end
 
 function check_addon_compatibility(package_blacklist)
-	local bl_found = {}
+	local addon_bl_found = {}
+	local mod_bl_found = {}
 
 	local function do_single_addon_compat(id, title)
 		wprintf(W_INFO, "COMPAT: Checking for add-on %s...", id)
 		if filesystem.have_file("~add-ons/" .. id) then
 			wprintf(W_ERR, "COMPAT: Incompatible add-on %s detected", id)
-			table.insert(bl_found, title)
+			table.insert(addon_bl_found, title)
+		end
+	end
+
+	local function do_single_mod_compat(id, title)
+		wprintf(W_INFO, "COMPAT: Checking if modification %s is enabled...", id)
+
+		for _, mod in ipairs(wesnoth.scenario.modifications) do
+			if mod.id == id then
+				wprintf(W_ERR, "COMPAT: Incompatible modification %s enabled", id)
+				table.insert(mod_bl_found, title)
+			end
 		end
 	end
 
@@ -162,10 +188,20 @@ function check_addon_compatibility(package_blacklist)
 		do_single_addon_compat(id, title)
 	end
 
-	if #bl_found > 0 then
-		table.sort(bl_found, function(a, b) return a < b end)
-		wprintf(W_ERR, "COMPAT: %d incompatible add-ons found, cannot continue", #bl_found)
-		do_addon_compat_fail(bl_found) -- does not return
+	for id, title in pairs(naia_mods_bl) do
+		do_single_mod_compat(id, title)
+	end
+
+	if #addon_bl_found > 0 then
+		table.sort(addon_bl_found, function(a, b) return a < b end)
+		wprintf(W_ERR, "COMPAT: %d incompatible add-ons found, cannot continue", #addon_bl_found)
+		do_addon_compat_fail(addon_bl_found) -- does not return
+	end
+
+	if #mod_bl_found > 0 then
+		table.sort(addon_bl_found, function(a, b) return a < b end)
+		wprintf(W_ERR, "COMPAT: %d incompatible modifications enabled, cannot continue", #mod_bl_found)
+		do_addon_compat_fail(mod_bl_found, true) -- does not return
 	end
 
 	wprintf(W_INFO, "COMPAT: Add-on compatibility check finished!")
