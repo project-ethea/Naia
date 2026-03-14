@@ -91,6 +91,10 @@ local function do_addon_compat_fail(titles)
 		msg = msg .. "    • " .. title .. "\n"
 	end
 
+	-- Prevent start-of-scenario functions from running
+	wesnoth.wml_actions.story = function() end
+	wesnoth.wml_actions.campaign_intro_screen = function() end
+
 	defer(function ()
 		gui.show_prompt(caption, msg)
 		die()
