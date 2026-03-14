@@ -116,14 +116,11 @@ end
 -- campaigns or break boss fights and scripted cutscenes.
 --
 
-local naia_addons_bl = {
-	[ "Damage_Distribution_Mod" ]				= "Randomized Damage Mod",
-	[ "Move_Units_Between_Campaigns" ]			= "Move Units Between Campaigns",
-	[ "No_Randomness_Mod" ]						= "No Randomness Mod",
+local naia_addons_bl = {}
 
 local naia_mods_bl = {
-	-- No_Randomness_Mod
-	[ "Rav_no_randomness_mod" ] = "No Randomness Mod"
+	-- No_Randomness_Mod - commented out until tested
+	--[ "Rav_no_randomness_mod" ] = "No Randomness Mod"
 }
 
 function check_host_compatibility(host_min, host_max, host_blacklist, is_experimental_port)
