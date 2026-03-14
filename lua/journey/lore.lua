@@ -50,6 +50,7 @@ local fragment_placeholder = ("<i>%s</i>"):format( _ "(records not found yet)")
 
 -- Character attributes that should be overridden by additional_info.
 local chara_override_attributes = {
+	"rank",
 	"name",
 	"additional_titles",
 	"affiliation",
@@ -329,7 +330,7 @@ function journeylog.rebuild_lore(target)
 	local recap_cache = {}
 
 	if not target or target == "chara" then
-		for _, id in ipairs(chara_index) do
+		for i, id in ipairs(chara_index) do
 			local profile = chara_profiles[id]
 
 			if profile == nil then
@@ -355,10 +356,19 @@ function journeylog.rebuild_lore(target)
 					end
 				end
 
+				-- Unranked items are understood to be rank #1001 and above.
+				if cached_profile.rank == nil then
+					cached_profile.rank = 1000 + i
+				end
+
 				table.insert(profile_cache, cached_profile)
 			end
 		end
 	end
+
+	-- Too lazy to optimize this and we're never going to have enough
+	-- characters for this to matter
+	table.sort(profile_cache, function(a, b) return a.rank < b.rank end)
 
 	if not target or target == "world" then
 		for _, id in ipairs(world_index) do
