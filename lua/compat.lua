@@ -150,7 +150,7 @@ function check_host_compatibility(host_min, host_max, host_blacklist, is_experim
 	end
 end
 
-function check_addon_compatibility(package_blacklist)
+function check_addon_compatibility()
 	local addon_bl_found = {}
 	local mod_bl_found = {}
 
@@ -173,15 +173,7 @@ function check_addon_compatibility(package_blacklist)
 		end
 	end
 
-	if package_blacklist == nil then
-		package_blacklist = {}
-	end
-
 	for id, title in pairs(naia_addons_bl) do
-		do_single_addon_compat(id, title)
-	end
-
-	for id, title in pairs(package_blacklist) do
 		do_single_addon_compat(id, title)
 	end
 
