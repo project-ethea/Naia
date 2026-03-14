@@ -7,6 +7,11 @@ Version 20260309.9000+dev:
   * First fully-supported Wesnoth 1.18 release, supporting Wesnoth 1.17.23 and
     later.
   * Removed all compatibility code for Wesnoth 1.15.13 and earlier.
+  * Implemented a modification blacklist to prevent starting/loading games
+    with incompatible modifications enabled (currently unused). This is meant
+    to report add-ons which the player should disable rather than outright
+    remove.
+  * Cleared add-on blacklist.
 
 * Graphics:
   * New or updated unit graphics: Shaxthal Drone, Shaxthal Assault Drone,
