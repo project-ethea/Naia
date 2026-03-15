@@ -749,23 +749,36 @@ function naia_do_amla_menu(cfg)
 			end
 		end
 
-		local function recursive_apply_amla(parent_id)
+		local function recursive_apply_amla(parent_id, apply_history)
 			-- Apply AMLAs recursively, so that the entire dependency list of
 			-- the AMLA with id == parent_id is satisfied (including AMLAs that
 			-- need to be acquired multiple times).
 
+			if not apply_history then
+				apply_history = {}
+			end
+
 			for dep_id, times_needed in pairs(amlas[parent_id].amla.require_amla) do
+				lmsg(W_DBG, "parent %s wants to apply %s %d times", parent_id, dep_id, times_needed)
+
 				local amla = amlas[dep_id]
 				if not amla then
 					lmsg(W_ERR, "Cannot satisfy %s (x%d) dependency for AMLA %s", dep_id, times_needed, parent_id)
 					return
 				end
 
-				local apply_count = times_needed - amlas[dep_id].times_applied
+				if not apply_history[dep_id] then
+					apply_history[dep_id] = 0
+				end
+
+				-- Count both the number of times the game applied the AMLA and the number of times
+				-- we synthetically "applied" -- see <https://github.com/project-ethea/Naia/issues/28>
+				local apply_count = times_needed - amla.times_applied - apply_history[dep_id]
 				if apply_count > 0 then
 					lmsg(W_DBG, "Satisfying recursive AMLA dependency %s (x%d)", dep_id, apply_count)
 					for i = 1, apply_count do
-						recursive_apply_amla(dep_id)
+						recursive_apply_amla(dep_id, apply_history)
+						apply_history[dep_id] = apply_history[dep_id] + 1
 					end
 				end
 			end
