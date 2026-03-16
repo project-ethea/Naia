@@ -179,27 +179,25 @@ end
 --                           as true.
 --
 function journeylog.unlock_milestone(milestone_ids, show_notification, highlight)
-	local new_milestones = {}
 	if highlight == nil then
 		highlight = true
 	end
 
+	local milestone_list = {}
+	local new_milestones = {}
+
 	if type(milestone_ids) == "table" then
-		for _, id in ipairs(milestone_ids) do
-			if not journeylog_milestones[id] and highlight then
-				table.insert(new_milestones, id)
-			end
-			journeylog_milestones[id]= true
-		end
-		jprintf(W_INFO, "milestone unlocked: { %s }; will rebuild lore", stringx.join(milestone_ids, ", "))
+		milestone_list = milestone_ids
 	else
-		for _, id in ipairs(stringx.split(milestone_ids)) do
-			if not journeylog_milestones[id] and highlight then
-				table.insert(new_milestones, id)
-			end
-			journeylog_milestones[id] = true
+		milestone_list = stringx.split(milestone_ids or "")
+	end
+
+	for _, id in ipairs(milestone_list) do
+		if not journeylog_milestones[id] and highlight then
+			table.insert(new_milestones, id)
 		end
-		jprintf(W_INFO, "milestone unlocked: %s; will rebuild lore", milestone_ids)
+		journeylog_milestones[id] = true
+		jprintf(W_INFO, "milestone unlocked: %s; will rebuild lore", id)
 	end
 
 	journeylog.rebuild_lore(nil, new_milestones, nil)
@@ -225,9 +223,16 @@ function journeylog.record_lore_fragment(entry_id, fragment_ids, show_notificati
 		journeylog_fragments[entry_id] = {}
 	end
 
+	local fragment_list = {}
 	local new_fragments = {}
 
-	for _, fragment_id in ipairs(stringx.split(fragment_ids)) do
+	if type(fragment_ids) == "table" then
+		fragment_list = fragment_ids
+	else
+		fragment_list = stringx.split(fragment_ids or "")
+	end
+
+	for _, fragment_id in ipairs(fragment_list) do
 		if not journeylog_fragments[entry_id][fragment_id] then
 			table.insert(new_fragments, fragment_id)
 		end
