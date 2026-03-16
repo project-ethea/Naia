@@ -69,6 +69,8 @@ local function serialize_journeylog_prog_state(variable)
 		end
 		wml.variables[wmlpath(("lore_fragments.%s"):format(entry_id), variable)] = stringx.join(lore_fragments)
 	end
+
+	wml.variables[wmlpath("highlights", variable)] = journeylog.internal._serialize_highlights()
 end
 
 local function deserialize_journeylog_prog_state(variable, merge_only)
@@ -104,6 +106,8 @@ local function deserialize_journeylog_prog_state(variable, merge_only)
 			journeylog_fragments[entry_id][fragment] = true
 		end
 	end
+
+	journeylog.internal._deserialize_highlights(wml.variables[wmlpath("highlights", variable)])
 
 	-- Properly commit changes and ensure they'll be visible in the UI
 	-- immediately.
@@ -159,30 +163,34 @@ function journeylog.has_lore_fragment(entry_id, fragment_id)
 	return not not journeylog_fragments[entry_id][fragment_id]
 end
 
-function journeylog.unlock_milestone(milestone_ids, show_notification)
-	local state_changed = false
+function journeylog.unlock_milestone(milestone_ids, show_notification, highlight)
+	local new_milestones = {}
+	if highlight == nil then
+		highlight = true
+	end
+
 	if type(milestone_ids) == "table" then
 		for _, id in ipairs(milestone_ids) do
-			if not journeylog_milestones[id] then
-				state_changed = true
+			if not journeylog_milestones[id] and highlight then
+				table.insert(new_milestones, id)
 			end
 			journeylog_milestones[id]= true
 		end
 		jprintf(W_INFO, "milestone unlocked: { %s }; will rebuild lore", stringx.join(milestone_ids, ", "))
 	else
 		for _, id in ipairs(stringx.split(milestone_ids)) do
-			if not journeylog_milestones[id] then
-				state_changed = true
+			if not journeylog_milestones[id] and highlight then
+				table.insert(new_milestones, id)
 			end
 			journeylog_milestones[id] = true
 		end
 		jprintf(W_INFO, "milestone unlocked: %s; will rebuild lore", milestone_ids)
 	end
 
-	journeylog.rebuild_lore()
+	journeylog.rebuild_lore(nil, new_milestones, nil)
 	serialize_journeylog_prog_state()
 
-	if show_notification and state_changed then
+	if show_notification and #new_milestones > 0 then
 		milestone_ui_impl( _ "New knowledge unlocked — %s to browse journal")
 	end
 end
@@ -192,20 +200,20 @@ function journeylog.record_lore_fragment(entry_id, fragment_ids, show_notificati
 		journeylog_fragments[entry_id] = {}
 	end
 
-	local state_changed = false
+	local new_fragments = {}
 
 	for _, fragment_id in ipairs(stringx.split(fragment_ids)) do
 		if not journeylog_fragments[entry_id][fragment_id] then
-			state_changed = true
+			table.insert(new_fragments, fragment_id)
 		end
 		journeylog_fragments[entry_id][fragment_id] = true
 		jprintf(W_INFO, "fragment id unlocked: %s.%s; will rebuild lore", entry_id, fragment_id)
 	end
 
-	journeylog.rebuild_lore()
+	journeylog.rebuild_lore(nil, nil, entry_id, new_fragments)
 	serialize_journeylog_prog_state()
 
-	if show_notification and state_changed then
+	if show_notification and #new_fragments > 0 then
 		milestone_ui_impl( _ "Findings recorded — %s to browse journal")
 	end
 end

@@ -46,6 +46,13 @@ local lore_cache = {
 	recaps = {},
 }
 
+-- Ids of entries that need to be highlighted in the UI because of recent
+-- changes to their availability/contents. This is serialized to save files.
+local highlights = {
+	profiles = {},
+	world = {}
+}
+
 local fragment_placeholder = ("<i>%s</i>"):format( _ "(records not found yet)")
 
 -- Character attributes that should be overridden by additional_info.
@@ -150,6 +157,48 @@ local function retrieve_lore_fragment_text_priv(entry_id, fragment_id)
 	end
 
 	return nil
+end
+
+local function flatten_highlights(from_table)
+	local keys = ""
+
+	for key, value in pairs(from_table) do
+		if value then
+			if keys == "" then
+				keys = key
+			else
+				keys = ("%s,%s"):format(keys, key)
+			end
+		end
+	end
+
+	return keys
+end
+
+function journeylog.internal._serialize_highlights()
+	return {
+		profiles = flatten_highlights(highlights.profiles),
+		world    = flatten_highlights(highlights.world)
+	}
+end
+
+local function unflatten_highlights(from_str)
+	local res = {}
+	local keys = stringx.split(from_str or "")
+
+	for _, key in ipairs(keys) do
+		res[key] = true
+	end
+
+	return res
+end
+
+function journeylog.internal._deserialize_highlights(cfg)
+	if not cfg then
+		cfg = {}
+	end
+	highlights.profiles = unflatten_highlights(cfg.profiles)
+	highlights.world    = unflatten_highlights(cfg.world)
 end
 
 --
@@ -318,10 +367,52 @@ function journeylog.register_recap_entries(cfg)
 	journeylog.rebuild_lore("recap")
 end
 
+function journeylog.unhighlight_profile(id)
+	if not highlights.profiles[id] then
+		return
+	end
+
+	jprintf(W_DBG, "unhighlight profile %s", id)
+
+	highlights.profiles[id] = nil
+
+	for _, entry in ipairs(lore_cache.profiles) do
+		if entry.id  == id then
+			entry.highlight = false
+			break
+		end
+	end
+end
+
+function journeylog.unhighlight_lore(id)
+	if not highlights.world[id] then
+		return
+	end
+
+	jprintf(W_DBG, "unhighlight lore %s", id)
+
+	highlights.world[id] = nil
+
+	for _, entry in ipairs(lore_cache.world) do
+		if entry.id  == id then
+			entry.highlight = false
+			break
+		end
+	end
+end
+
 --
 -- Refreshes the internal lore library cache.
 --
-function journeylog.rebuild_lore(target)
+-- The new_milestones and new_fragments parameters specify the identifiers of
+-- milestones and fragments which have been recently changed. Entries that are
+-- connected to these items will be tagged with a .highlight field set to true
+-- in order to specify which items should be highlighted in the UI, in order
+-- to help the player find newly changed items. The UI should use the
+-- journeylog.unhighlight_profile() and journeylog.unhighlight_lore()
+-- functions to notify that the player has perused the relevant entries.
+--
+function journeylog.rebuild_lore(target, new_milestones, new_fragmented_entry_id, new_fragments)
 	jprintf(W_INFO, "lore rebuild has begun (SPOILERS)")
 	windent()
 
@@ -352,6 +443,10 @@ function journeylog.rebuild_lore(target)
 					for _, extra in ipairs(profile.additional_info) do
 						if journeylog.has_milestone(extra.requires_milestone) then
 							merge_chara_additional_info(cached_profile, extra)
+
+							if list_has(new_milestones, extra.requires_milestone) then
+								highlights.profiles[id] = true
+							end
 						end
 					end
 				end
@@ -360,6 +455,12 @@ function journeylog.rebuild_lore(target)
 				if cached_profile.rank == nil then
 					cached_profile.rank = 1000 + i
 				end
+
+				if list_has(new_milestones, profile.requires_milestone) then
+					highlights.profiles[id] = true
+				end
+
+				cached_profile.highlight = not not highlights.profiles[id]
 
 				table.insert(profile_cache, cached_profile)
 			end
@@ -404,6 +505,9 @@ function journeylog.rebuild_lore(target)
 						if frag.id ~= nil and journeylog.has_lore_fragment(id, frag.id) then
 							table.insert(parts, tostring(frag.text))
 							should_include = true
+							if new_fragmented_entry_id == id and list_has(new_fragments, frag.id) then
+								highlights.world[id] = true
+							end
 						elseif last_placeholder == 0 or last_placeholder ~= #parts then
 							table.insert(parts, fragment_placeholder)
 							last_placeholder = #parts
@@ -420,9 +524,18 @@ function journeylog.rebuild_lore(target)
 					for _, extra in ipairs(entry.additional_info) do
 						if journeylog.has_milestone(extra.requires_milestone) then
 							merge_lore_additional_info(cached_entry, extra)
+							if list_has(new_milestones, extra.requires_milestone) then
+								highlights.world[id] = true
+							end
 						end
 					end
 				end
+
+				if list_has(new_milestones, entry.requires_milestone) then
+					highlights.world[id] = true
+				end
+
+				cached_entry.highlight = not not highlights.world[id]
 
 				if should_include then
 					table.insert(world_cache, cached_entry)
