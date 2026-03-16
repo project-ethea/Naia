@@ -163,6 +163,20 @@ function random_char_unsynced(str)
 	return str:sub(i, i)
 end
 
+function list_has(table_v, wanted_value)
+	if table_v == nil then
+		return false
+	end
+
+	for _, value in ipairs(table_v) do
+		if value == wanted_value then
+			return true
+		end
+	end
+
+	return false
+end
+
 ---
 -- Returns the size of a table.
 ---
