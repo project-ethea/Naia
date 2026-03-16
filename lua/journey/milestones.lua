@@ -151,6 +151,9 @@ function journeylog.has_milestone(milestone_ids)
 	return true
 end
 
+--
+-- Returns whether the specified fragment for the specified entry has been unlocked.
+--
 function journeylog.has_lore_fragment(entry_id, fragment_id)
 	if entry_id == nil or entry_id == "" or fragment_id == nil or fragment_id == "" then
 		return false
@@ -163,6 +166,18 @@ function journeylog.has_lore_fragment(entry_id, fragment_id)
 	return not not journeylog_fragments[entry_id][fragment_id]
 end
 
+--
+-- Unlocks a milestone.
+--
+-- Parameters:
+--   milestone_ids           A table or string (comma-separated list) containing the
+--                           list of milestones to be unlocked.
+--   show_notification       Whether newly unlocked milestones should trigger a UI
+--                           notification.
+--   highlight               Whether newly unlocked milestones should be highlighted
+--                           in the UI. Note that if omitted or nil, this is evaluated
+--                           as true.
+--
 function journeylog.unlock_milestone(milestone_ids, show_notification, highlight)
 	local new_milestones = {}
 	if highlight == nil then
@@ -195,6 +210,16 @@ function journeylog.unlock_milestone(milestone_ids, show_notification, highlight
 	end
 end
 
+--
+-- Unlocks a lore fragment attached to a world lore entry.
+--
+-- Parameters:
+--   entry_id                The id of the parent world lore entry.
+--   fragment_ids            A table or string (comma-separated list) containing the
+--                           list of fragments to be unlocked.
+--   show_notification       Whether newly unlocked milestones should trigger a UI
+--                           notification.
+--
 function journeylog.record_lore_fragment(entry_id, fragment_ids, show_notification)
 	if not journeylog_fragments[entry_id] then
 		journeylog_fragments[entry_id] = {}
