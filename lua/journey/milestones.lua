@@ -249,7 +249,7 @@ function wesnoth.wml_actions.unlock_milestone(cfg)
 	if notification == nil then
 		notification = true
 	end
-	journeylog.unlock_milestone(cfg.milestone, notification)
+	journeylog.unlock_milestone(milestone, notification)
 end
 
 function wesnoth.wml_actions.record_lore_fragment(cfg)
