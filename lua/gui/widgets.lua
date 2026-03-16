@@ -1140,6 +1140,47 @@ G_widget(
 	journeylog_dialog_line_widget_def(15, 320, JOURNEYLOG_DIALOG_COLOR)
 )
 
+G_widget("label", "naia_journeylog_highlight_star", {
+	min_width        = 0,
+	min_height       = 0,
+	default_width    = 0,
+	default_height   = 0,
+	max_width        = 0,
+	max_height       = 0,
+
+	text_font_family = "",
+	text_font_size   = 12,
+	text_font_style  = "",
+
+	T.state_enabled {
+		T.draw {
+			T.circle {
+				x = "(width / 2)",
+				y = "(height / 2)",
+				radius = "(width / 2 - 1)",
+				fill_color = "0, 0, 0, 255",
+				border_color = "0, 0, 0, 0"
+			},
+			T.text {
+				x = 0,
+				y = "((height - text_height) / 2)",
+				w = "(width)",
+				h = "(text_height)",
+				maximum_width = "(width)",
+				font_family = "",
+				font_size = 10,
+				font_style = "",
+				color = "255, 238, 180, 255",
+				text = "(text)",
+				text_alignment = "center"
+			}
+		}
+	},
+	T.state_disabled {
+		T.draw {}
+	}
+})
+
 G_widget("progress_bar", "naia_journeylog_achievements_overall_progress", {
 	min_width      = 14,
 	min_height     = 10,

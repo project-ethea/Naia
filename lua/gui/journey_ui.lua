@@ -21,6 +21,8 @@ local JOURNEYLOG_UI_ENTRY_TOP_MARGIN       = 10
 local JOURNEYLOG_UI_SCENARIO_ICON          = "help/closed_section.png"
 local JOURNEYLOG_UI_SCENARIO_ICON_SELECTED = "help/open_section.png"
 local JOURNEYLOG_UI_LORE_ICON              = "help/topic.png"
+local JOURNEYLOG_UI_HIGHLIGHT_COLOR        = "#FFDB66"
+local JOURNEYLOG_UI_HIGHLIGHT_LABEL        = "★"
 
 local JOURNEYLOG_UI_MAJOR_DIVIDER          = "misc/loadscreen_decor.png~BLEND(162, 127, 68, 1.0)"
 local JOURNEYLOG_UI_MINOR_DIVIDER          = "misc/ui-gradient.png~BLEND(162, 127, 68, 1.0)"
@@ -500,9 +502,30 @@ local journeylog_nav_treedef = {
 									grow_factor = 0,
 									border = "top,left,bottom",
 									border_size = 10,
-									T.image {
-										id = "archive_item_icon",
-										label = JOURNEYLOG_UI_LORE_ICON,
+									T.stacked_widget {
+										T.layer {
+											T.row {
+												T.column {
+													T.image {
+														id = "archive_item_icon",
+														label = JOURNEYLOG_UI_LORE_ICON,
+													}
+												}
+											}
+										},
+										T.layer {
+											T.row {
+												T.column {
+													vertical_alignment = "bottom",
+													horizontal_alignment = "right",
+													T.label {
+														id = "archive_item_highlight",
+														definition = "naia_journeylog_highlight_star",
+														label = JOURNEYLOG_UI_HIGHLIGHT_LABEL
+													}
+												}
+											}
+										}
 									}
 								},
 								T.column {
@@ -1879,6 +1902,11 @@ function journeylog_ui()
 		return BIO_STATUS_LABELS[status] or JOURNEYLOG_UI_STATUS_PLACEHOLDER
 	end
 
+	local deferred_unhighlight = {
+		path  = {},
+		title = "",
+	}
+
 	local function show_chara_bio(self, index)
 		if not index or index > #archive.profiles then
 			self.archive_entry.visible = false
@@ -1931,6 +1959,9 @@ function journeylog_ui()
 				gui.show_help(("unit_%s"):format(profile.help_unit_type))
 			end
 		end
+
+		journeylog.unhighlight_lore(profile.id)
+		deferred_unhighlight.title = profile.name
 	end
 
 	local function show_world_lore_entry(self, index)
@@ -1975,6 +2006,9 @@ function journeylog_ui()
 		-- at first, resulting in most text being vertically cut off.
 		self.archive_entry.visible = "hidden"
 		self.archive_entry.visible = true
+
+		journeylog.unhighlight_lore(entry.id)
+		deferred_unhighlight.title = entry.title
 	end
 
 	local function show_recap_entry(self, index)
@@ -2053,7 +2087,12 @@ function journeylog_ui()
 			chara_group_start = j
 			for i, profile in ipairs(archive.profiles) do
 				local archive_item = self.archive_nav_tree:add_item_of_type("entry")
-				archive_item.archive_item_label.label = profile.name
+				local label = profile.name
+				if profile.highlight then
+					label = ("<span color='%s'>%s</span>"):format(JOURNEYLOG_UI_HIGHLIGHT_COLOR, label)
+				end
+				archive_item.archive_item_highlight.enabled = profile.highlight
+				archive_item.archive_item_label.marked_up_text = label
 				j = j + 1
 			end
 		end
@@ -2064,7 +2103,12 @@ function journeylog_ui()
 			world_group_start = j
 			for i, entry in ipairs(archive.world) do
 				local archive_item = self.archive_nav_tree:add_item_of_type("entry")
-				archive_item.archive_item_label.label = entry.title
+				local label = entry.title
+				if entry.highlight then
+					label = ("<span color='%s'>%s</span>"):format(JOURNEYLOG_UI_HIGHLIGHT_COLOR, label)
+				end
+				archive_item.archive_item_highlight.enabled = entry.highlight
+				archive_item.archive_item_label.marked_up_text = label
 				j = j + 1
 			end
 		end
@@ -2075,10 +2119,29 @@ function journeylog_ui()
 			recap_group_start = j
 			for i, entry in ipairs(archive.recaps) do
 				local archive_item = self.archive_nav_tree:add_item_of_type("entry")
+				archive_item.archive_item_highlight.enabled = false -- never used
 				archive_item.archive_item_label.label = entry.title
 				j = j + 1
 			end
 		end
+	end
+
+	-- We unhighlight entries in the UI after they are deselected (i.e. a
+	-- different entry is selected). In order to achieve this, we put
+	-- show_archive_item() in charge of telling us what should be unhighlighted
+	-- next time it runs by filling in deferred_unhighlight.
+	local function do_deferred_unhighlight(self)
+		if #deferred_unhighlight.path == 0 then
+			return
+		end
+
+		local node = self.archive_nav_tree:find(table.unpack(deferred_unhighlight.path))
+
+		node.archive_item_highlight.enabled = false
+		node.archive_item_label.label = deferred_unhighlight.title
+
+		deferred_unhighlight.path =  {}
+		deferred_unhighlight.title = ""
 	end
 
 	local function show_archive_item(self, path, force)
@@ -2091,6 +2154,8 @@ function journeylog_ui()
 			return
 		end
 
+		do_deferred_unhighlight(self)
+
 		local index = path[1]
 
 		if recap_group_start > 0 and index >= recap_group_start then
@@ -2099,9 +2164,11 @@ function journeylog_ui()
 		elseif world_group_start > 0 and index >= world_group_start then
 			index = 1 + index - world_group_start
 			show_world_lore_entry(self, index)
+			deferred_unhighlight.path = path
 		elseif chara_group_start > 0 and index >= chara_group_start then
 			index = 1 + index - chara_group_start
 			show_chara_bio(self, index)
+			deferred_unhighlight.path = path
 		end
 
 		current_page = path[1]
