@@ -160,13 +160,20 @@ function journeylog.has_lore_fragment(entry_id, fragment_id)
 end
 
 function journeylog.unlock_milestone(milestone_ids, show_notification)
+	local state_changed = false
 	if type(milestone_ids) == "table" then
 		for _, id in ipairs(milestone_ids) do
+			if not journeylog_milestones[id] then
+				state_changed = true
+			end
 			journeylog_milestones[id]= true
 		end
 		jprintf(W_INFO, "milestone unlocked: { %s }; will rebuild lore", stringx.join(milestone_ids, ", "))
 	else
 		for _, id in ipairs(stringx.split(milestone_ids)) do
+			if not journeylog_milestones[id] then
+				state_changed = true
+			end
 			journeylog_milestones[id] = true
 		end
 		jprintf(W_INFO, "milestone unlocked: %s; will rebuild lore", milestone_ids)
@@ -175,7 +182,7 @@ function journeylog.unlock_milestone(milestone_ids, show_notification)
 	journeylog.rebuild_lore()
 	serialize_journeylog_prog_state()
 
-	if show_notification then
+	if show_notification and state_changed then
 		milestone_ui_impl( _ "New knowledge unlocked — %s to browse journal")
 	end
 end
@@ -185,7 +192,12 @@ function journeylog.record_lore_fragment(entry_id, fragment_ids, show_notificati
 		journeylog_fragments[entry_id] = {}
 	end
 
+	local state_changed = false
+
 	for _, fragment_id in ipairs(stringx.split(fragment_ids)) do
+		if not journeylog_fragments[entry_id][fragment_id] then
+			state_changed = true
+		end
 		journeylog_fragments[entry_id][fragment_id] = true
 		jprintf(W_INFO, "fragment id unlocked: %s.%s; will rebuild lore", entry_id, fragment_id)
 	end
@@ -193,7 +205,7 @@ function journeylog.record_lore_fragment(entry_id, fragment_ids, show_notificati
 	journeylog.rebuild_lore()
 	serialize_journeylog_prog_state()
 
-	if show_notification then
+	if show_notification and state_changed then
 		milestone_ui_impl( _ "Findings recorded — %s to browse journal")
 	end
 end
