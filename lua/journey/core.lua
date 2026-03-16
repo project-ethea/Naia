@@ -7,7 +7,9 @@
 -- See COPYING for usage terms.
 --
 
-journeylog = {}
+journeylog = {
+	internal = {}
+}
 
 JOURNEYLOG_TABLE = "__naia_journeylog"
 
