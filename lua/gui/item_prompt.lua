@@ -16,6 +16,13 @@ local _ = wesnoth.textdomain "wesnoth-Naia"
 -- Displays a prompt for confirming item pick-ups.
 --
 -- [item_prompt]
+--     # Caption
+--     # (default value is "Confirm")
+--     caption=(string)
+--     # Message text
+--     # (default value is "Do you want this unit to pick up this item?")
+--     message=(string)
+--
 --     # Message box icon (wesnoth-icon.png by default)
 --     image=(string)
 --     # Plays a sound when the item is picked up.
@@ -131,6 +138,8 @@ function wesnoth.wml_actions.item_prompt(cfg)
 		}
 	}
 
+	local caption = cfg.caption
+	local message = cfg.message
 	local image = cfg.image
 	local sound = cfg.sound
 
@@ -151,6 +160,14 @@ function wesnoth.wml_actions.item_prompt(cfg)
 
 	local res = wesnoth.sync.evaluate_single(function()
 		return { value = gui.show_dialog(dd, function(self)
+			if caption ~= nil then
+				self.caption.label = caption
+			end
+
+			if message ~= nil then
+				self.message.marked_up_text = message
+			end
+
 			if image ~= nil and tostring(image):len() > 0 then
 				self.image.label = image
 			end
