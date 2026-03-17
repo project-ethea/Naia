@@ -22,9 +22,13 @@ local _ = wesnoth.textdomain "wesnoth-Naia"
 --     sound=(string)
 --
 --     # Commands to execute when the item pick-up is confirmed.
---     [command]
+--     [then]
 --         # EventWML
---     [/command]
+--     [/then]
+--     # Commands to execute when the item pick-up is canceled.
+--     [else]
+--         # Event WML
+--     [/else]
 -- [/item_prompt]
 ---
 function wesnoth.wml_actions.item_prompt(cfg)
