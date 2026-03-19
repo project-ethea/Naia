@@ -39,8 +39,23 @@ local _ = wesnoth.textdomain "wesnoth-Naia"
 -- [/item_prompt]
 ---
 function wesnoth.wml_actions.item_prompt(cfg)
+	local caption = cfg.caption
+	local message = cfg.message
+	local image = cfg.image
+	local sound = cfg.sound
+
+	local image_alignment = "top"
+
+	if image ~= nil and image ~= "" then
+		local image_w, image_h = filesystem.image_size(image)
+		-- Past size 60 it's probably not one of those framed icons
+		if image_w > 60 or image_h > 60 then
+			image_alignment = "center"
+		end
+	end
+
 	local dd = {
-		maximum_width = 800,
+		maximum_width = 700,
 		maximum_height = 600,
 
 		T.helptip { id="tooltip_large" }, -- mandatory field
@@ -49,50 +64,73 @@ function wesnoth.wml_actions.item_prompt(cfg)
 		T.grid {
 			T.row {
 				T.column {
+					border = "all",
+					border_size = 10,
+					horizontal_alignment = "center",
+					vertical_alignment = image_alignment,
+
+					T.image {
+						id = "image",
+						label = "wesnoth-icon.png~SCALE(96, 96)"
+					}
+				},
+				T.column {
 					T.grid {
 						T.row {
 							T.column {
 								border = "all",
 								border_size = 5,
-								horizontal_alignment = "center",
-								vertical_alignment = "center",
-
-								T.image {
-									id = "image",
-									label = "wesnoth-icon.png~SCALE(96, 96)"
-								}
-							},
-							T.column {
 								vertical_alignment = "top",
 								horizontal_alignment = "left",
+
+								T.label {
+									id = "caption",
+									definition = "title",
+									label = wgettext("Confirm")
+								}
+							}
+						},
+						T.row {
+							T.column {
+								border = "all",
+								border_size = 5,
+								vertical_alignment = "top",
+								horizontal_alignment = "left",
+
+								T.label {
+									id = "message",
+									label = _("Do you want this unit to pick up this item?"),
+									wrap = true
+								}
+							}
+						},
+						T.row {
+							T.column {
+								horizontal_alignment = "right",
 
 								T.grid {
 									T.row {
 										T.column {
 											border = "all",
 											border_size = 5,
-											vertical_alignment = "top",
-											horizontal_alignment = "left",
+											horizontal_alignment = "right",
 
-											T.label {
-												id = "caption",
-												definition = "title",
-												label = wgettext("Confirm")
+											T.button {
+												id = "ok",
+												label = wgettext("Yes"),
+												return_value = 1
 											}
-										}
-									},
+										},
 
-									T.row {
 										T.column {
 											border = "all",
 											border_size = 5,
-											vertical_alignment = "top",
-											horizontal_alignment = "left",
+											horizontal_alignment = "right",
 
-											T.label {
-												id = "message",
-												label = _("Do you want this unit to pick up this item?"),
-												wrap = true
+											T.button {
+												id = "quit",
+												label = wgettext("No"),
+												return_value = 2
 											}
 										}
 									}
@@ -101,47 +139,9 @@ function wesnoth.wml_actions.item_prompt(cfg)
 						}
 					}
 				}
-			},
-			T.row {
-				T.column {
-					horizontal_alignment = "right",
-
-					T.grid {
-						T.row {
-							T.column {
-								border = "all",
-								border_size = 5,
-								horizontal_alignment = "right",
-
-								T.button {
-									id = "ok",
-									label = wgettext("Yes"),
-									return_value = 1
-								}
-							},
-
-							T.column {
-								border = "all",
-								border_size = 5,
-								horizontal_alignment = "right",
-
-								T.button {
-									id = "quit",
-									label = wgettext("No"),
-									return_value = 2
-								}
-							}
-						}
-					}
-				},
 			}
 		}
 	}
-
-	local caption = cfg.caption
-	local message = cfg.message
-	local image = cfg.image
-	local sound = cfg.sound
 
 	local branch_then = wml.get_child(cfg, "then") or
 		wml.error("[item_prompt] Missing mandatory [then] branch")
