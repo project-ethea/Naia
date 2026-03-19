@@ -28,6 +28,7 @@ Version 20260309.9000+dev:
   * Add `[list_foreach]` WML action tag.
   * Progressive achievements are tracked locally instead of globally, until
     completed.
+  * Added comma-separated list support to `[remove_object] object_id=`.
 
 * Terrains:
   * Removed obsolete Earthy Rockbound Cave terrain.
@@ -55,6 +56,7 @@ Version 20260309.9000+dev:
   * Reworked objectives UI macros for consistency and increased readability
     across all campaigns.
   * Fixed extra healing sound when units get healed by glyphs.
+  * Healing glyphs now use the item pick-up UI instead of `[message]`.
 
 * Terrains:
   * Added Dark Hive Facility, Dark Hive Vent, Dark Hive Heatsink.

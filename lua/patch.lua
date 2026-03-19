@@ -76,6 +76,20 @@ else
 end
 
 ---
+-- Add comma-separated list support to [remove_object]
+---
+local _WA_remove_object = wesnoth.wml_actions.remove_object
+
+function wesnoth.wml_actions.remove_object(cfg)
+	cfg = wml.parsed(cfg)
+	local object_ids = stringx.split(cfg.object_id)
+	for _, object_id in ipairs(object_ids) do
+		cfg.object_id = object_id
+		_WA_remove_object(cfg)
+	end
+end
+
+---
 -- Workaround for Wesnoth issue #1617/AtS issue #31.
 ---
 
