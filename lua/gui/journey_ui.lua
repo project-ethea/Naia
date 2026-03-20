@@ -2262,6 +2262,7 @@ function journeylog_ui()
 		if journeylog_ui_in_dream_sequence() then
 			journeylog_ui_dream_hook(self)
 			self.tabs_container.selected_index = 4
+			self.hidden_achievements.visible = false
 			self.compact_view.enabled = false
 			self.search_box.enabled = false
 			self.log_section_selector.visible = "invisible"
