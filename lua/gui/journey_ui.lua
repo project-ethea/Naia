@@ -52,7 +52,7 @@ local EVENT_LABELS = {
 }
 
 local UI_TAB_LABELS = {
-	_ "Journal",
+	_ "Dialogue",
 	_ "Knowledge",
 	_ "Achievements",
 }
@@ -60,6 +60,23 @@ local UI_TAB_LABELS = {
 local BIO_STATUS_LABELS = {
 	dead        = _ "chara_status^Deceased",
 	missing     = _ "chara_status^Missing",
+}
+
+-- Contents for a [drawing] that renders a horizontal bar colored like the
+-- JourneyLog panel borders.
+local HORIZONTAL_BAR = {
+	width = "(width)",
+	height = 1,
+	T.draw {
+		T.line {
+			x1 = 0,
+			y1 = 0,
+			x2 = "(width - 1)",
+			y2 = 0,
+			color = "114, 79, 46, 127",
+			thickness = 1
+		}
+	}
 }
 
 local journeylog_section_listdef = {
@@ -70,8 +87,7 @@ local journeylog_section_listdef = {
 					T.row {
 						T.column {
 							T.spacer {
-								width = 20,
-								height = 10
+								width = 10
 							}
 						},
 						T.column {
@@ -80,13 +96,13 @@ local journeylog_section_listdef = {
 							border_size = 5,
 							T.label {
 								id = "tab_label",
-								wrap = true
+								definition = "naia_fixed_width_120",
+								text_alignment = "center"
 							}
 						},
 						T.column {
 							T.spacer {
-								width = 20,
-								height = 10
+								width = 10,
 							}
 						}
 					}
@@ -148,7 +164,9 @@ local journeylog_scenarios_listdef = {
 						border_size = 10,
 						T.label {
 							id = "scenario_name",
-							linked_group = "scenario_name_group"
+							definition = "naia_fixed_width_240",
+							linked_group = "scenario_name_group",
+							wrap = true
 						}
 					}
 					,
@@ -474,11 +492,11 @@ local journeylog_nav_treedef = {
 			},
 			T.row {
 				T.column {
-					grow_factor = 0,
-					horizontal_alignment = "center",
-					T.image {
-						label = JOURNEYLOG_UI_MINOR_DIVIDER
-					}
+					grow_factor = 1,
+					horizontal_grow = true,
+					border = "top,bottom",
+					border_size = 10,
+					T.drawing(HORIZONTAL_BAR)
 				}
 			}
 		}
@@ -534,7 +552,9 @@ local journeylog_nav_treedef = {
 									border = "all",
 									border_size = 10,
 									T.label {
-										id = "archive_item_label"
+										id = "archive_item_label",
+										definition = "naia_fixed_width_260",
+										wrap = true
 									}
 								}
 							}
@@ -860,7 +880,7 @@ local journeylog_dialoglog_grid = {
 			}
 		},
 		T.column {
-			grow_factor = 3,
+			grow_factor = 1,
 			horizontal_alignment = "left",
 			vertical_grow = true,
 			border = "all",
@@ -887,12 +907,14 @@ local journeylog_archive_grid = {
 		grow_factor = 1,
 		T.column {
 			grow_factor = 1,
+			horizontal_grow = true,
 			vertical_alignment = "top",
 			T.grid {
 				T.row {
 					grow_factor = 1,
 					T.column {
-						horizontal_alignment = "left",
+						grow_factor = 1,
+						horizontal_grow = true,
 						vertical_alignment = "top",
 						border = "all",
 						border_size = 5,
@@ -902,8 +924,8 @@ local journeylog_archive_grid = {
 			}
 		},
 		T.column {
-			grow_factor = 3,
-			horizontal_alignment = "left",
+			grow_factor = 1,
+			horizontal_grow = true,
 			vertical_grow = true,
 			border = "all",
 			border_size = 5,
@@ -1059,11 +1081,143 @@ local journeylog_achievements_filter_listdef = {
 	}}
 }
 
+local journeylog_achievements_left_side_grid = {
+	T.row {
+		grow_factor = 1,
+		T.column {
+			horizontal_grow = true,
+			grow_factor = 1,
+			border = "top,left,right",
+			border_size = 10,
+			T.label {
+				definition = "gold_small",
+				label = _ "achievements^Filter",
+				text_alignment = "center"
+			}
+		}
+	},
+	T.row {
+		grow_factor = 0,
+		T.column {
+			grow_factor = 1,
+			horizontal_grow = true,
+			border = "top,bottom",
+			border_size = 10,
+			T.drawing(HORIZONTAL_BAR)
+		}
+	},
+	T.row {
+		grow_factor = 1,
+		T.column {
+			horizontal_grow = true,
+			vertical_alignment = "top",
+			T.listbox {
+				id = "achievements_filter",
+				definition = "naia_journeylog_listbox",
+				T.list_definition(journeylog_achievements_filter_listdef),
+				T.list_data {
+					T.row {
+						T.column {
+							T.widget {
+								id = "label",
+								label = _ "achievements^All"
+							}
+						}
+					},
+					T.row {
+						T.column {
+							T.widget {
+								id = "label",
+								label = _ "achievements^Complete"
+							}
+						}
+					},
+					T.row {
+						T.column {
+							T.widget {
+								id = "label",
+								label = _ "achievements^Incomplete"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	T.row {
+		grow_factor = 1,
+		T.column {
+			horizontal_grow = true,
+			grow_factor = 1,
+			border = "top,left,right",
+			border_size = 10,
+			T.label {
+				definition = "gold_small",
+				label = _ "achievements^Progress",
+				text_alignment = "center"
+			}
+		},
+	},
+	T.row {
+		grow_factor = 0,
+		T.column {
+			grow_factor = 0,
+			horizontal_grow = true,
+			border = "top,bottom",
+			border_size = 10,
+			T.drawing(HORIZONTAL_BAR)
+		}
+	},
+	T.row {
+		grow_factor = 1,
+		T.column {
+			horizontal_grow = true,
+			grow_factor = 1,
+			border = "top",
+			border_size = 10,
+			T.progress_bar {
+				id = "achievements_overall_bar",
+				definition = "naia_journeylog_achievements_overall_progress"
+			}
+		}
+	},
+	T.row {
+		grow_factor = 1,
+		T.column {
+			horizontal_grow = true,
+			grow_factor = 1,
+			T.grid {
+				T.row {
+					T.column {
+						border = "top,bottom",
+						border_size = 10,
+						horizontal_alignment = "left",
+						T.label {
+							id = "achievements_overall_percentage_text",
+							label = "100%"
+						}
+					},
+					T.column {
+						border = "top,bottom",
+						border_size = 10,
+						horizontal_alignment = "right",
+						T.label {
+							id = "achievements_overall_text",
+							label = "9999/9999",
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 local journeylog_achievements_grid = {
 	T.row {
 		grow_factor = 1,
 		T.column {
 			grow_factor = 1,
+			horizontal_grow = true,
 			vertical_alignment = "top",
 			border = "all",
 			border_size = 5,
@@ -1072,113 +1226,21 @@ local journeylog_achievements_grid = {
 				T.row {
 					grow_factor = 1,
 					T.column {
-						horizontal_grow = true,
 						grow_factor = 1,
-						border = "top,left,right",
-						border_size = 10,
-						T.label {
-							definition = "gold_small",
-							label = _ "achievements^Filter",
-							text_alignment = "center"
-						}
+						horizontal_grow = true,
+						vertical_grow = true,
+						T.grid(journeylog_achievements_left_side_grid)
 					},
-				},
-				T.row {
-					grow_factor = 0,
+					-- HACK: This is used as an equivalent to tree_view reserving horizontal
+					-- space for its vertical scrollbar. This way, we also "reserve" space
+					-- making this left side panel look exactly the same as the Knowledge
+					-- section's. Yes, we could just have the Knowledge section's tree_view
+					-- use vertical_scrollbar_mode="initial_auto" instead, but then when there
+					-- IS a scrollbar, our section's width would still be visibly different.
 					T.column {
 						grow_factor = 0,
-						horizontal_alignment = "center",
-						T.image {
-							label = JOURNEYLOG_UI_MINOR_DIVIDER
-						}
-					}
-				},
-				T.row {
-					grow_factor = 1,
-					T.column {
-						horizontal_grow = true,
-						vertical_alignment = "top",
-						T.listbox {
-							id = "achievements_filter",
-							definition = "naia_journeylog_listbox",
-							T.list_definition(journeylog_achievements_filter_listdef),
-							T.list_data {
-								T.row {
-									T.column {
-										T.widget {
-											id = "label",
-											label = _ "achievements^All"
-										}
-									}
-								},
-								T.row {
-									T.column {
-										T.widget {
-											id = "label",
-											label = _ "achievements^Complete"
-										}
-									}
-								},
-								T.row {
-									T.column {
-										T.widget {
-											id = "label",
-											label = _ "achievements^Incomplete"
-										}
-									}
-								}
-							}
-						}
-					}
-				},
-				T.row {
-					grow_factor = 1,
-					T.column {
-						horizontal_grow = true,
-						grow_factor = 1,
-						border = "top,left,right",
-						border_size = 10,
-						T.label {
-							definition = "gold_small",
-							label = _ "achievements^Progress",
-							text_alignment = "center"
-						}
-					},
-				},
-				T.row {
-					grow_factor = 0,
-					T.column {
-						grow_factor = 0,
-						horizontal_alignment = "center",
-						T.image {
-							label = JOURNEYLOG_UI_MINOR_DIVIDER
-						}
-					}
-				},
-				T.row {
-					grow_factor = 1,
-					T.column {
-						horizontal_grow = true,
-						grow_factor = 1,
-						border = "top,left,right",
-						border_size = 10,
-						T.progress_bar {
-							id = "achievements_overall_bar",
-							definition = "naia_journeylog_achievements_overall_progress"
-						}
-					}
-				},
-				T.row {
-					grow_factor = 1,
-					T.column {
-						horizontal_grow = true,
-						grow_factor = 1,
-						border = "all",
-						border_size = 10,
-						T.label {
-							id = "achievements_overall_text",
-							label = "9999/9999",
-							text_alignment = "right"
+						T.spacer {
+							width = 10
 						}
 					}
 				}
@@ -1186,7 +1248,7 @@ local journeylog_achievements_grid = {
 		},
 		T.column {
 			grow_factor = 1,
-			horizontal_grow = false,
+			horizontal_grow = true,
 			vertical_grow = true,
 			border = "all",
 			border_size = 5,
@@ -1301,6 +1363,11 @@ local journeylog_dlg = {
 	},
 
 	T.linked_group {
+		id = "top_leftright_element",
+		fixed_width = true
+	},
+
+	T.linked_group {
 		id = "left_side_pane",
 		fixed_width = true
 	},
@@ -1317,64 +1384,51 @@ local journeylog_dlg = {
 				grow_factor = 1,
 				horizontal_grow = true,
 				vertical_alignment = "top",
-				T.stacked_widget {
-					T.layer {
-						T.row {
-							T.column {
-								horizontal_alignment = "center",
-								border = "top,left,right",
-								border_size = 5,
-								T.label {
-									id = "title",
-									definition = "title",
-									label = "<DIALOG_TITLE>"
-								}
+				T.grid {
+					T.row {
+						-- This column is only here to force the listbox to be horizontally
+						-- centered across. Yes, we need it.
+						T.column {
+							horizontal_alignment = "left",
+							T.spacer {
+								linked_group = "top_leftright_element",
 							}
 						},
-						T.row {
-							T.column {
-								horizontal_alignment = "center",
-								border = "all",
-								border_size = 5,
-								T.image {
-									label = JOURNEYLOG_UI_MAJOR_DIVIDER
-								}
+						T.column {
+							horizontal_alignment = "center",
+							vertical_alignment = "top",
+							border = "all",
+							border_size = 5,
+							T.horizontal_listbox {
+								id = "log_section_selector",
+								T.list_definition(journeylog_section_listdef),
+								T.list_data(journeylog_section_listdata)
 							}
-						}
-					},
-					T.layer {
-						T.row {
-							T.column {
-								horizontal_alignment = "left",
-								vertical_alignment = "top",
-								T.grid {
-									T.row {
-										T.column {
-											border = "all",
-											border_size = 5,
-											T.horizontal_listbox {
-												id = "log_section_selector",
-												T.list_definition(journeylog_section_listdef),
-												T.list_data(journeylog_section_listdata)
-											}
-										}
-									}
-								}
-							},
-							T.column {
-								horizontal_alignment = "right",
-								vertical_alignment = "top",
-								border = "all",
-								border_size = 5,
-								T.text_box {
-									id = "search_box",
-									hint_text = _ "Search",
-									hint_image = "icons/action/zoomdefault_25.png~FL(horiz)~CS(-80,-90,-100)"
-								}
+						},
+						T.column {
+							horizontal_alignment = "right",
+							vertical_alignment = "top",
+							border = "all",
+							border_size = 5,
+							T.text_box {
+								id = "search_box",
+								linked_group = "top_leftright_element",
+								hint_text = _ "Search",
+								hint_image = "icons/action/zoomdefault_25.png~FL(horiz)~CS(-80,-90,-100)"
 							}
 						}
 					}
 				}
+			}
+		},
+		T.row {
+			grow_factor = 0,
+			T.column {
+				grow_factor = 1,
+				horizontal_grow = true,
+				border = "all",
+				border_size = 5,
+				T.drawing(HORIZONTAL_BAR)
 			}
 		},
 		T.row {
@@ -2255,6 +2309,7 @@ function journeylog_ui()
 
 			self.achievements_overall_bar.percentage = mathx.round(achs_completed_pc)
 			self.achievements_overall_text.label = ("%d/%d"):format(completed_count, #achs)
+			self.achievements_overall_percentage_text.label = ("%0.0f%%"):format(100 * completed_count / #achs)
 		end
 	end
 
@@ -2270,7 +2325,6 @@ function journeylog_ui()
 		end
 
 		self.tabs_container.selected_index = tab_num
-		self.title.label = UI_TAB_LABELS[tab_num] or "OUT_OF_RANGE"
 
 		if tab_num == 1 then
 			self.scenario_list:focus()
@@ -2281,12 +2335,12 @@ function journeylog_ui()
 			self.archive_nav_tree:focus()
 			self.hidden_achievements.visible = false
 			self.compact_view.visible = false
-			self.search_box.visible = false
+			self.search_box.visible = "hidden"
 		elseif tab_num == 3 then
 			self.achievement_list:focus()
 			self.hidden_achievements.visible = naia_is_in_maintainer_mode() and wesnoth.game_config.debug
 			self.compact_view.visible = false
-			self.search_box.visible = false
+			self.search_box.visible = "hidden"
 		end
 
 		initial_tab = tab_num
@@ -2415,8 +2469,6 @@ function journeylog_ui()
 
 		show_tab(self, initial_tab)
 		self.log_section_selector.selected_index = initial_tab
-
-		self.title.visible = false
 	end
 
 	gui.show_dialog(journeylog_dlg, preshow)
