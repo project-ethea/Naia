@@ -656,6 +656,51 @@ G_widget("window", "naia_journeylog", {
 	}
 })
 
+-- These are literally just normal labels with max_width set since Wesnoth
+-- doesn't let us do this on a per-instance basis </3
+local function fixed_width_label_factory(width)
+	return {
+		min_width        = 0,
+		min_height       = 0,
+		default_width    = width,
+		default_height   = 0,
+		max_width        = width,
+		max_height       = 0,
+
+		-- GUI_FONT_SIZE_DEFAULT
+		text_font_size   = 17,
+
+		T.state_enabled {
+			T.draw {
+				T.text {
+					x = 0,
+					y = 0,
+					w = "(width)",
+					h = "(text_height)",
+					maximum_width = "(width)",
+					-- GUI_FONT_SIZE_DEFAULT
+					font_size = 17,
+					-- GUI__FONT_COLOR_ENABLED__DEFAULT
+					color = "215, 215, 215, 255",
+					text = "(text)",
+					text_markup = "(text_markup)",
+					text_alignment = "(text_alignment)"
+				}
+			}
+		},
+		T.state_disabled {
+			-- Unused so no need to define this
+			T.draw {}
+		}
+	}
+end
+
+G_widget("label", "naia_fixed_width_120", fixed_width_label_factory(120))
+
+G_widget("label", "naia_fixed_width_240", fixed_width_label_factory(240))
+
+G_widget("label", "naia_fixed_width_260", fixed_width_label_factory(260))
+
 G_widget("panel", "naia_journeylog_panel", {
 	left_border   = JOURNEYLOG_PANEL_PADDING,
 	right_border  = JOURNEYLOG_PANEL_PADDING,
