@@ -1961,6 +1961,55 @@ function journeylog_ui()
 		title = "",
 	}
 
+	local lore_page = {
+		text   = "",
+		widget = nil,
+	}
+
+	lore_page.set = function(self, text, widget)
+		self.text   = transform_markup(text) or JOURNEYLOG_UI_BIO_PLACEHOLDER
+		self.widget = widget
+		for i = #self, 1, -1 do
+			table.remove(self, i)
+		end
+	end
+
+	lore_page.clear = function(self)
+		self:set("", nil)
+	end
+
+	lore_page.push = function(self, text, widget)
+		table.insert(self, {
+			text   = transform_markup(text) or JOURNEYLOG_UI_BIO_PLACEHOLDER,
+			widget = widget
+		})
+	end
+
+	local function render_lore_text(self)
+		if (lore_page.text == "" or not lore_page.widget) and #lore_page == 0 then
+			return
+		end
+
+		local elements = {}
+
+		-- Single widget or multi widget mode?
+		if #lore_page == 0 then
+			elements = { lore_page }
+		else
+			elements = lore_page
+		end
+
+		for _, element in ipairs(elements) do
+			if element.widget == nil then
+				jprintf(W_ERR, "nil widget in lore page element set, this is a BUG")
+			else
+				element.widget.marked_up_text = highlight_marked_up_text(
+					element.text, self.search_box.text
+				)
+			end
+		end
+	end
+
 	local function show_chara_bio(self, index)
 		if not index or index > #archive.profiles then
 			self.archive_entry.visible = false
@@ -1978,8 +2027,10 @@ function journeylog_ui()
 
 		local page = self.archive_entry:add_item_of_type("chara_profile")
 
+		lore_page:set(profile.description, page.archive_entry_body)
+
 		page.archive_entry_title.marked_up_text = ("<big>%s</big>"):format(profile.name)
-		page.archive_entry_body.marked_up_text = transform_markup(profile.description) or JOURNEYLOG_UI_BIO_PLACEHOLDER
+		render_lore_text(self)
 
 		page.chara_portrait.label = profile.portrait or ""
 		page.race.marked_up_text = bio_race_name_helper(profile.race, profile.gender)
@@ -2035,8 +2086,10 @@ function journeylog_ui()
 
 		local page = self.archive_entry:add_item_of_type("lore_entry")
 
+		lore_page:set(entry.text, page.archive_entry_body)
+
 		page.archive_entry_title.marked_up_text = ("<big>%s</big>"):format(entry.title)
-		page.archive_entry_body.marked_up_text = transform_markup(entry.text) or JOURNEYLOG_UI_BIO_PLACEHOLDER
+		render_lore_text(self)
 
 		local source = entry.source
 		if source then
@@ -2082,8 +2135,10 @@ function journeylog_ui()
 
 		local prologue = self.archive_entry:add_item_of_type("lore_entry")
 
+		lore_page:clear()
+		lore_page:push(entry.text, prologue.archive_entry_body)
+
 		prologue.archive_entry_title.marked_up_text = ("<big>%s</big>"):format(entry.title)
-		prologue.archive_entry_body.marked_up_text = transform_markup(entry.text) or JOURNEYLOG_UI_BIO_PLACEHOLDER
 
 		prologue.source.visible = false
 		prologue.source_heading.visible = false
@@ -2099,8 +2154,9 @@ function journeylog_ui()
 		for i, section_data in ipairs(entry.sections) do
 			local section = self.archive_entry:add_item_of_type("recap_subsection")
 
+			lore_page:push(section_data.text, section.archive_entry_body)
+
 			section.archive_entry_title.marked_up_text = ("%s"):format(section_data.title)
-			section.archive_entry_body.marked_up_text = transform_markup(section_data.text) or JOURNEYLOG_UI_BIO_PLACEHOLDER
 
 			if section_data.quote ~= nil then
 				local quote_color = '#baac7d'
@@ -2118,6 +2174,8 @@ function journeylog_ui()
 				section.character_quote.visible = false
 			end
 		end
+
+		render_lore_text(self)
 
 		-- HACK: work around layout bug in Wesnoth 1.18 that causes the entry
 		-- display to often have unexpectedly short widgets when repopulated
@@ -2335,12 +2393,12 @@ function journeylog_ui()
 			self.archive_nav_tree:focus()
 			self.hidden_achievements.visible = false
 			self.compact_view.visible = false
-			self.search_box.visible = "hidden"
+			self.search_box.visible = true
 		elseif tab_num == 3 then
 			self.achievement_list:focus()
 			self.hidden_achievements.visible = naia_is_in_maintainer_mode() and wesnoth.game_config.debug
 			self.compact_view.visible = false
-			self.search_box.visible = "hidden"
+			--self.search_box.visible = "hidden"
 		end
 
 		initial_tab = tab_num
@@ -2434,7 +2492,12 @@ function journeylog_ui()
 		end
 
 		self.search_box.on_modified = function()
-			set_journey_filter(self, self.search_box.text)
+			local tab_num = self.log_section_selector.selected_index
+			if tab_num == 1 then
+				set_journey_filter(self, self.search_box.text)
+			elseif tab_num == 2 then
+				render_lore_text(self)
+			end
 		end
 
 		self.compact_view.on_modified = function()
