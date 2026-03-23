@@ -1986,6 +1986,10 @@ function journeylog_ui()
 	end
 
 	local function render_lore_text(self)
+		local clean_terms = self.search_box.text or ""
+		-- Trim leading and trailing whitespace
+		clean_terms = clean_terms:trim()
+
 		if (lore_page.text == "" or not lore_page.widget) and #lore_page == 0 then
 			return
 		end
@@ -2004,7 +2008,7 @@ function journeylog_ui()
 				jprintf(W_ERR, "nil widget in lore page element set, this is a BUG")
 			else
 				element.widget.marked_up_text = highlight_marked_up_text(
-					element.text, self.search_box.text
+					element.text, clean_terms
 				)
 			end
 		end
