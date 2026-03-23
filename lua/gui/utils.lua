@@ -7,6 +7,85 @@
 -- See COPYING for usage terms.
 --
 
+--------------------
+-- FONT UTILITIES --
+--------------------
+
+local core_fonts = { valid = false }
+local core_fonts_wml_fn = "hardwired/fonts.cfg"
+
+if filesystem.have_file(core_fonts_wml_fn) then
+	local cfg = wml.load(core_fonts_wml_fn, false)
+	if cfg then
+		cfg = wml.get_child(cfg, "fonts")
+		if cfg then
+			core_fonts = cfg
+			core_fonts.valid = true
+		end
+	end
+end
+
+if not core_fonts.valid then
+	wprintf(W_ERR, "Engine data file %s not found or has an incorrect structure. Some Naia GUI utilities may display abnormal behavior during this session. This error probably indicates an incompatibility with a future version of Wesnoth that needs to be addressed in Naia. Please file a bug report.")
+end
+
+function ui_default_font_name()
+	return tostring(core_fonts.family_order)
+end
+
+function ui_monospace_font_name()
+	return tostring(core_fonts.family_order_monospace)
+end
+
+function ui_script_font_name()
+	return tostring(core_fonts.family_order_script)
+end
+
+----------------------
+-- MARKUP UTILITIES --
+----------------------
+
+--
+-- Helper to make markup text fancier by converting certain tags to use color
+-- formatting.
+--
+-- NOTE:
+-- In order to preserve semantics, if the input is nil then the output should
+-- be nil as well.
+--
+function transform_markup(markup)
+	if markup then
+		return tostring(markup):gsub(
+			"<b>([^<]+)</b>",
+			"<span color='#baac7d'>%0</span>")
+	else
+		return nil
+	end
+end
+
+local HEADER_SIZES = { 160, 130, 115, 100 }
+
+--
+-- Makes a header in a script font
+--
+function header_markup(markup, level)
+	if level == nil then
+		level = 1
+	elseif level > #HEADER_SIZES or level < 1 then
+		level = #HEADER_SIZES
+	end
+
+	if markup then
+		return ("<span face='%s' size='%d%%'>%s</span>"):format(ui_script_font_name(), HEADER_SIZES[level], markup)
+	else
+		return nil
+	end
+end
+
+----------------------------------
+-- TEXT SEARCH AND HIGHLIGHTING --
+----------------------------------
+
 local UI_TEXT_HIGHLIGHT_BG_COLOR = "#153550" -- Same as [text_box] selection bg in 1.18
 
 -- Special characters that need to be escaped when used in a Pango markup
@@ -43,24 +122,6 @@ local function escape_text(text)
 		text = text:gsub(original, sub)
 	end
 	return text
-end
-
---
--- Helper to make markup text fancier by converting certain tags to use color
--- formatting.
---
--- NOTE:
--- In order to preserve semantics, if the input is nil then the output should
--- be nil as well.
---
-function transform_markup(markup)
-	if markup then
-		return tostring(markup):gsub(
-			"<b>([^<]+)</b>",
-			"<span color='#baac7d'>%0</span>")
-	else
-		return nil
-	end
 end
 
 local U_HIGHLIGHT_PRE  = unicode_array("<span color='" .. UI_TEXT_HIGHLIGHT_BG_COLOR .. "'>")
@@ -242,3 +303,4 @@ function highlight_marked_up_text(text, search_for)
 
 	return stringx.join(tokens, '')
 end
+
