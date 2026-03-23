@@ -1732,7 +1732,7 @@ function journeylog_ui()
 	local function apply_journey_filter_row(row)
 		if #current_filter == 0 then
 			-- This is only relevant when this function is called during view
-			-- rebuilds, because set_journey_filter() will manually bail and
+			-- rebuilds, because update_journey_filter() will manually bail and
 			-- set all rows to visible if the filter is empty.
 			return
 		end
@@ -1775,8 +1775,8 @@ function journeylog_ui()
 		end
 	end
 
-	local function set_journey_filter(self, search_terms)
-		local clean_terms = search_terms or ""
+	local function update_journey_filter(self)
+		local clean_terms = self.search_box.text or ""
 		-- Trim leading and trailing whitespace
 		clean_terms = clean_terms:trim()
 
@@ -1788,7 +1788,7 @@ function journeylog_ui()
 		end
 
 		current_filter = {}
-		for word in search_terms:gmatch("[^%s]+") do
+		for word in clean_terms:gmatch("[^%s]+") do
 			table.insert(current_filter, word:lower())
 		end
 
@@ -2498,7 +2498,7 @@ function journeylog_ui()
 		self.search_box.on_modified = function()
 			local tab_num = self.log_section_selector.selected_index
 			if tab_num == 1 then
-				set_journey_filter(self, self.search_box.text)
+				update_journey_filter(self)
 			elseif tab_num == 2 then
 				render_lore_text(self)
 			end
