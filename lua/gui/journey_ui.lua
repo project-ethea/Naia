@@ -2386,6 +2386,16 @@ function journeylog_ui()
 			return
 		end
 
+		-- Update these before switching.
+		-- "Why don't we do it in self.search_box.on_modified?" Because then
+		-- we'd be performing extra super-expensive operations every time,
+		-- even if the relevant elements are not currently visible.
+		if tab_num == 1 then
+			update_journey_filter(self)
+		elseif tab_num == 2 then
+			render_lore_text(self)
+		end
+
 		self.tabs_container.selected_index = tab_num
 
 		if tab_num == 1 then
