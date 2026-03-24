@@ -13,6 +13,7 @@ PROJECT_ETHEA_NAIA_VERSION = (...).version
 NAIA_PREFIX                = (...).prefix
 WESNOTH_VERSION            = wesnoth.current_version()
 WML_INIT                   = wml.get_child(..., "init")
+APPLE                      = (...).platform == "apple"
 
 utils                      = wesnoth.require("wml-utils.lua")
 on_event                   = wesnoth.require("on_event.lua")
