@@ -16,14 +16,14 @@ local BOSS_TITLE_OFFSET = 10
 
 local BOSS_SUBTITLE_COLOR = { 215, 215, 215 }
 local BOSS_SUBTITLE_SIZE = 14
-local BOSS_SUBTITLE_OFFSET = BOSS_TITLE_OFFSET + 30
+local BOSS_SUBTITLE_OFFSET = BOSS_TITLE_OFFSET + 32
 
 local BOSS_BAR_FILL_COLOR = '#ffb367'
 local BOSS_BAR_BG_COLOR = '#0a2233'
 local BOSS_BAR_FADE_TIME = 1000
 local BOSS_BAR_FADE_DELAY = 1500
 local BOSS_BAR_SIZE = 10
-local BOSS_BAR_OFFSET = BOSS_SUBTITLE_OFFSET + 22
+local BOSS_BAR_OFFSET = BOSS_SUBTITLE_OFFSET + 25
 
 local BOSS_ALERT_SIZE = 32
 local BOSS_ALERT_OFFSET = -200
@@ -208,7 +208,7 @@ function ui.update()
 
 	wprintf(W_INFO, "refreshing boss fight UI")
 
-	local name, sub = boss_state.title, ("– %s –"):format(boss_state.subtitle)
+	local name, sub = header_markup(boss_state.title, 2), boss_state.subtitle
 	local hp, max_hp = unit.hitpoints, unit.max_hitpoints
 	local padding = string.rep(" ", #(("%d / %d"):format(hp, max_hp)))
 	local bar = ("<b><span size='125%%'>%s</span>  %s  <span size='125%%' color='#d7d7d7'>%d / %d</span></b>"):format(padding, bar_factory(hp, max_hp), hp, max_hp)
