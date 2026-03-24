@@ -1092,7 +1092,7 @@ G_widget("scrollbar_panel", "naia_journeylog_scrollbar_panel", {
 	JOURNEYLOG_VIEWER_GRID,
 })
 
-local function journeylog_dialog_line_canvas(font_size, text_color)
+local function journeylog_dialog_line_canvas(font_size, text_color, family)
 	return T.draw {
 		T.text {
 			x               = 0,
@@ -1100,7 +1100,7 @@ local function journeylog_dialog_line_canvas(font_size, text_color)
 			w               = "(width)",
 			h               = "(text_height)",
 			maximum_width   = "(width)",
-			font_family     = "",
+			font_family     = family or "",
 			font_size       = font_size,
 			font_style      = "",
 			color           = string.format("([%s, text_alpha])", text_color),
@@ -1113,7 +1113,7 @@ local function journeylog_dialog_line_canvas(font_size, text_color)
 	}
 end
 
-local function journeylog_dialog_line_widget_def(font_size, width, color)
+local function journeylog_dialog_line_widget_def(font_size, width, color, family)
 	return {
 		min_width        = 0,
 		min_height       = 0,
@@ -1121,18 +1121,18 @@ local function journeylog_dialog_line_widget_def(font_size, width, color)
 		default_height   = 0,
 		max_width        = width,
 		max_height       = 0,
-		text_font_family = "",
+		text_font_family = family or "",
 		text_font_size   = font_size,
 		text_font_style  = "",
 		link_color       = "255, 255, 0",
 
 		T.state_enabled {
 			-- GUI__FONT_COLOR_ENABLED__DEFAULT
-			journeylog_dialog_line_canvas(font_size, color)
+			journeylog_dialog_line_canvas(font_size, color, family)
 		},
 		T.state_disabled {
 			-- GUI__FONT_COLOR_DISABLED__DEFAULT
-			journeylog_dialog_line_canvas(font_size, "128, 128, 128")
+			journeylog_dialog_line_canvas(font_size, "128, 128, 128", family)
 		}
 	}
 end
@@ -1149,11 +1149,19 @@ G_widget(
 	journeylog_dialog_line_widget_def(17, JOURNEYLOG_MESSAGE_WIDTH, JOURNEYLOG_DIALOG_COLOR)
 )
 
-G_widget(
-	"label",
-	"naia_journeylog_dialog_speaker",
-	journeylog_dialog_line_widget_def(20, JOURNEYLOG_MESSAGE_WIDTH, JOURNEYLOG_SPEAKER_COLOR)
-)
+if WESNOTH_VERSION >= V"1.19.0" then
+	G_widget(
+		"label",
+		"naia_journeylog_dialog_speaker",
+		journeylog_dialog_line_widget_def(24, JOURNEYLOG_MESSAGE_WIDTH, JOURNEYLOG_SPEAKER_COLOR, "script")
+	)
+else
+	G_widget(
+		"label",
+		"naia_journeylog_dialog_speaker",
+		journeylog_dialog_line_widget_def(20, JOURNEYLOG_MESSAGE_WIDTH, JOURNEYLOG_SPEAKER_COLOR)
+	)
+end
 
 G_widget(
 	"label",
