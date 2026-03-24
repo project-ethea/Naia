@@ -2033,7 +2033,7 @@ function journeylog_ui()
 
 		lore_page:set(profile.description, page.archive_entry_body)
 
-		page.archive_entry_title.marked_up_text = ("<big>%s</big>"):format(profile.name)
+		page.archive_entry_title.marked_up_text = header_markup(profile.name)
 		render_lore_text(self)
 
 		page.chara_portrait.label = profile.portrait or ""
@@ -2092,7 +2092,7 @@ function journeylog_ui()
 
 		lore_page:set(entry.text, page.archive_entry_body)
 
-		page.archive_entry_title.marked_up_text = ("<big>%s</big>"):format(entry.title)
+		page.archive_entry_title.marked_up_text = header_markup(entry.title)
 		render_lore_text(self)
 
 		local source = entry.source
@@ -2142,7 +2142,7 @@ function journeylog_ui()
 		lore_page:clear()
 		lore_page:push(entry.text, prologue.archive_entry_body)
 
-		prologue.archive_entry_title.marked_up_text = ("<big>%s</big>"):format(entry.title)
+		prologue.archive_entry_title.marked_up_text = header_markup(entry.title)
 
 		prologue.source.visible = false
 		prologue.source_heading.visible = false
@@ -2160,7 +2160,7 @@ function journeylog_ui()
 
 			lore_page:push(section_data.text, section.archive_entry_body)
 
-			section.archive_entry_title.marked_up_text = ("%s"):format(section_data.title)
+			section.archive_entry_title.marked_up_text = header_markup(section_data.title, 2)
 
 			if section_data.quote ~= nil then
 				local quote_color = '#baac7d'
