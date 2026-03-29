@@ -1,6 +1,14 @@
 Naia - Project Ethea Phase 1 Shared Library - Changelog
 =======================================================
 
+Version 20260329.1:
+-------------------
+* Lua and WML library:
+  * Added `HERO_MARKERS` and `UNHERO_MARKERS` family of macros to handle hero
+    unit markers more consistently (IftU issue #84, AtS issue #112, Naia issue
+    #51)
+
+
 Version 20260329:
 -----------------
 * General:
