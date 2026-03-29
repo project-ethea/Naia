@@ -900,7 +900,7 @@ end
 -- [/apply_amlas]
 ---
 function wesnoth.wml_actions.apply_amlas(cfg)
-	local u = wesnoth.units.find_on_map(cfg)[1] or wml.error("[apply_amlas]: Could not match any units!")
+	local u = wesnoth.units.find(cfg)[1] or wml.error("[apply_amlas]: Could not match any units!")
 
 	for amla_cfg in wml.child_range(cfg, "advancement") do
 		u:add_modification("advancement", amla_cfg)
