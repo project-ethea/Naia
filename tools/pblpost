@@ -55,7 +55,7 @@ class NaiaAuthStore:
 
     def query_passphrase(self, addon_id):
         'Retrieves a single passphrase from the store.'
-        if addon_id not in self._data:
+        if not self.valid() or addon_id not in self._data:
             return None
         return self._data[addon_id]['passphrase']
 
@@ -91,7 +91,7 @@ def read_base64_file(path):
 def get_addon_credentials(addon_id):
     'Retrieves the passphrase for the specified add-on.'
     passphrase = ADDON_AUTH.query_passphrase(addon_id)
-    if not passphrase:
+    if passphrase is None:
         die("Passphrase for add-on {} not found in the Naia credentials store.".format(addon_id))
     return passphrase
 
