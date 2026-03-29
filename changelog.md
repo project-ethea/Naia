@@ -5,7 +5,7 @@ Version 20260329:
 -----------------
 * General:
   * First fully-supported Wesnoth 1.18 release, supporting Wesnoth 1.17.23 and
-    later.
+    later; as well as Wesnoth 1.19.22 through 1.20.x.
   * Removed all compatibility code for Wesnoth 1.15.13 and earlier.
   * Implemented a modification blacklist to prevent starting/loading games
     with incompatible modifications enabled (currently unused). This is meant
