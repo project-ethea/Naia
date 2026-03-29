@@ -181,7 +181,7 @@ if __name__ == "__main__":
     # Initialize the add-on credentials store.
     ADDON_AUTH = NaiaAuthStore(args.auth_file)
     if not ADDON_AUTH.valid():
-        die("Could not open the Naia add-on credentials store file: {}".format(ADDON_AUTH.path))
+        warn(f"Could not open the Naia add-on credentials store file: {ADDON_AUTH.path}")
     #
     # We're making this happen.
     #
