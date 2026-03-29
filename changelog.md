@@ -7,6 +7,8 @@ Version 20260329.1:
   * Added `HERO_MARKERS` and `UNHERO_MARKERS` family of macros to handle hero
     unit markers more consistently (IftU issue #84, AtS issue #112, Naia issue
     #51)
+  * `[apply_amlas] amla_ids=` allows enumerating AMLAs to apply by id to avoid
+    including the original AMLA WML tags wholesale.
   * `[apply_amlas]` now matches on recall list units as well.
 
 

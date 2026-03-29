@@ -890,6 +890,7 @@ end
 --
 -- [apply_amlas]
 --     ... SUF ...
+--     amla_ids= ... comma-separated list of AMLA ids ...
 --     [advancement]
 --         ... contents of the [advancement] tag ...
 --     [/advancement]
@@ -902,6 +903,26 @@ end
 function wesnoth.wml_actions.apply_amlas(cfg)
 	local u = wesnoth.units.find(cfg)[1] or wml.error("[apply_amlas]: Could not match any units!")
 
+	-- Apply unit type AMLAs identified by id
+	if cfg.amla_ids and cfg.amla_ids ~= "" then
+		local ut = wesnoth.unit_types[u.type]
+		if u.variation and u.variation ~= "" then
+			ut = ut.variations[u.variation]
+		end
+		ut = ut.variations[u.gender]
+
+		local amla_ids = stringx.split(cfg.amla_ids)
+		for _, amla_id in ipairs(amla_ids) do
+			local amla_cfg = wml.find_child(ut.__cfg, "advancement", { id = amla_id })
+			if amla_cfg then
+				u:add_modification("advancement", amla_cfg)
+			else
+				wprintf(W_ERR, "[apply_amlas] unknown amla id '%s' for unit type '%s'", amla_id, u.type)
+			end
+		end
+	end
+
+	-- Apply wholesale AMLAs
 	for amla_cfg in wml.child_range(cfg, "advancement") do
 		u:add_modification("advancement", amla_cfg)
 	end
