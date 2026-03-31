@@ -3,6 +3,10 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 
 Version 20260330+dev:
 ---------------------
+* General:
+  * Updated start screen to only mention Standing Unit Animations, as the
+    other options have been removed (halos) or are not worth fussing over
+    (combat damage indicators).
 
 
 Version 20260330:
