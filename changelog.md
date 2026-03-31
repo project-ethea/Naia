@@ -8,6 +8,9 @@ Version 20260330+dev:
     other options have been removed (halos) or are not worth fussing over
     (combat damage indicators).
 
+* Tools:
+  * mkdist should now run on macOS and *BSD Unices.
+
 
 Version 20260330:
 -----------------

@@ -20,7 +20,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-UMCDIST_VERSION='0.2.0'
+UMCDIST_VERSION='0.2.1'
 
 #
 # Configurable variables (affected by command line contents).
@@ -79,19 +79,18 @@ error()
 	echo `basename $0`: $*
 }
 
-need_gnu()
+checksum()
 {
-	echo "$1 is not the GNU version. $0 has only been tested with the GNU version. Aborting."
-	exit 3
-}
+	local input_file="$1"
+	local output_file="$2"
 
-probe_gnu()
-{
-	local cmd=$1
-	set -- `$cmd --version`
-
-	local is_gnu=$2
-	[ "$2" = "(GNU" ] || need_gnu $cmd
+	if command -v sha256sum 2>&1 > /dev/null; then
+		sha256sum "$input_file" | tee "$output_file"
+	elif command -v shasum 2>&1 > /dev/null; then
+		sha256 "$input_file" | tee "$output_file"
+	else
+		error 'sha256sum or sha256 not found in $PATH. Cannot generate SHA256 digest.'
+	fi
 }
 
 print_usage()
@@ -165,16 +164,6 @@ END
 }
 
 #
-# Make sure we are on a GNU environment.
-#
-
-for c in cp mv mkdir mktemp readlink tr tar; do
-	probe_gnu $c
-done
-
-sed 'v' < /dev/null || need_gnu 'sed'
-
-#
 # Process command line.
 #
 
@@ -211,7 +200,7 @@ while [ -n "$1" ]; do
 		;;
 		* )
 			#print_usage; exit 1
-			input_dir=`readlink -e -- $1 2>/dev/null`
+			input_dir=`readlink -f -- $1 2>/dev/null`
 			shift
 
 			if [ -z "$1" ]; then
@@ -225,7 +214,7 @@ while [ -n "$1" ]; do
 				exit 2
 			fi
 
-			output_dir="`readlink -e -- $1 2>/dev/null`"
+			output_dir="`readlink -f -- $1 2>/dev/null`"
 
 			if [ -n "$2" ]; then
 				error "Unrecognized option '$2'."
@@ -251,7 +240,7 @@ fi
 
 if [ -n "$lib_dir" ]; then
 	if [ -h "$lib_dir" ]; then
-		lib_dir="$(readlink -e $lib_dir)"
+		lib_dir="$(readlink -f $lib_dir)"
 	fi
 
 	if [ -z "$lib_dir" ] || [ ! -d "$lib_dir" ]; then
@@ -260,10 +249,10 @@ if [ -n "$lib_dir" ]; then
 	fi
 else
 	# Autodetect Naia. Outer Naia takes precedence
-	lib_dir="$(readlink -e $input_dir)/../Naia"
+	lib_dir="$(readlink -f $input_dir)/../Naia"
 
 	if [ ! -d "$lib_dir" ]; then
-		lib_dir="$(readlink -e $input_dir)/Naia"
+		lib_dir="$(readlink -f $input_dir)/Naia"
 
 		if [ ! -d "$lib_dir" ]; then
 			error "Could not auto-detect Naia. Use the -L option to provide a path to Naia if necessary."
@@ -298,9 +287,9 @@ trap restore_pwd INT QUIT HUP TERM
 
 cd $input_dir
 
-PKG_NAME=`cat ./dist/BASEDIRS | sed $CLEAR_WHITESPACE_EXPR`
-PKG_VERSION=`cat ./dist/VERSION | sed $CLEAR_WHITESPACE_EXPR`
-PKG_TITLE=`echo "$PKG_NAME" | sed 'y/_/ /'`
+PKG_NAME=`cat ./dist/BASEDIRS`
+PKG_VERSION=`cat ./dist/VERSION`
+PKG_TITLE=`sed 'y/_/ /' ./dist/BASEDIRS`
 
 OUTPUT_NAME_STEM="${PKG_NAME}-${PKG_VERSION}"
 OUTPUT_EXTENSION="${ARCHIVE_FORMAT}.${ARCHIVE_COMPRESSOR}"
@@ -435,7 +424,7 @@ tar -${ARCHIVE_SWITCH}cf "$PKG_FILE" "./$PKG_NAME"
 # Compute message digests of the generated tarball.
 #
 
-[ $do_sha256 -ne 0 ] && sha256sum "$PKG_FILE" > "$PKG_FILE.SHA256"
+[ $do_sha256 -ne 0 ] && checksum "$PKG_FILE" "$PKG_FILE.SHA256"
 
 
 
