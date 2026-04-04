@@ -869,14 +869,37 @@ local journeylog_dialoglog_grid = {
 		T.column {
 			grow_factor = 1,
 			horizontal_grow = true,
-			vertical_alignment = "top",
-			border = "all",
-			border_size = 5,
-			T.listbox {
-				id = "scenario_list",
-				definition = "naia_journeylog_listbox",
-				linked_group = "left_side_pane",
-				T.list_definition(journeylog_scenarios_listdef)
+			vertical_grow = true,
+			T.grid {
+				T.row {
+					grow_factor = 1,
+					T.column {
+						grow_factor = 1,
+						horizontal_grow = true,
+						vertical_alignment = "top",
+						border = "all",
+						border_size = 5,
+						T.listbox {
+							id = "scenario_list",
+							definition = "naia_journeylog_listbox",
+							linked_group = "left_side_pane",
+							T.list_definition(journeylog_scenarios_listdef)
+						}
+					}
+				},
+				T.row {
+					grow_factor = 0,
+					T.column {
+						horizontal_alignment = "left",
+						vertical_alignment = "bottom",
+						border = "all",
+						border_size = 5,
+						T.toggle_button {
+							id = "compact_view",
+							label = _ "Compact view",
+						}
+					}
+				}
 			}
 		},
 		T.column {
@@ -1083,7 +1106,7 @@ local journeylog_achievements_filter_listdef = {
 
 local journeylog_achievements_left_side_grid = {
 	T.row {
-		grow_factor = 1,
+		grow_factor = 0,
 		T.column {
 			horizontal_grow = true,
 			grow_factor = 1,
@@ -1107,7 +1130,7 @@ local journeylog_achievements_left_side_grid = {
 		}
 	},
 	T.row {
-		grow_factor = 1,
+		grow_factor = 0,
 		T.column {
 			horizontal_grow = true,
 			vertical_alignment = "top",
@@ -1145,7 +1168,37 @@ local journeylog_achievements_left_side_grid = {
 		}
 	},
 	T.row {
-		grow_factor = 1,
+		grow_factor = 0,
+		T.column {
+			T.spacer {
+				height = 10
+			}
+		}
+	},
+	T.row {
+		grow_factor = 0,
+		T.column {
+			grow_factor = 0,
+			horizontal_alignment = "left",
+			-- Parent already has this margin
+			border = "all",
+			border_size = 5,
+			T.toggle_button {
+				id = "hidden_achievements",
+				label = _ "Hidden achievements (debug)",
+			}
+		}
+	},
+	T.row {
+		grow_factor = 0,
+		T.column {
+			T.spacer {
+				height = 5
+			}
+		}
+	},
+	T.row {
+		grow_factor = 0,
 		T.column {
 			horizontal_grow = true,
 			grow_factor = 1,
@@ -1169,7 +1222,7 @@ local journeylog_achievements_left_side_grid = {
 		}
 	},
 	T.row {
-		grow_factor = 1,
+		grow_factor = 0,
 		T.column {
 			horizontal_grow = true,
 			grow_factor = 1,
@@ -1182,7 +1235,7 @@ local journeylog_achievements_left_side_grid = {
 		}
 	},
 	T.row {
-		grow_factor = 1,
+		grow_factor = 0,
 		T.column {
 			horizontal_grow = true,
 			grow_factor = 1,
@@ -1218,7 +1271,7 @@ local journeylog_achievements_grid = {
 		T.column {
 			grow_factor = 1,
 			horizontal_grow = true,
-			vertical_alignment = "top",
+			vertical_grow = true,
 			border = "all",
 			border_size = 5,
 			T.grid {
@@ -1228,7 +1281,7 @@ local journeylog_achievements_grid = {
 					T.column {
 						grow_factor = 1,
 						horizontal_grow = true,
-						vertical_grow = true,
+						vertical_alignment = "top",
 						T.grid(journeylog_achievements_left_side_grid)
 					},
 					-- HACK: This is used as an equivalent to tree_view reserving horizontal
@@ -1416,7 +1469,17 @@ local journeylog_dlg = {
 								hint_text = _ "Search",
 								hint_image = "icons/action/zoomdefault_25.png~FL(horiz)~CS(-80,-90,-100)"
 							}
-						}
+						},
+						T.column {
+							horizontal_alignment = "right",
+							border = "all",
+							border_size = 5,
+							T.button {
+								id = "ok",
+								definition = "close",
+								label = wgettext("Close")
+							}
+						},
 					}
 				}
 			}
@@ -1463,50 +1526,6 @@ local journeylog_dlg = {
 								label = _ "<unknown campaign>",
 								tooltip = _ "Select the campaign to display",
 								linked_group = "left_side_pane"
-							}
-						},
-						T.column {
-							grow_factor = 1,
-							horizontal_alignment = "right",
-							T.grid {
-								T.row {
-									grow_factor = 0,
-									T.column {
-										grow_factor = 0,
-										horizontal_alignment = "right",
-										border = "all",
-										border_size = 5,
-										T.toggle_button {
-											id = "hidden_achievements",
-											label = _ "Hidden achievements",
-										}
-									},
-									T.column {
-										grow_factor = 0,
-										horizontal_alignment = "right",
-										border = "all",
-										border_size = 5,
-										T.toggle_button {
-											id = "compact_view",
-											label = _ "Compact view",
-										}
-									},
-									T.column {
-										T.spacer {
-											width = 30
-										}
-									},
-									T.column {
-										grow_factor = 0,
-										horizontal_alignment = "right",
-										border = "all",
-										border_size = 5,
-										T.button {
-											id = "ok",
-											label = wgettext("Close")
-										}
-									}
-								}
 							}
 						}
 					}
@@ -2378,7 +2397,7 @@ function journeylog_ui()
 		if journeylog_ui_in_dream_sequence() then
 			journeylog_ui_dream_hook(self)
 			self.tabs_container.selected_index = 4
-			self.hidden_achievements.visible = false
+			--self.hidden_achievements.visible = false
 			self.compact_view.enabled = false
 			self.search_box.enabled = false
 			self.log_section_selector.visible = "invisible"
@@ -2399,18 +2418,18 @@ function journeylog_ui()
 
 		if tab_num == 1 then
 			self.scenario_list:focus()
-			self.hidden_achievements.visible = false
-			self.compact_view.visible = true
+			--self.hidden_achievements.visible = false
+			--self.compact_view.visible = true
 			self.search_box.visible = true
 		elseif tab_num == 2 then
 			self.archive_nav_tree:focus()
-			self.hidden_achievements.visible = false
-			self.compact_view.visible = false
+			--self.hidden_achievements.visible = false
+			--self.compact_view.visible = false
 			self.search_box.visible = true
 		elseif tab_num == 3 then
 			self.achievement_list:focus()
 			self.hidden_achievements.visible = naia_is_in_maintainer_mode() and wesnoth.game_config.debug
-			self.compact_view.visible = false
+			--self.compact_view.visible = false
 			--self.search_box.visible = "hidden"
 		end
 
