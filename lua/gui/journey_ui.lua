@@ -1722,7 +1722,6 @@ function journeylog_ui()
 		table.insert(journey_view_rows, {
 			message = journey_msg,
 			ui = new_node,
-			parent = container,
 			visible = function() return container.unfolded end,
 			set_visible = function(value) container.unfolded = value end
 		})
