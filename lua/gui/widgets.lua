@@ -1350,3 +1350,229 @@ end
 
 G_mini_button("naia_mini_close", "×")
 G_mini_button("naia_mini_ok",    "✓")
+G_mini_button("naia_mini_menu",  "a")
+
+local function G_icon_button(id, icon_stem, size)
+	if size == nil then
+		size = 25
+	end
+	G_widget("button", id, {
+		min_width         = size,
+		min_height        = size,
+		default_width     = size,
+		default_height    = size,
+		max_width         = size,
+		max_height        = size,
+
+		T.state_enabled {
+			T.draw {
+				T.image {
+					w    = size,
+					h    = size,
+					name = icon_stem .. ".png"
+				}
+			}
+		},
+		T.state_disabled {
+			T.draw {
+				T.image {
+					w    = size,
+					h    = size,
+					name = icon_stem .. ".png~GS()"
+				}
+			}
+		},
+		T.state_pressed {
+			T.draw {
+				T.image {
+					w    = size,
+					h    = size,
+					name = icon_stem .. "-pressed.png"
+				}
+			}
+		},
+		T.state_focused {
+			T.draw {
+				T.image {
+					w    = size,
+					h    = size,
+					name = icon_stem .. "-active.png"
+				}
+			}
+		}
+	})
+end
+
+G_icon_button("naia_menu", "icons/menu-25")
+
+local function G_mini_toggle(id, label, label_on)
+	G_widget("toggle_button", id, {
+		min_width         = 30,
+		min_height        = 30,
+		default_width     = 30,
+		default_height    = 30,
+		max_width         = 30,
+		max_height        = 30,
+		text_extra_width  = 0,
+		text_extra_height = 0,
+		text_font_size    = 20,
+
+		-- Default
+		T.state {
+			T.enabled {
+				C_vcanvas(
+					C_button_frame({
+						background_image_path = "background",
+						border_color          = "162, 127, 68, 255",   -- GUI__BORDER_COLOR
+						border_color_dark     = "114, 79, 46, 255",    -- GUI__BORDER_COLOR_DARK
+						highlight_line_color  = "21, 79, 109, 255"
+					}),
+					mini_button_text(label, INTRO_TEXT_COLOR)
+				)
+			},
+			T.disabled {
+				C_vcanvas(
+					C_button_frame({
+						background_image_path = "background",
+						border_color          = "128, 128, 128, 255",  -- GUI__FONT_COLOR_DISABLED__DEFAULT
+						border_color_dark     = "89, 89, 89, 255",
+						highlight_line_color  = "60, 60, 60, 255",
+						ipf                   = "~GS()"
+					}),
+					mini_button_text(label, "128, 128, 128")
+				)
+			},
+			T.focused {
+				C_vcanvas(
+					C_button_frame({
+						background_image_path = "background-active",
+						border_color          = "162, 127, 68, 255",   -- GUI__BORDER_COLOR
+						border_color_dark     = "114, 79, 46, 255",    -- GUI__BORDER_COLOR_DARK
+						highlight_line_color  = "12, 108, 157, 255"
+					}),
+					mini_button_text(label, INTRO_TEXT_COLOR)
+				)
+			},
+		},
+		-- Selected
+		T.state {
+			T.enabled {
+				C_vcanvas(
+					C_button_frame({
+						background_image_path = "background-pressed",
+						border_color          = "162, 127, 68, 255",   -- GUI__BORDER_COLOR
+						border_color_dark     = "114, 79, 46, 255",    -- GUI__BORDER_COLOR_DARK
+						highlight_line_color  = "1, 10, 16, 255"
+					}),
+					mini_button_text(label_on or label, INTRO_TEXT_COLOR)
+				)
+			},
+			T.disabled {
+				C_vcanvas(
+					C_button_frame({
+						background_image_path = "background-pressed",
+						border_color          = "128, 128, 128, 255",  -- GUI__FONT_COLOR_DISABLED__DEFAULT
+						border_color_dark     = "89, 89, 89, 255",
+						highlight_line_color  = "60, 60, 60, 255",
+						ipf                   = "~GS()"
+					}),
+					mini_button_text(label_on or label, "128, 128, 128")
+				)
+			},
+			T.focused {
+				C_vcanvas(
+					C_button_frame({
+						background_image_path = "background-pressed",
+						border_color          = "162, 127, 68, 255",   -- GUI__BORDER_COLOR
+						border_color_dark     = "114, 79, 46, 255",    -- GUI__BORDER_COLOR_DARK
+						highlight_line_color  = "1, 10, 16, 255"
+					}),
+					mini_button_text(label_on or label, INTRO_TEXT_COLOR)
+				)
+			}
+		}
+	})
+end
+
+G_mini_toggle("naia_layout_sidebar", "⇥", "⇤")
+
+local function G_icon_toggle(id, icon_stem, size, icon_stem_pressed)
+	if not size then
+		size = 25
+	end
+	G_widget("toggle_button", id, {
+		min_width         = size,
+		min_height        = size,
+		default_width     = size,
+		default_height    = size,
+		max_width         = size,
+		max_height        = size,
+		text_extra_width  = 0,
+		text_extra_height = 0,
+		text_font_size    = 1,
+
+		T.state {
+			T.enabled {
+				T.draw {
+					T.image {
+						w = size,
+						h = size,
+						name = icon_stem .. ".png"
+					}
+				}
+			},
+			T.disabled {
+				T.draw {
+					T.image {
+						w = size,
+						h = size,
+						name = icon_stem .. ".png~GS()"
+					}
+				}
+			},
+			T.focused {
+				T.draw {
+					T.image {
+						w = size,
+						h = size,
+						name = icon_stem .. "-active.png"
+					}
+				}
+			}
+		},
+		T.state {
+			T.enabled {
+				T.draw {
+					T.image {
+						w = size,
+						h = size,
+						name = (icon_stem_pressed and icon_stem_pressed .. ".png") or (icon_stem .. "-pressed.png")
+					}
+				}
+			},
+			T.disabled {
+				T.draw {
+					T.image {
+						w = size,
+						h = size,
+						name = ((icon_stem_pressed and icon_stem_pressed .. ".png") or (icon_stem .. "-pressed.png")) .. "~GS()"
+					}
+				}
+			},
+			T.focused {
+				T.draw {
+					T.image {
+						w = size,
+						h = size,
+						name = (icon_stem_pressed and icon_stem_pressed .. "-active.png") or (icon_stem .. "-pressed.png")
+					}
+				}
+			}
+		}
+	})
+end
+
+G_icon_toggle("naia_menu",                 "icons/menu-25")
+G_icon_toggle("naia_layout_narrow_select", "icons/journeylog-mobile-25")
+G_icon_toggle("naia_layout_wide_select",   "icons/journeylog-pc-25")
+G_icon_toggle("naia_layout_cols_select",   "icons/journeylog-1col-25", nil, "icons/journeylog-2col-25")
