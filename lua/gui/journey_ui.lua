@@ -1976,6 +1976,12 @@ function journeylog_ui()
 		-- Reset sidebar toggle every time we change view mode
 		self.layout_sidebar_toggle.selected = false
 		toggle_layout_visibility(self)
+
+		-- HACK: Render the search box hidden (takes up cell space) if in wide
+		-- layout and the Achievements tab is selected
+		if mode == "wide" and self.tabs_container.selected_index == 3 then
+			self.search_box.visible = "hidden"
+		end
 	end
 
 	local function journey_view_add_node(treeview, node_type, journey_msg)

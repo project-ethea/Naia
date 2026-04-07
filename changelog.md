@@ -11,6 +11,10 @@ Version 20260330+dev:
 * Tools:
   * mkdist should now run on macOS and *BSD Unices.
 
+* User interface:
+  * Fixed JourneyLog search box being unintentionally visible when the
+    Achievements tab is selected.
+
 
 Version 20260330:
 -----------------
