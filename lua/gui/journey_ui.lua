@@ -1581,12 +1581,13 @@ local journeylog_dlg = {
 											id = "layout_narrow_controls",
 											T.grid {
 												T.row {
+													--[[
 													T.column {
 														vertical_grow = true,
 														border = "left,right",
 														border_size = 5,
 														T.drawing(VERTICAL_BAR)
-													},
+													},]]
 													T.column {
 														horizontal_alignment = "left",
 														border = "all",
@@ -1644,6 +1645,15 @@ local journeylog_dlg = {
 									T.column {
 										border = "all",
 										border_size = 5,
+										T.toggle_button {
+											id = "search_toggle",
+											definition = "naia_search",
+											tooltip = _ "Show Search box"
+										}
+									},
+									T.column {
+										border = "all",
+										border_size = 5,
 										T.button {
 											id = "ok",
 											definition = "close",
@@ -1665,6 +1675,46 @@ local journeylog_dlg = {
 				border = "all",
 				border_size = 5,
 				T.drawing(HORIZONTAL_BAR)
+			}
+		},
+		T.row {
+			grow_factor = 0,
+			T.column {
+				T.panel {
+					id = "search_panel",
+					--definition = "naia_journeylog_panel",
+					T.grid {
+						-- HACK: This is safe to link because the grid is a widget in and of
+						-- itself which isn't hidden when its parent panel is.
+						linked_group = "right_side_pane",
+						T.row {
+							T.column {
+								horizontal_alignment = "right",
+								T.grid {
+									T.row {
+										--[[T.column {
+											border = "all",
+											border_size = 5,
+											T.label {
+												definition = "gold_small",
+												label = _ "Search:"
+											}
+										},]]
+										T.column {
+											border = "top,left,bottom",
+											border_size = 5,
+											T.text_box {
+												id = "search_box_narrow",
+												hint_text = _ "Search",
+												hint_image = "icons/action/zoomdefault_25.png~FL(horiz)~CS(-80,-90,-100)"
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		},
 		T.row {
@@ -1939,51 +1989,6 @@ function journeylog_ui()
 		end
 	end
 
-	local function select_layout(self, mode)
-		if mode == nil then
-			mode = global_layout_mode
-		else
-			global_layout_mode = mode
-		end
-
-		if mode ~= "narrow" and mode ~= "wide" then
-			wml.error("bad layout mode")
-		end
-
-		-- HACK: in narrow view mode, we force the left side panels to match
-		-- the width of the right side panels by inserting a special node into
-		-- a tree view stashed away in an invisible stacked_widget page
-
-		local geometry_ctl = self.tabs_container:find(#UI_TAB_LABELS + 2, "geometry_control_treeview")
-
-		clear_treeview(geometry_ctl)
-
-		if mode == "narrow" then
-			geometry_ctl:add_item_of_type("force_match_right_side_pane")
-		end
-
-		if journey_title_node then
-			journey_title_node.unfolded     = mode == "narrow"
-		end
-		--self.layout_narrow_toggle.selected  = mode == "narrow"
-		--self.layout_wide_toggle.selected    = mode == "wide"
-		self.layout_switch_toggle.selected  = mode == "narrow"
-		self.layout_switch_toggle.tooltip   = LAYOUT_SWITCH_TOOLTIPS[mode]
-		self.layout_narrow_controls.visible = mode == "narrow"
-		self.search_box.visible             = mode == "wide"
-		self.narrow_layout_spacer.visible   = mode == "narrow"
-		self.wide_layout_spacer.visible     = mode == "wide"
-		-- Reset sidebar toggle every time we change view mode
-		self.layout_sidebar_toggle.selected = false
-		toggle_layout_visibility(self)
-
-		-- HACK: Render the search box hidden (takes up cell space) if in wide
-		-- layout and the Achievements tab is selected
-		if mode == "wide" and self.tabs_container.selected_index == 3 then
-			self.search_box.visible = "hidden"
-		end
-	end
-
 	local function journey_view_add_node(treeview, node_type, journey_msg)
 		-- The dialog view uses an indirect approach where the treeview
 		-- contains nodes that are in charge of containing the nodes with the
@@ -2047,8 +2052,17 @@ function journeylog_ui()
 		end
 	end
 
+	local function current_search_text(self)
+		if global_layout_mode == "wide" then
+			return self.search_box.text or ""
+		else
+			-- Do not use if the search toggle is off
+			return (self.search_toggle.selected and self.search_box_narrow.text) or ""
+		end
+	end
+
 	local function update_journey_filter(self)
-		local clean_terms = self.search_box.text or ""
+		local clean_terms = current_search_text(self)
 		-- Trim leading and trailing whitespace
 		clean_terms = clean_terms:trim()
 
@@ -2268,7 +2282,7 @@ function journeylog_ui()
 	end
 
 	local function render_lore_text(self)
-		local clean_terms = self.search_box.text or ""
+		local clean_terms = current_search_text(self)
 		-- Trim leading and trailing whitespace
 		clean_terms = clean_terms:trim()
 
@@ -2470,6 +2484,20 @@ function journeylog_ui()
 		self.archive_entry.visible = true
 	end
 
+	local function update_search_box(self, active_widget, inactive_widget)
+		if active_widget and inactive_widget then
+			inactive_widget.text = active_widget.text
+		end
+
+		local tab_num = self.log_section_selector.selected_index
+
+		if tab_num == 1 then
+			update_journey_filter(self)
+		elseif tab_num == 2 then
+			render_lore_text(self)
+		end
+	end
+
 	local function make_nav_header(self, label)
 		local header = self.archive_nav_tree:add_item_of_type("header")
 		header.tree_view_node_label.label = label
@@ -2657,6 +2685,55 @@ function journeylog_ui()
 		end
 	end
 
+	local function select_layout(self, mode)
+		if mode == nil then
+			mode = global_layout_mode
+		else
+			global_layout_mode = mode
+		end
+
+		if mode ~= "narrow" and mode ~= "wide" then
+			wml.error("bad layout mode")
+		end
+
+		-- HACK: in narrow view mode, we force the left side panels to match
+		-- the width of the right side panels by inserting a special node into
+		-- a tree view stashed away in an invisible stacked_widget page
+
+		local geometry_ctl = self.tabs_container:find(#UI_TAB_LABELS + 2, "geometry_control_treeview")
+
+		clear_treeview(geometry_ctl)
+
+		if mode == "narrow" then
+			geometry_ctl:add_item_of_type("force_match_right_side_pane")
+		end
+
+		if journey_title_node then
+			journey_title_node.unfolded     = mode == "narrow"
+		end
+		--self.layout_narrow_toggle.selected  = mode == "narrow"
+		--self.layout_wide_toggle.selected    = mode == "wide"
+		self.layout_switch_toggle.selected  = mode == "narrow"
+		self.layout_switch_toggle.tooltip   = LAYOUT_SWITCH_TOOLTIPS[mode]
+		self.layout_narrow_controls.visible = mode == "narrow"
+		self.search_box.visible             = mode == "wide"
+		self.search_toggle.visible          = mode == "narrow"
+		self.search_panel.visible           = mode == "narrow" and self.search_toggle.selected
+		self.narrow_layout_spacer.visible   = mode == "narrow"
+		self.wide_layout_spacer.visible     = mode == "wide"
+		-- Reset sidebar toggle every time we change view mode
+		self.layout_sidebar_toggle.selected = false
+		toggle_layout_visibility(self)
+		-- May be necessary when the search bar is hidden but the box is not empty
+		update_search_box(self)
+
+		-- HACK: Render the search box hidden (takes up cell space) if in wide
+		-- layout and the Achievements tab is selected
+		if mode == "wide" and self.tabs_container.selected_index == 3 then
+			self.search_box.visible = "hidden"
+		end
+	end
+
 	local function show_tab(self, tab_num)
 		if journeylog_ui_in_dream_sequence() then
 			journeylog_ui_dream_hook(self)
@@ -2794,12 +2871,11 @@ function journeylog_ui()
 		end
 
 		self.search_box.on_modified = function()
-			local tab_num = self.log_section_selector.selected_index
-			if tab_num == 1 then
-				update_journey_filter(self)
-			elseif tab_num == 2 then
-				render_lore_text(self)
-			end
+			update_search_box(self, self.search_box, self.search_box_narrow)
+		end
+
+		self.search_box_narrow.on_modified = function()
+			update_search_box(self, self.search_box_narrow, self.search_box)
 		end
 
 		self.compact_view.on_modified = function()
@@ -2829,6 +2905,11 @@ function journeylog_ui()
 
 		self.layout_switch_toggle.on_modified = function()
 			select_layout(self, (global_layout_mode == "wide" and "narrow") or "wide")
+		end
+
+		self.search_toggle.on_modified = function()
+			self.search_panel.visible = global_layout_mode == "narrow" and self.search_toggle.selected
+			update_search_box(self)
 		end
 
 		--[[self.layout_narrow_toggle.on_modified = function()
