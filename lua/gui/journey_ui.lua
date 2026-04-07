@@ -62,6 +62,11 @@ local BIO_STATUS_LABELS = {
 	missing     = _ "chara_status^Missing",
 }
 
+local LAYOUT_SWITCH_TOOLTIPS = {
+	wide   = _ "Switch to narrow view\n(Optimized for small screens)",
+	narrow = _ "Switch to wide view\n(Optimized for large screens)"
+}
+
 -- Contents for a [drawing] that renders a horizontal bar colored like the
 -- JourneyLog panel borders.
 local HORIZONTAL_BAR = {
@@ -73,6 +78,23 @@ local HORIZONTAL_BAR = {
 			y1 = 0,
 			x2 = "(width - 1)",
 			y2 = 0,
+			color = "114, 79, 46, 127",
+			thickness = 1
+		}
+	}
+}
+
+-- Contents for a [drawing] that renders a vertical bar colored like the
+-- JourneyLog panel borders.
+local VERTICAL_BAR = {
+	width  = 1,
+	height = "(height)",
+	T.draw {
+		T.line {
+			x1 = 0,
+			y1 = 0,
+			x2 = 0,
+			y2 = "(height - 1)",
 			color = "114, 79, 46, 127",
 			thickness = 1
 		}
@@ -168,8 +190,7 @@ local journeylog_scenarios_listdef = {
 							linked_group = "scenario_name_group",
 							wrap = true
 						}
-					}
-					,
+					},
 					T.column {
 						vertical_alignment = "top",
 						grow_factor = 0,
@@ -297,6 +318,32 @@ local journeylog_messages_treedef = {
 			T.row {
 				T.column {
 					T.spacer {}
+				}
+			}
+		}
+	},
+
+	T.node {
+		id = "scenario_title",
+		T.node_definition {
+			T.row {
+				T.column {
+					border = "all",
+					border_size = 5,
+					grow_factor = 0,
+					T.label {
+						id = "scenario_title_main",
+						definition = "naia_journeylog_page",
+						label = "SCENARIO_NAME",
+						wrap = true,
+					}
+				}
+			},
+			T.row {
+				T.column {
+					T.spacer {
+						height = 5
+					}
 				}
 			}
 		}
@@ -870,33 +917,36 @@ local journeylog_dialoglog_grid = {
 			grow_factor = 1,
 			horizontal_grow = true,
 			vertical_grow = true,
-			T.grid {
-				T.row {
-					grow_factor = 1,
-					T.column {
+			T.panel {
+				id = "page_sidebar",
+				T.grid {
+					T.row {
 						grow_factor = 1,
-						horizontal_grow = true,
-						vertical_alignment = "top",
-						border = "all",
-						border_size = 5,
-						T.listbox {
-							id = "scenario_list",
-							definition = "naia_journeylog_listbox",
-							linked_group = "left_side_pane",
-							T.list_definition(journeylog_scenarios_listdef)
+						T.column {
+							grow_factor = 1,
+							horizontal_grow = true,
+							vertical_alignment = "top",
+							border = "all",
+							border_size = 5,
+							T.listbox {
+								id = "scenario_list",
+								definition = "naia_journeylog_listbox",
+								linked_group = "left_side_pane",
+								T.list_definition(journeylog_scenarios_listdef)
+							}
 						}
-					}
-				},
-				T.row {
-					grow_factor = 0,
-					T.column {
-						horizontal_alignment = "left",
-						vertical_alignment = "bottom",
-						border = "all",
-						border_size = 5,
-						T.toggle_button {
-							id = "compact_view",
-							label = _ "Compact view",
+					},
+					T.row {
+						grow_factor = 0,
+						T.column {
+							horizontal_alignment = "left",
+							vertical_alignment = "bottom",
+							border = "all",
+							border_size = 5,
+							T.toggle_button {
+								id = "compact_view",
+								label = _ "Compact view",
+							}
 						}
 					}
 				}
@@ -909,6 +959,7 @@ local journeylog_dialoglog_grid = {
 			border = "all",
 			border_size = 5,
 			T.panel {
+				id = "page_main",
 				definition = "naia_journeylog_panel",
 				T.grid {
 					T.row {
@@ -932,16 +983,19 @@ local journeylog_archive_grid = {
 			grow_factor = 1,
 			horizontal_grow = true,
 			vertical_alignment = "top",
-			T.grid {
-				T.row {
-					grow_factor = 1,
-					T.column {
+			T.panel {
+				id = "page_sidebar",
+				T.grid {
+					T.row {
 						grow_factor = 1,
-						horizontal_grow = true,
-						vertical_alignment = "top",
-						border = "all",
-						border_size = 5,
-						T.tree_view(journeylog_nav_treedef)
+						T.column {
+							grow_factor = 1,
+							horizontal_grow = true,
+							vertical_alignment = "top",
+							border = "all",
+							border_size = 5,
+							T.tree_view(journeylog_nav_treedef)
+						}
 					}
 				}
 			}
@@ -953,6 +1007,7 @@ local journeylog_archive_grid = {
 			border = "all",
 			border_size = 5,
 			T.panel {
+				id = "page_main",
 				definition = "naia_journeylog_panel",
 				T.grid {
 					T.row {
@@ -1274,26 +1329,41 @@ local journeylog_achievements_grid = {
 			vertical_grow = true,
 			border = "all",
 			border_size = 5,
-			T.grid {
-				linked_group = "left_side_pane",
-				T.row {
-					grow_factor = 1,
-					T.column {
-						grow_factor = 1,
-						horizontal_grow = true,
-						vertical_alignment = "top",
-						T.grid(journeylog_achievements_left_side_grid)
-					},
-					-- HACK: This is used as an equivalent to tree_view reserving horizontal
-					-- space for its vertical scrollbar. This way, we also "reserve" space
-					-- making this left side panel look exactly the same as the Knowledge
-					-- section's. Yes, we could just have the Knowledge section's tree_view
-					-- use vertical_scrollbar_mode="initial_auto" instead, but then when there
-					-- IS a scrollbar, our section's width would still be visibly different.
-					T.column {
-						grow_factor = 0,
-						T.spacer {
-							width = 10
+			T.panel {
+				id = "page_sidebar",
+				T.grid {
+					T.row {
+						T.column {
+							horizontal_grow = true,
+							vertical_grow = true,
+							T.grid {
+								-- HACK: Icky, but we need a sub-grid within a the single-cell panel so that it's
+								-- not the panel that dictates the dimensions of the linked_group, otherwise
+								-- Wesnoth 1.18 dies from an assertion failure upon trying to change the panel's
+								-- visibility.
+								linked_group = "left_side_pane",
+								T.row {
+									grow_factor = 1,
+									T.column {
+										grow_factor = 1,
+										horizontal_grow = true,
+										vertical_alignment = "top",
+										T.grid(journeylog_achievements_left_side_grid)
+									},
+									-- HACK: This is used as an equivalent to tree_view reserving horizontal
+									-- space for its vertical scrollbar. This way, we also "reserve" space
+									-- making this left side panel look exactly the same as the Knowledge
+									-- section's. Yes, we could just have the Knowledge section's tree_view
+									-- use vertical_scrollbar_mode="initial_auto" instead, but then when there
+									-- IS a scrollbar, our section's width would still be visibly different.
+									T.column {
+										grow_factor = 0,
+										T.spacer {
+											width = 10
+										}
+									}
+								}
+							}
 						}
 					}
 				}
@@ -1307,6 +1377,7 @@ local journeylog_achievements_grid = {
 			border_size = 5,
 
 			T.panel {
+				id = "page_main",
 				definition = "naia_journeylog_panel",
 				T.grid {
 					T.row {
@@ -1335,6 +1406,7 @@ local journeylog_nightmare_grid = {
 			border_size = 5,
 
 			T.panel {
+				id = "page_main",
 				definition = "naia_journeylog_panel",
 				T.grid {
 					T.row {
@@ -1348,6 +1420,36 @@ local journeylog_nightmare_grid = {
 								definition = "naia_journeylog_page",
 								wrap = true,
 								text_alignment = "center",
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+local journeylog_control_grid = {
+	T.row {
+		T.column {
+			T.tree_view {
+				id = "geometry_control_treeview",
+				horizontal_scrollbar_mode = "never",
+				vertical_scrollbar_mode = "never",
+				T.node {
+					id = "force_match_right_side_pane",
+					T.node_definition {
+						T.row {
+							T.column {
+								border = "all",
+								border_size = 25,
+								T.label {
+									-- HACK: this forces the left side pane to match the standard
+									-- width of the main pane if this node is inserted into the tree
+									-- view (see also select_layout)
+									linked_group = "left_side_pane",
+									definition = "naia_journeylog_page"
+								}
 							}
 						}
 					}
@@ -1439,17 +1541,79 @@ local journeylog_dlg = {
 				vertical_alignment = "top",
 				T.grid {
 					T.row {
+						T.column {
+							horizontal_alignment = "left",
+							T.grid {
+								T.row {
+									--[[
+									T.column {
+										horizontal_alignment = "left",
+										border = "all",
+										border_size = 5,
+										T.toggle_button {
+											id = "layout_narrow_toggle",
+											definition = "naia_layout_narrow_select",
+											tooltip = _ "Narrow view\n(Optimized for mobile)"
+										}
+									},
+									T.column {
+										horizontal_alignment = "left",
+										border = "all",
+										border_size = 5,
+										T.toggle_button {
+											id = "layout_wide_toggle",
+											definition = "naia_layout_wide_select",
+											tooltip = _ "Wide view\n(Optimized for desktop)"
+										}
+									},]]
+									T.column {
+										horizontal_alignment = "left",
+										border = "all",
+										border_size = 5,
+										T.toggle_button {
+											id = "layout_switch_toggle",
+											definition = "naia_layout_cols_select",
+											tooltip = LAYOUT_SWITCH_TOOLTIPS.wide
+										}
+									},
+									T.column {
+										T.panel {
+											id = "layout_narrow_controls",
+											T.grid {
+												T.row {
+													T.column {
+														vertical_grow = true,
+														border = "left,right",
+														border_size = 5,
+														T.drawing(VERTICAL_BAR)
+													},
+													T.column {
+														horizontal_alignment = "left",
+														border = "all",
+														border_size = 5,
+														T.toggle_button {
+															id = "layout_sidebar_toggle",
+															definition = "naia_menu",
+															tooltip = _ "Browse items"
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						},
 						-- This column is only here to force the listbox to be horizontally
 						-- centered across. Yes, we need it.
 						T.column {
-							horizontal_alignment = "left",
+							horizontal_grow = true,
 							T.spacer {
-								linked_group = "top_leftright_element",
+								id = "wide_layout_spacer"
 							}
 						},
 						T.column {
-							horizontal_alignment = "center",
-							vertical_alignment = "top",
+							horizontal_alignment = "right",
 							border = "all",
 							border_size = 5,
 							T.horizontal_listbox {
@@ -1459,27 +1623,36 @@ local journeylog_dlg = {
 							}
 						},
 						T.column {
-							horizontal_alignment = "right",
-							vertical_alignment = "top",
-							border = "all",
-							border_size = 5,
-							T.text_box {
-								id = "search_box",
-								linked_group = "top_leftright_element",
-								hint_text = _ "Search",
-								hint_image = "icons/action/zoomdefault_25.png~FL(horiz)~CS(-80,-90,-100)"
+							horizontal_grow = true,
+							T.spacer {
+								id = "narrow_layout_spacer"
 							}
 						},
 						T.column {
 							horizontal_alignment = "right",
-							border = "all",
-							border_size = 5,
-							T.button {
-								id = "ok",
-								definition = "close",
-								label = wgettext("Close")
+							T.grid {
+								T.row {
+									T.column {
+										border = "all",
+										border_size = 5,
+										T.text_box {
+											id = "search_box",
+											hint_text = _ "Search",
+											hint_image = "icons/action/zoomdefault_25.png~FL(horiz)~CS(-80,-90,-100)"
+										}
+									},
+									T.column {
+										border = "all",
+										border_size = 5,
+										T.button {
+											id = "ok",
+											definition = "close",
+											label = wgettext("Close")
+										}
+									}
+								}
 							}
-						},
+						}
 					}
 				}
 			}
@@ -1505,6 +1678,7 @@ local journeylog_dlg = {
 					T.layer(journeylog_archive_grid),
 					T.layer(journeylog_achievements_grid),
 					T.layer(journeylog_nightmare_grid),
+					T.layer(journeylog_control_grid),
 				}
 			}
 		},
@@ -1625,6 +1799,7 @@ end
 
 local initial_tab = 1
 local global_compact_view = false
+local global_layout_mode = "wide"
 
 -- BEGIN: FUNCTIONALITY SPECIFIC TO AFTER THE STORM EPISODE 3 SCENARIO 9
 
@@ -1699,11 +1874,16 @@ function journeylog_ui()
 	wesnoth.wml_actions.global_table {
 		T.read {
 			key = "_journeylog_ui_compact"
+		},
+		T.read {
+			key = "_journeylog_ui_layout"
 		}
 	}
 	global_compact_view = wml.variables._journeylog_ui_compact or global_compact_view
-	-- Delete internal WML variable
+	global_layout_mode = wml.variables._journeylog_ui_layout or global_layout_mode
+	-- Delete internal WML variables
 	wml.variables._journeylog_ui_compact = nil
+	wml.variables._journeylog_ui_layout = nil
 
 	local journal = {}
 	local archive = {
@@ -1722,12 +1902,80 @@ function journeylog_ui()
 	local journey_view_rows = {}
 	-- Content filter in use, as a list of words to match
 	local current_filter = {}
+	-- Journey entry title node for hiding in certain layout modes
+	local journey_title_node = nil
 
 	local function clear_journey_view(treeview)
 		if #journey_view_rows > 0 then
 			journey_view_rows = {}
 			clear_treeview(treeview)
 		end
+	end
+
+	local function toggle_layout_visibility(self, sidebar_visible, panel_visible)
+		if global_layout_mode == "wide" then
+			-- Everything must be visible
+			sidebar_visible = true
+			panel_visible   = true
+		else
+			if sidebar_visible == nil then
+				sidebar_visible = self.layout_sidebar_toggle.selected
+			else
+				self.layout_sidebar_toggle.selected = sidebar_visible
+			end
+
+			if panel_visible == nil then
+				panel_visible = not sidebar_visible
+			end
+		end
+
+		for i = 1, 1 + #UI_TAB_LABELS do
+			-- swallow errors from tabs that do not have a sidebar
+			local res, sidebar = pcall(function() return self.tabs_container:find(i, "page_sidebar") end)
+			if res and sidebar then
+				sidebar.visible = sidebar_visible
+				self.tabs_container:find(i, "page_main").visible = panel_visible
+			end
+		end
+	end
+
+	local function select_layout(self, mode)
+		if mode == nil then
+			mode = global_layout_mode
+		else
+			global_layout_mode = mode
+		end
+
+		if mode ~= "narrow" and mode ~= "wide" then
+			wml.error("bad layout mode")
+		end
+
+		-- HACK: in narrow view mode, we force the left side panels to match
+		-- the width of the right side panels by inserting a special node into
+		-- a tree view stashed away in an invisible stacked_widget page
+
+		local geometry_ctl = self.tabs_container:find(#UI_TAB_LABELS + 2, "geometry_control_treeview")
+
+		clear_treeview(geometry_ctl)
+
+		if mode == "narrow" then
+			geometry_ctl:add_item_of_type("force_match_right_side_pane")
+		end
+
+		if journey_title_node then
+			journey_title_node.unfolded     = mode == "narrow"
+		end
+		--self.layout_narrow_toggle.selected  = mode == "narrow"
+		--self.layout_wide_toggle.selected    = mode == "wide"
+		self.layout_switch_toggle.selected  = mode == "narrow"
+		self.layout_switch_toggle.tooltip   = LAYOUT_SWITCH_TOOLTIPS[mode]
+		self.layout_narrow_controls.visible = mode == "narrow"
+		self.search_box.visible             = mode == "wide"
+		self.narrow_layout_spacer.visible   = mode == "narrow"
+		self.wide_layout_spacer.visible     = mode == "wide"
+		-- Reset sidebar toggle every time we change view mode
+		self.layout_sidebar_toggle.selected = false
+		toggle_layout_visibility(self)
 	end
 
 	local function journey_view_add_node(treeview, node_type, journey_msg)
@@ -1875,6 +2123,16 @@ function journeylog_ui()
 
 		local treeview = self.messages_tree
 		clear_journey_view(treeview)
+
+		journey_title_node = treeview:add_item_of_type("container")
+		local journey_title_node_inner = journey_title_node:add_item_of_type("scenario_title")
+		local title_node_contents =
+			("<span face='%s' color='#baac7d' size='190%%'>%s</span>"):format(ui_script_font_name(), journey.name)
+		if journey.mnemonic then
+			title_node_contents = ("%s\n<span color='#baac7d' size='90%%'>%s</span>"):format(title_node_contents, journey.mnemonic)
+		end
+		journey_title_node_inner.scenario_title_main.marked_up_text = title_node_contents
+		journey_title_node.unfolded = global_layout_mode == "narrow"
 
 		for i, msg in ipairs(journey.messages) do
 			if msg.event_name then
@@ -2400,6 +2658,7 @@ function journeylog_ui()
 			--self.hidden_achievements.visible = false
 			self.compact_view.enabled = false
 			self.search_box.enabled = false
+			self.layout_sidebar_toggle.enabled = false
 			self.log_section_selector.visible = "invisible"
 			return
 		end
@@ -2420,12 +2679,12 @@ function journeylog_ui()
 			self.scenario_list:focus()
 			--self.hidden_achievements.visible = false
 			--self.compact_view.visible = true
-			self.search_box.visible = true
+			self.search_box.visible = global_layout_mode == "wide"
 		elseif tab_num == 2 then
 			self.archive_nav_tree:focus()
 			--self.hidden_achievements.visible = false
 			--self.compact_view.visible = false
-			self.search_box.visible = true
+			self.search_box.visible = global_layout_mode == "wide"
 		elseif tab_num == 3 then
 			self.achievement_list:focus()
 			self.hidden_achievements.visible = naia_is_in_maintainer_mode() and wesnoth.game_config.debug
@@ -2434,6 +2693,9 @@ function journeylog_ui()
 		end
 
 		initial_tab = tab_num
+
+		-- Reset sidebar visibility if applicable
+		select_layout(self)
 	end
 
 	local function preshow(self)
@@ -2462,6 +2724,7 @@ function journeylog_ui()
 					-- Prefer the label from Naia runtime init as it may be more accurate
 					-- than older information engraved by journeylog into saved games.
 					name = runtime_info.label or scenario.name,
+					mnemonic = runtime_info.mnemonic,
 					messages = {},
 					cache_built = false,
 				}
@@ -2521,6 +2784,7 @@ function journeylog_ui()
 		self.scenario_list.on_modified = function()
 			update_scenario_icon(self)
 			show_journey(self, current_campaign, self.scenario_list.selected_index)
+			toggle_layout_visibility(self, false)
 		end
 
 		self.search_box.on_modified = function()
@@ -2534,22 +2798,43 @@ function journeylog_ui()
 
 		self.compact_view.on_modified = function()
 			set_journey_compact_view(self, self.compact_view.selected)
+			toggle_layout_visibility(self, false)
 		end
 
 		self.archive_nav_tree.on_modified = function()
 			show_archive_item(self, self.archive_nav_tree.selected_item_path)
+			toggle_layout_visibility(self, false)
 		end
 
 		self.log_section_selector.on_modified = function()
 			show_tab(self, self.log_section_selector.selected_index)
+			toggle_layout_visibility(self, false)
 		end
 
 		self.achievements_filter.on_modified = function()
 			populate_achievement_list(self)
+			toggle_layout_visibility(self, false)
 		end
 
 		self.hidden_achievements.on_modified = function()
 			populate_achievement_list(self)
+			toggle_layout_visibility(self, false)
+		end
+
+		self.layout_switch_toggle.on_modified = function()
+			select_layout(self, (global_layout_mode == "wide" and "narrow") or "wide")
+		end
+
+		--[[self.layout_narrow_toggle.on_modified = function()
+			select_layout(self, "narrow")
+		end
+
+		self.layout_wide_toggle.on_modified = function()
+			select_layout(self, "wide")
+		end]]
+
+		self.layout_sidebar_toggle.on_modified = function()
+			toggle_layout_visibility(self)
 		end
 
 		if not JOURNEYLOG_ALLOW_BROKEN_GARBAGE then
@@ -2564,19 +2849,26 @@ function journeylog_ui()
 
 		show_tab(self, initial_tab)
 		self.log_section_selector.selected_index = initial_tab
+
+		select_layout(self)
 	end
 
 	gui.show_dialog(journeylog_dlg, preshow)
 
 	-- Save compact mode flag to persistent store
 	wml.variables._journeylog_ui_compact = global_compact_view
+	wml.variables._journeylog_ui_layout = global_layout_mode
 	wesnoth.wml_actions.global_table {
 		T.write {
 			key = "_journeylog_ui_compact"
+		},
+		T.write {
+			key = "_journeylog_ui_layout"
 		}
 	}
 	-- Delete internal WML variable
 	wml.variables._journeylog_ui_compact = nil
+	wml.variables._journeylog_ui_layout = nil
 end
 
 --
