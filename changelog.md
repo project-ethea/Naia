@@ -12,6 +12,8 @@ Version 20260330+dev:
   * mkdist should now run on macOS and *BSD Unices.
 
 * User interface:
+  * Added single-column mode to JourneyLog for small resolution screens (under
+    1280 px horizontal).
   * Fixed JourneyLog search box being unintentionally visible when the
     Achievements tab is selected.
 
