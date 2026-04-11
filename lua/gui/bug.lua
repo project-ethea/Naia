@@ -12,6 +12,24 @@ local T = wml.tag
 -- #textdomain wesnoth-Naia
 local _ = wesnoth.textdomain "wesnoth-Naia"
 
+local function scan_wmlvars_recursive(var_table, wml_cond)
+	for _, tag in ipairs(wml_cond) do
+		local name, cfg = tag[1], tag[2]
+		if name:match("^variable") and cfg.name ~= nil then
+			table.insert(var_table, cfg.name)
+		else
+			scan_variables_recursive(var_table, cfg)
+		end
+	end
+end
+
+local function scan_wml_variables(wml_cond)
+	local var_table = {}
+	scan_wmlvars_recursive(var_table, wml_cond)
+	table.sort(var_table)
+	return var_table
+end
+
 --[[
 
 Displays an error message on a popup dialog.
@@ -69,7 +87,12 @@ function wesnoth.wml_actions.bug(cfg)
 		may_ignore = true
 	end
 
-	wput(W_ERR, "BUG: " .. log_notice)
+	debug_wall {
+		banner   = "BUG: " .. log_notice,
+		wml      = cond,
+		wml_desc = "Abnormal WML condition:",
+		wml_vars = cond and scan_wml_variables(cond)
+	}
 
 	local alert_dialog = {
 		maximum_width = 640,

@@ -8,6 +8,9 @@ Version 20260330+dev:
     other options have been removed (halos) or are not worth fussing over
     (combat damage indicators).
 
+* Lua and WML library:
+  * Make the console output of `[bug]` significantly more verbose.
+
 * Tools:
   * mkdist should now run on macOS and *BSD Unices.
 

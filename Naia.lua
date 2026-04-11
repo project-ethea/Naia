@@ -82,6 +82,134 @@ function wunindent()
 	logdepth = math.max(0, logdepth - 1)
 end
 
+local function fmtpos(x, y)
+	if x == nil or y == nil then
+		return "<n/a>"
+	else
+		return ("%d,%d"):format(x, y)
+	end
+end
+
+local function in_replay()
+	if WESNOTH_VERSION > V"1.19.6" then
+		return wesnoth.current.user_is_replaying
+	else
+		return false
+	end
+end
+
+local function fmt_event_id()
+	if wesnoth.current.event_context.id ~= nil and wesnoth.current.event_context.id ~= "" then
+		return wesnoth.current.event_context.id
+	else
+		return "<anonymous>"
+	end
+end
+
+function debug_wall(params)
+	local traceback = debug.traceback()
+	local out = ""
+
+	local function dbgput(msg)
+		if not msg then
+			msg = ""
+		end
+		if out ~= "" then
+			out = out .. "\n" .. msg
+		else
+			out = msg
+		end
+	end
+
+	local function dbgprintf(fmt, ...)
+		dbgput(tostring(fmt or ""):format(...))
+	end
+
+	local function dbgmulti(indent, text, skip_to)
+		if type(indent) == "string" and text == nil then
+			text = indent
+			indent = nil
+		end
+
+		local prefix = ""
+
+		if indent ~= nil and indent > 0 then
+			prefix = ("  "):rep(indent)
+		end
+
+		local lno = 0
+		for _, line in ipairs(text:split("\n", { remove_empty = true, strip_spaces = false })) do
+			lno = lno + 1
+			if lno >= (skip_to or 1) then
+				if out ~= "" then out = out .. "\n" end
+				out = out .. string.format("%s%s", prefix, line)
+			end
+		end
+	end
+
+	local lvl, banner, separators, cfg, cfg_desc, wml_vars =
+		params.lvl, params.banner, params.separators,
+		params.wml, params.wml_desc, params.wml_vars
+
+	if lvl == nil then
+		lvl = W_ERR
+	end
+
+	if separators == nil then
+		separators = true
+	end
+
+	local bt_separator = "------------[ cut here ]------------"
+
+	if banner ~= nil then
+		dbgput("*** " .. banner)
+		if cfg then
+			dbgput()
+			dbgput(cfg_desc or "Code:")
+			dbgmulti(1, wml.tostring(cfg))
+		end
+	end
+
+	dbgput()
+	if wml_vars and #wml_vars > 0 then
+		dbgput("Variables:")
+		for _, name in ipairs(wml_vars) do
+			dbgprintf("  $%s = %s", name, wesnoth.as_text(wml.variables[name] or "<uninitialized>"))
+		end
+		dbgput()
+	end
+	dbgprintf("Context:")
+	dbgprintf("  sync:    %s%s", wesnoth.current.synced_state, (in_replay() and " (replay mode)") or "")
+	dbgprintf("  side:    %d", wesnoth.current.side or 0)
+	dbgprintf("  turn:    %d", wesnoth.current.turn or 0)
+	local ev = wesnoth.current.event_context
+	dbgprintf("  event:   %s [%s]", ev.name, fmt_event_id())
+	dbgprintf("  primary: %s   secondary: %s   unit: %s",
+		fmtpos(ev.x1, ev.y1), fmtpos(ev.x2, ev.y2), fmtpos(ev.unit_x, ev.unit_y))
+	if ev.data then
+		dbgprintf("  data:    %s", wesnoth.as_text(ev.data))
+	else
+		dbgprintf("  data:    n/a")
+	end
+	dbgprintf()
+	dbgprintf("Lua state:")
+	-- skip "stack traceback" heading on line 1
+	dbgmulti(1, traceback, 2)
+
+	-- Print to console
+	if separators then
+		wput(lvl, bt_separator)
+	end
+	for _, line in ipairs(out:split("\n", { remove_empty = false, strip_spaces = false })) do
+		wput(lvl, line)
+	end
+	if separators then
+		wput(lvl, bt_separator)
+	end
+
+	return out
+end
+
 ---
 -- Returns a textdomain-specific string translated to the current locale
 --
