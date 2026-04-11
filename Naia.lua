@@ -48,6 +48,9 @@ end
 -- msg: Line contents.
 ---
 function wput(lvl, msg)
+	if msg == nil then
+		msg = ""
+	end
 	wesnoth.wml_actions.wml_message {
 		logger = loglvl_map[math.max(1, math.min(lvl, #loglvl_map))],
 		message = logprefix .. _windentprefix() .. tostring(msg)
@@ -62,7 +65,7 @@ end
 -- ...: Parameters for line formatting.
 ---
 function wprintf(lvl, fmt, ...)
-	wput(lvl, tostring(fmt):format(...))
+	wput(lvl, tostring(fmt or ""):format(...))
 end
 
 ---
