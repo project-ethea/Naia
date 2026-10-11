@@ -97,14 +97,60 @@ local function deserialize_journeylog_prog_state(variable, merge_only)
 	end
 
 	local lore_cfg = wml.variables[wmlpath("lore_fragments", variable)]
+	local ats117patched = false
 
 	for entry_id, fragments_wml in pairs(lore_cfg or {}) do
+		if type(fragments_wml) == "table" then
+			if not ats117patched then
+				--
+				-- Handle AtS E3S7A.1 JourneyLog state corruption due to illegal
+				-- WML ids being used as fragment ids. There will be multiple
+				-- unwanted tables, but we only need to run this code once at
+				-- initialization since we already know all the potential
+				-- impacted ids.
+				--
+				-- (Yes, this solution is kinda lazy and unlocks all affected
+				-- lore at once even if the player hasn't come across it yet.)
+				--
+				-- cf.:
+				-- <https://forums.wesnoth.org/viewtopic.php?p=705358#p705358>
+				-- <https://github.com/project-ethea/After_the_Storm/issues/117>
+				--
+				wprintf(W_ERR, "**CRITICAL** AtS issue #117 detected, will ignore unwanted WML child and assume ALL fragments for E3S7A.1 collected")
+
+				-- Hardcoded from AtS journey/world.cfg as of v1.0.1
+				journeylog_fragments["E3S7A1_note1"] = {
+					corruption1 = true,
+					corruption2 = true,
+					corruption3 = true,
+				}
+				journeylog_fragments["E3S7A1_note2"] = {
+					existence1 = true,
+					existence2 = true,
+					existence3 = true,
+					existence4 = true,
+				}
+				-- Milestones are not subject to this bug, but we changed the
+				-- ids for these in AtS v1.0.1 as well for consistency's sake,
+				-- so it's probably a good idea to patch them too
+				journeylog_milestones["E3S7A1_prophecy1"] = true
+				journeylog_milestones["E3S7A1_urvatha"] = true
+				journeylog_milestones["E3S7A1_silida"] = true
+
+				ats117patched = true
+			end
+			-- Nothing else to do after fixing state
+			goto skip117
+		end
+
 		if not merge_only or journeylog_fragments[entry_id] == nil then
 			journeylog_fragments[entry_id] = {}
 		end
 		for _, fragment in ipairs(stringx.split(fragments_wml or "")) do
 			journeylog_fragments[entry_id][fragment] = true
 		end
+
+		::skip117::
 	end
 
 	journeylog.internal._deserialize_highlights(wml.variables[wmlpath("highlights", variable)])

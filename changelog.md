@@ -10,6 +10,8 @@ Version 20260330+dev:
 
 * Lua and WML library:
   * Make the console output of `[bug]` significantly more verbose.
+  * Fix/workaround for JourneyLog state corruption resulting from AtS issue
+    #117.
 
 * Tools:
   * mkdist should now run on macOS and *BSD Unices.
