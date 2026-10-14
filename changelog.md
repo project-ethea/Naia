@@ -3,6 +3,8 @@ Naia - Project Ethea Phase 1 Shared Library - Changelog
 
 Version 20261010+dev:
 ---------------------
+* Language and i18n:
+  * Updated translations: Spanish.
 
 
 Version 20261010:
