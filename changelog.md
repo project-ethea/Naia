@@ -6,6 +6,10 @@ Version 20261010+dev:
 * Language and i18n:
   * Updated translations: Spanish.
 
+* Lua and WML library:
+  * Make the `AMOUNT` parameter of `ACHIEVEMENT:PROGRESS` optional (defaults
+    to 1).
+
 
 Version 20261010:
 -----------------
