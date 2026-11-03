@@ -10,6 +10,9 @@ Version 20261010+dev:
   * Make the `AMOUNT` parameter of `ACHIEVEMENT:PROGRESS` optional (defaults
     to 1).
 
+* Terrains:
+  * Incorporated Blood terrains from AtS.
+
 
 Version 20261010:
 -----------------
